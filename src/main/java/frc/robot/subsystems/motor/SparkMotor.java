@@ -1,0 +1,133 @@
+package frc.robot.subsystems.motor;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+
+public class SparkMotor implements Motor{
+    
+    MotorCal k;
+    CANSparkMax motor;
+
+    RelativeEncoder encoder;
+    SparkPIDController PIDController;
+
+    public SparkMotor(MotorCal k){
+        this.k = k;
+        motor = new CANSparkMax(k.channel, MotorType.kBrushless);
+
+        motor.restoreFactoryDefaults();
+
+        encoder = motor.getEncoder();
+        PIDController = motor.getPIDController();
+
+        motor.setInverted(k.inverted);
+
+        if(k.rampRate != 0){
+            motor.setOpenLoopRampRate(k.rampRate);
+            motor.setClosedLoopRampRate(k.rampRate);
+        }
+
+        PIDController.setP(k.p);
+        PIDController.setI(k.i);
+        PIDController.setIZone(k.iZone);
+        PIDController.setD(k.d);
+        PIDController.setFF(k.ff);
+        PIDController.setDFilter(k.dFilt);
+
+        powerLimMax = k.pidLimUp;
+        powerLimMin = k.pidLimDn;
+        PIDController.setOutputRange(k.pidLimDn,k.pidLimUp);
+
+        if(k.currLim != 0){
+            motor.setSmartCurrentLimit((int) k.currLim);
+            motor.setSecondaryCurrentLimit(k.currLim);
+        }
+
+        if(k.brakeMode){
+            motor.setIdleMode(IdleMode.kBrake);
+            brakeMode = true;
+        } else {
+            motor.setIdleMode(IdleMode.kCoast);
+            brakeMode = false;
+        }
+    }
+
+    @Override
+    public void setPower(double power) {
+        motor.set(power);
+    }
+
+    @Override
+    public double getPosition() {
+        return encoder.getPosition() * k.gearRatio;//in rotations
+    }
+
+    @Override
+    public Rotation2d getRotation() {
+        return new Rotation2d(Units.rotationsToRadians(getPosition()));
+    }
+
+    @Override
+    public void setPosition(double position){
+        PIDController.setReference(position / k.gearRatio, ControlType.kPosition);//in rotations
+    }
+
+    @Override
+    public void setRotation(Rotation2d angle){
+        setPosition(angle.getRotations());
+    }
+
+    @Override
+    public void setEncoderPosition(double position) {
+        REVLibError err = encoder.setPosition(position / k.gearRatio);
+        if(!err.equals(REVLibError.kOk)){
+            System.out.println("Error resetting wheel: " + err.toString());
+        }
+    }
+
+    @Override
+    public void setSpeed(double rpm){
+        PIDController.setReference(rpm / k.gearRatio, ControlType.kVelocity);
+    }
+
+    @Override
+    public double getCurrent(){
+        return motor.getOutputCurrent();
+    }
+
+    @Override
+    public double getTemp(){
+        return motor.getMotorTemperature();
+    }
+
+    boolean brakeMode;
+    @Override
+    public void setBrakeMode(boolean brakeMode) {
+        if(brakeMode != this.brakeMode){
+            this.brakeMode = brakeMode;
+            if(brakeMode){
+                motor.setIdleMode(IdleMode.kBrake);
+            } else {
+                motor.setIdleMode(IdleMode.kCoast);
+            }
+        }
+    }
+
+    double powerLimMin,powerLimMax;
+    @Override
+    public void setPIDPwrLim(double pwrLim) {
+        if(pwrLim != powerLimMax){
+            PIDController.setOutputRange(-pwrLim,pwrLim);
+            powerLimMax = pwrLim;
+            powerLimMin = -pwrLim;
+        }
+    }
+}
