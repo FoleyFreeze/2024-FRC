@@ -11,15 +11,16 @@ public class DriveCals {
     public class WheelCal{
         public MotorCal driveMotor;
         public MotorCal swerveMotor;
+        public int encChannel;
 
         public Translation2d wheelLocation;
         
+        public String name;
     }
 
     //wheel locations
     private double width = Units.inchesToMeters(12); //robo dimensions 
     private double length = Units.inchesToMeters(13);
-
 
     public double maxWheelSpeed = Units.feetToMeters(18);
     
@@ -37,24 +38,32 @@ public class DriveCals {
         wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6);
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim);
         wheelFL.wheelLocation = new Translation2d(-width, length);
+        wheelFL.encChannel = 0;
+        wheelFL.name = "FL";
     }
 
     public WheelCal wheelFR = new WheelCal();{
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2);
         wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim);
         wheelFR.wheelLocation = new Translation2d(width, length);
+        wheelFR.encChannel = 1;
+        wheelFR.name = "FR";
     }
 
     public WheelCal wheelBL = new WheelCal();{
         wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8);
         wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim);
         wheelBL.wheelLocation = new Translation2d(-width, -length);
+        wheelBL.encChannel = 2;
+        wheelBL.name = "BL";
     }
 
     public WheelCal wheelBR = new WheelCal();{
         wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20);
         wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim);
         wheelBR.wheelLocation = new Translation2d(width, -length);
+        wheelBR.encChannel = 3;
+        wheelBR.name = "BR";
     }
 
     public WheelCal[] wheelCals = {wheelFL, wheelFR, wheelBL, wheelBR};
