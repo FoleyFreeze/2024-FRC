@@ -8,9 +8,10 @@ public class CmdDrive extends Command {
     
     RobotContainer r;
 
-public CmdDrive(RobotContainer r){
-    this.r = r;
-}
+    public CmdDrive(RobotContainer r){
+        this.r = r;
+        addRequirements(r.drive);
+    }
     
     @Override
     public void execute(){

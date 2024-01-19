@@ -66,6 +66,10 @@ public class Drive extends SubsystemBase{
     }
     
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
+        boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.02
+                        && Math.abs(speeds.vyMetersPerSecond) < 0.02
+                        && Math.abs(speeds.omegaRadiansPerSecond) < 0.02;
+        
         //scale to m/s
         speeds = speeds.times(k.maxWheelSpeed);
         
@@ -77,9 +81,10 @@ public class Drive extends SubsystemBase{
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, k.maxWheelSpeed);
 
         for(int i = 0; i < 4; i++){
-            SwerveModuleState finalState = SwerveModuleState.optimize(moduleStates[i], wheels[i].swerveMotor.getRotation());
-            wheels[i].swerveMotor.setRotation(finalState.angle);
-            wheels[i].driveMotor.setPower(finalState.speedMetersPerSecond/k.maxWheelSpeed);
+            Rotation2d currRot = wheels[i].swerveMotor.getRotation();
+            SwerveModuleState finalState = SwerveModuleState.optimize(moduleStates[i], currRot);
+            if(!stopped) wheels[i].swerveMotor.setRotation(finalState.angle.plus(Rotation2d.fromDegrees(wheels[i].encAngOffset)));
+            wheels[i].driveMotor.setPower(finalState.speedMetersPerSecond / k.maxWheelSpeed);
         }
 
     }
@@ -127,9 +132,14 @@ public class Drive extends SubsystemBase{
 
     public void setEncAngOffset(int i, double offset){
         wheels[i].swerveMotor.setEncoderPosition(0.0);
-        wheels[i].encAngOffset = (wheels[i].absEncoder.getVoltage() - offset) / 5.0 * 2 * Math.PI - Math.PI / 2.0;
+        //90 deg offset not needed if zeroing with wheels pointed forward (bevels to the right, -y direction)
+        wheels[i].encAngOffset = (wheels[i].absEncoder.getVoltage() - offset) / 5.0 * 2 * Math.PI /*- Math.PI / 2.0*/;
         System.out.println(k.wheelCals[i].name + " angle offset: " + Units.radiansToDegrees(wheels[i].encAngOffset));
         System.out.println(k.wheelCals[i].name + "current voltage: " + wheels[i].absEncoder.getVoltage());
     }
 
+    @Override
+    public void periodic(){
+        
+    }
 }

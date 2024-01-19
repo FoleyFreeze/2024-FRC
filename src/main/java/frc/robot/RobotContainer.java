@@ -6,6 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.cals.DriveCals;
+import frc.robot.cals.InputsCals;
+import frc.robot.commands.drive.CmdDrive;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.gather.Gather;
@@ -23,10 +27,17 @@ public class RobotContainer {
   public Inputs inputs;
 
   public RobotContainer() {
+    inputs = new Inputs(this, new InputsCals());
+    drive = new Drive(this, new DriveCals());
+
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
+
+    inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::writeAbsOffset).ignoringDisable(true));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

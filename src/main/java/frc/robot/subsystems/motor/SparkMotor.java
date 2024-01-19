@@ -82,7 +82,18 @@ public class SparkMotor implements Motor{
 
     @Override
     public void setRotation(Rotation2d angle){
-        setPosition(angle.getRotations());
+        double targetAngle = angle.getRotations();
+        double rotations = getPosition();
+        double wholeRotations = Math.floor(rotations);
+        double adjustedReferenceAngle = targetAngle + wholeRotations;
+        double fractionalAngle = rotations - wholeRotations;
+
+        if(targetAngle - fractionalAngle > 0.5){
+            adjustedReferenceAngle--;
+        }else if (targetAngle - fractionalAngle < -0.5) {
+            adjustedReferenceAngle++;
+        }
+        setPosition(adjustedReferenceAngle);
     }
 
     @Override
