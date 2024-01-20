@@ -55,7 +55,6 @@ public class Drive extends SubsystemBase{
             k.wheelCals[3].wheelLocation
             );
 
-        SwerveModulePosition zero = new SwerveModulePosition(0, new Rotation2d(0));
         odometry = new SwerveDriveOdometry(
             kinematics, 
             getRobotAngle(),

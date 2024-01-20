@@ -2,6 +2,7 @@ package frc.robot.subsystems.inputs;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,21 +28,47 @@ public class Inputs extends SubsystemBase {
         double x = -flysky.getRawAxis(1);
         double z = -flysky.getRawAxis(4);
         
-        x = deadband(x);
-        y = deadband(y);
+        if(x < k.deadband && y < k.deadband){
+            x = 0;  
+            y = 0;
+        }
+
         z = deadband(z);
 
-        /*
+        
         x = Math.pow(x, k.expo) * Math.signum(x);
         y = Math.pow(y, k.expo) * Math.signum(y);
         z = Math.pow(z, k.expo) * Math.signum(z);
-        */
+        
+
+        Translation2d newXY = mapSqrToCirc(x, y);
+        x = newXY.getX();
+        y = newXY.getY();
 
         x *= k.maxDrivePwr;
         y *= k.maxDrivePwr;
         z *= k.maxDrivePwr;
 
         return new ChassisSpeeds(x, y, z);
+    }
+
+    public Translation2d mapSqrToCirc(double x, double y){
+        double length1 = Math.sqrt((x*x)+(y*y));
+        double theta = Math.atan2(y, x);
+        double slope;
+
+        if (Math.abs(theta % Math.PI/2) > Math.PI/4){
+            slope = x/y;
+            if(y == 0) slope = 1;
+        }else{
+            slope = y/x;
+            if(x == 0) slope = 1;
+        }
+
+        double length2 = Math.sqrt(1 + slope*slope);
+        double r = length1/length2;
+
+        return new Translation2d((r*Math.cos(theta)), r*Math.sin(theta));
     }
 
     public double deadband(double value){
