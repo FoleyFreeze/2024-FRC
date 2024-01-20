@@ -1,10 +1,14 @@
 package frc.robot.subsystems.drive;
 
+import com.kauailabs.navx.IMUProtocol.GyroUpdate;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -23,6 +27,7 @@ public class Drive extends SubsystemBase{
     SwerveDriveKinematics kinematics;
     Wheel[] wheels;
     AHRS navX;
+    SwerveDriveOdometry odometry;
 
     FileManager fm = new FileManager("/home/lvuser/WheelEncoderOffsets.txt");
 
@@ -31,6 +36,13 @@ public class Drive extends SubsystemBase{
         Motor swerveMotor;
         AnalogInput absEncoder;
         double encAngOffset;
+
+        public SwerveModulePosition getPosition(){
+            Rotation2d angle = swerveMotor.getRotation();
+            double driveEnc = Units.inchesToMeters(driveMotor.getPosition());
+            
+            return new SwerveModulePosition(driveEnc, angle);
+        }
     }
 
     public Drive (RobotContainer r, DriveCals k){
@@ -42,6 +54,18 @@ public class Drive extends SubsystemBase{
             k.wheelCals[2].wheelLocation,
             k.wheelCals[3].wheelLocation
             );
+
+        SwerveModulePosition zero = new SwerveModulePosition(0, new Rotation2d(0));
+        odometry = new SwerveDriveOdometry(
+            kinematics, 
+            getRobotAngle(),
+            new SwerveModulePosition[] {
+                wheels[0].getPosition(),
+                wheels[1].getPosition(),
+                wheels[2].getPosition(),
+                wheels[3].getPosition()
+            }
+        );
 
         wheels = new Wheel[4];
     
@@ -138,8 +162,25 @@ public class Drive extends SubsystemBase{
         System.out.println(k.wheelCals[i].name + "current voltage: " + wheels[i].absEncoder.getVoltage());
     }
 
+    Pose2d robotPose;
+
     @Override
     public void periodic(){
+        //update odometry
+        robotPose = odometry.update(
+            getRobotAngle(), 
+            new SwerveModulePosition[] {
+                wheels[0].getPosition(),
+                wheels[1].getPosition(),
+                wheels[2].getPosition(),
+                wheels[3].getPosition()
+            }
+        );
+
         
+    }
+
+    public Pose2d getPose(){
+        return robotPose;
     }
 }
