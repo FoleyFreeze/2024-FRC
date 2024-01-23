@@ -25,13 +25,13 @@ public class Drive extends SubsystemBase{
     RobotContainer r;
     public DriveCals k;
     SwerveDriveKinematics kinematics;
-    Wheel[] wheels;
+    WheelModule[] wheels;
     AHRS navX;
     SwerveDriveOdometry odometry;
 
     FileManager fm = new FileManager("/home/lvuser/WheelEncoderOffsets.txt");
 
-    class Wheel{
+    class WheelModule{
         Motor driveMotor;
         Motor swerveMotor;
         AnalogInput absEncoder;
@@ -66,10 +66,10 @@ public class Drive extends SubsystemBase{
             }
         );
 
-        wheels = new Wheel[4];
+        wheels = new WheelModule[4];
     
         for (int i = 0; i<4; i++){
-            wheels[i] = new Wheel();
+            wheels[i] = new WheelModule();
             wheels[i].swerveMotor = Motor.create(k.wheelCals[i].swerveMotor);
             wheels[i].driveMotor = Motor.create(k.wheelCals[i].driveMotor);
             wheels[i].absEncoder = new AnalogInput(k.wheelCals[i].encChannel);
