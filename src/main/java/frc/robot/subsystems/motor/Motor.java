@@ -26,11 +26,14 @@ public interface Motor {
     public abstract double getPosition();
     public abstract void setPosition(double position);
     public abstract void setEncoderPosition(double position);
-    public abstract void setSpeed(double rpm);
     public abstract double getCurrent();
     public abstract double getTemp();
     public abstract void setBrakeMode(boolean brakeMode);
     public abstract void setPIDPwrLim(double pwrLim);
     public abstract Rotation2d getRotation();
     public abstract void setRotation(Rotation2d angle);
+    public abstract void setVelocity(double velocity);
+    public default double getVelocity(){return 0;};
+    public default double getVoltage(){return 0;};
+    public default void setVoltage(double voltage){};
 }

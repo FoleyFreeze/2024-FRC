@@ -105,11 +105,6 @@ public class SparkMotor implements Motor{
     }
 
     @Override
-    public void setSpeed(double rpm){
-        PIDController.setReference(rpm / k.gearRatio, ControlType.kVelocity);
-    }
-
-    @Override
     public double getCurrent(){
         return motor.getOutputCurrent();
     }
@@ -140,5 +135,25 @@ public class SparkMotor implements Motor{
             powerLimMax = pwrLim;
             powerLimMin = -pwrLim;
         }
+    }
+
+    @Override
+    public double getVelocity(){
+        return encoder.getVelocity()*k.gearRatio / 60.0;
+    }
+
+     @Override
+    public void setVelocity(double velocity){
+        PIDController.setReference(velocity / k.gearRatio * 60, ControlType.kVelocity);
+    }
+
+    @Override
+    public double getVoltage(){
+        return motor.getAppliedOutput() * motor.getBusVoltage();
+    }
+
+    @Override
+    public void setVoltage(double voltage){
+        motor.setVoltage(voltage);
     }
 }

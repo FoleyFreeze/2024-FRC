@@ -29,7 +29,7 @@ public class NullMotor implements Motor{
     }
 
     @Override
-    public void setSpeed(double rpm) {
+    public void setVelocity(double rpm) {
         
     }
 

@@ -9,6 +9,7 @@ public class Wheel {
 
     private final WheelIO io;
     private final WheelIOInputsAutoLogged inputs = new WheelIOInputsAutoLogged();
+    
 
     public Wheel(){
         io = new WheelIO() {};
