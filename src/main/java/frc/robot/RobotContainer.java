@@ -39,7 +39,7 @@ public class RobotContainer {
 
     inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::writeAbsOffset).ignoringDisable(true));
 
-    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower((inputs.flysky.getRawAxis(7)-.5)/2), gather).finallyDo(() -> gather.setMotorPower(0)));
+    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)), gather).finallyDo(() -> gather.setMotorPower(0)));
   }
 
   public Command getAutonomousCommand() {
