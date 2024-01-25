@@ -5,6 +5,6 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class GatherCals {
     
-    public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14).setCurrLim(20)/*.invert()*/;
+    public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14).setCurrLim(20).invert();
 
 }

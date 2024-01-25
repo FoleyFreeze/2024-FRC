@@ -47,6 +47,18 @@ public class Drive extends SubsystemBase{
     public Drive (RobotContainer r, DriveCals k){
         this.r = r;
         this.k = k;
+
+        navX = new AHRS(Port.kMXP);
+
+        wheels = new WheelModule[4];
+    
+        for (int i = 0; i<4; i++){
+            wheels[i] = new WheelModule();
+            wheels[i].swerveMotor = Motor.create(k.wheelCals[i].swerveMotor);
+            wheels[i].driveMotor = Motor.create(k.wheelCals[i].driveMotor);
+            wheels[i].absEncoder = new AnalogInput(k.wheelCals[i].encChannel);
+        }
+
         kinematics = new SwerveDriveKinematics(
             k.wheelCals[0].wheelLocation,
             k.wheelCals[1].wheelLocation,
@@ -65,17 +77,8 @@ public class Drive extends SubsystemBase{
             }
         );
 
-        wheels = new WheelModule[4];
-    
-        for (int i = 0; i<4; i++){
-            wheels[i] = new WheelModule();
-            wheels[i].swerveMotor = Motor.create(k.wheelCals[i].swerveMotor);
-            wheels[i].driveMotor = Motor.create(k.wheelCals[i].driveMotor);
-            wheels[i].absEncoder = new AnalogInput(k.wheelCals[i].encChannel);
+        
 
-        }
-
-        navX = new AHRS(Port.kMXP);
 
     }
  

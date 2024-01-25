@@ -11,7 +11,7 @@ public class Gather extends SubsystemBase{
     RobotContainer r;
     Motor topGather;
 
-    public Gather (GatherCals k, RobotContainer r){
+    public Gather (RobotContainer r, GatherCals k){
         this.k = k;
         this.r = r;
 

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.cals.DriveCals;
+import frc.robot.cals.GatherCals;
 import frc.robot.cals.InputsCals;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.subsystems.climber.Climber;
@@ -30,6 +31,7 @@ public class RobotContainer {
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
     drive = new Drive(this, new DriveCals());
+    gather = new Gather(this, new GatherCals());
 
     configureBindings();
   }
@@ -39,7 +41,7 @@ public class RobotContainer {
 
     inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::writeAbsOffset).ignoringDisable(true));
 
-    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)), gather).finallyDo(() -> gather.setMotorPower(0)));
+    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)/2.0 + 0.5), gather).finallyDo(() -> gather.setMotorPower(0)));
   }
 
   public Command getAutonomousCommand() {

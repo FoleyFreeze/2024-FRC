@@ -28,14 +28,14 @@ public class Inputs extends SubsystemBase {
         double x = -flysky.getRawAxis(1);
         double z = -flysky.getRawAxis(4);
         
-        if(x < k.deadband && y < k.deadband){
+        if(Math.abs(x) < k.deadband && Math.abs(y) < k.deadband){
             x = 0;  
             y = 0;
         }
 
         z = deadband(z);
 
-        
+        /*
         x = Math.pow(x, k.expo) * Math.signum(x);
         y = Math.pow(y, k.expo) * Math.signum(y);
         z = Math.pow(z, k.expo) * Math.signum(z);
@@ -44,6 +44,7 @@ public class Inputs extends SubsystemBase {
         Translation2d newXY = mapSqrToCirc(x, y);
         x = newXY.getX();
         y = newXY.getY();
+        */
 
         x *= k.maxDrivePwr;
         y *= k.maxDrivePwr;
@@ -101,5 +102,5 @@ public class Inputs extends SubsystemBase {
         public boolean getAsBoolean(){
             return flysky.getRawAxis(2) > .25;
         }
-    })
+    });
 }
