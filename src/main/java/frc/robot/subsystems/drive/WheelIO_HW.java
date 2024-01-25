@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.cals.DriveCals.WheelCal;
 import frc.robot.subsystems.motor.Motor;
-import frc.robot.util.FileManager;
 
 public class WheelIO_HW implements WheelIO {
     
@@ -14,8 +13,6 @@ public class WheelIO_HW implements WheelIO {
     Motor swerveMotor;
     AnalogInput swerveAbsoluteEncoder;
     Rotation2d absoluteEncoderOffset;
-
-    static FileManager fm;
 
     public WheelIO_HW (WheelCal k){
         driveMotor = Motor.create(k.driveMotor);
