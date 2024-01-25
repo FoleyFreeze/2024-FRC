@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.InputsCals;
 import frc.robot.commands.drive.CmdDrive;
@@ -37,9 +38,12 @@ public class RobotContainer {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
 
     inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::writeAbsOffset).ignoringDisable(true));
+
+    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower((inputs.flysky.getRawAxis(7)-.5)/2), gather).finallyDo(() -> gather.setMotorPower(0)));
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+
 }

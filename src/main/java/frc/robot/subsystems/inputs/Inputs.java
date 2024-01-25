@@ -12,7 +12,7 @@ import frc.robot.cals.InputsCals;
 
 public class Inputs extends SubsystemBase {
     
-    Joystick flysky;
+    public Joystick flysky;
     RobotContainer r;
     InputsCals k;
 
@@ -96,4 +96,10 @@ public class Inputs extends SubsystemBase {
             }
         }
     });
+
+    public Trigger gatherTrigger = new Trigger (new BooleanSupplier() {
+        public boolean getAsBoolean(){
+            return flysky.getRawAxis(2) > .25;
+        }
+    })
 }
