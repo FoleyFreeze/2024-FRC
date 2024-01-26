@@ -13,7 +13,7 @@ public class DriveIO_HW implements DriveIO{
     AHRS navX;
     FileManager fm;
 
-    public DriveIO_HW (DriveCals k){
+    public DriveIO_HW (){
         navX = new AHRS(SPI.Port.kMXP, (byte) 200);
         fm = new FileManager("/home/lvuser/WheelEncoderOffsets.txt");
     }
@@ -44,6 +44,7 @@ public class DriveIO_HW implements DriveIO{
                 fm.close();
                 System.out.println();
             }
+            
         }catch(Exception e){
             System.out.println(e.toString());
             e.printStackTrace();

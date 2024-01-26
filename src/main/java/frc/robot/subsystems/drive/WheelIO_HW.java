@@ -27,7 +27,7 @@ public class WheelIO_HW implements WheelIO {
         inputs.driveCurrentAmps = driveMotor.getCurrent();
         inputs.driveAppliedVolts = driveMotor.getVoltage();
 
-        inputs.swervePosition = swerveMotor.getRotation();
+        inputs.swervePosition = swerveMotor.getRotation().minus(absoluteEncoderOffset);
         inputs.swerveVelocity = swerveMotor.getVelocity();
         inputs.swerveCurrent = driveMotor.getCurrent();
         inputs.swerveVoltage = driveMotor.getVoltage();
@@ -50,5 +50,10 @@ public class WheelIO_HW implements WheelIO {
     @Override
     public void setDriveBrakemode(boolean enable){
         driveMotor.setBrakeMode(enable);
+    }
+
+    @Override
+    public void setSwerveOffset(double offset){
+        absoluteEncoderOffset = new Rotation2d(offset);
     }
 }
