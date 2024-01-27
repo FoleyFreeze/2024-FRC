@@ -40,7 +40,7 @@ public class Drive extends SubsystemBase{
         if(Robot.isReal()){
             driveIO = new DriveIO_HW();
         }else{
-            driveIO = new DriveIO(){};
+            driveIO = new DriveIO() {};
         }
 
         for (int i = 0; i<4; i++){
@@ -57,12 +57,7 @@ public class Drive extends SubsystemBase{
         odometry = new SwerveDriveOdometry(
             kinematics, 
             new Rotation2d(),
-            new SwerveModulePosition[] {
-                wheels[0].getPosition(),
-                wheels[1].getPosition(),
-                wheels[2].getPosition(),
-                wheels[3].getPosition()
-            }
+            getWheelPositions()
         );
 
         driveIO.updateFileInputs(fileInputs);
