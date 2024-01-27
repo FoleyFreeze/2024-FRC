@@ -42,6 +42,10 @@ public class Wheel {
         return new SwerveModulePosition(driveEnc, angle);
     }
 
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(inputs.driveVelocity, inputs.swervePosition);
+    }
+
     public SwerveModuleState moveWheel(SwerveModuleState state){
         var optimizedState = SwerveModuleState.optimize(state, inputs.swervePosition);
         io.setDriveVoltage(12 * optimizedState.speedMetersPerSecond / k.maxSpeed);

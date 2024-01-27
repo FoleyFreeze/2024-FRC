@@ -1,8 +1,8 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,16 +11,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.cals.DriveCals;
-import frc.robot.subsystems.motor.Motor;
-import frc.robot.util.FileManager;
 
 public class Drive extends SubsystemBase{
     
@@ -118,18 +112,32 @@ public class Drive extends SubsystemBase{
         //update odometry
         robotPose = odometry.update(
             inputs.yaw, 
-            new SwerveModulePosition[] {
-                wheels[0].getPosition(),
-                wheels[1].getPosition(),
-                wheels[2].getPosition(),
-                wheels[3].getPosition()
-            }
+            getWheelPositions()
         );
 
         
     }
 
+    @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose(){
         return robotPose;
     }
+
+    private SwerveModulePosition[] getWheelPositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for (int i = 0; i < 4; i++) {
+            positions[i] = wheels[i].getPosition();
+        }
+        return positions;
+    }
+
+    @AutoLogOutput(key = "SwerveStates/Measured")
+    private SwerveModuleState[] getWheelStates() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            states[i] = wheels[i].getState();
+        }
+        return states;
+    }
+
 }
