@@ -5,7 +5,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.cals.DriveCals;
 import frc.robot.util.FileManager;
 
 public class DriveIO_HW implements DriveIO{
@@ -58,4 +57,16 @@ public class DriveIO_HW implements DriveIO{
         }
     }
 
+    @Override
+    public void writeOffsets(double offsets[]) {
+        try {
+            for (double num:offsets){
+               fm.writeLine(Double.toString(num));
+            }
+            fm.close();
+        }catch(Exception e){
+            System.out.println("Error while saving swerve offsets to file");
+            e.printStackTrace();
+        }
+    }
 }

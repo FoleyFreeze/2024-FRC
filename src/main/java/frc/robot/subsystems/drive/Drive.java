@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -63,7 +62,7 @@ public class Drive extends SubsystemBase{
         driveIO.updateFileInputs(fileInputs);
 
         for(int i = 0; i<4; i++){
-            wheels[i].setSwerveOffset(fileInputs.rotationOffsets[i]);
+            wheels[i].setSwerveOffset(new Rotation2d(fileInputs.rotationOffsets[i]));
         }
     }
  
@@ -133,6 +132,17 @@ public class Drive extends SubsystemBase{
             states[i] = wheels[i].getState();
         }
         return states;
+    }
+
+    //get offset for every wheels, apply offset, write to file
+    public void learnSwerveOffsets(){
+        double offsets[] = new double[4];
+        for (int i = 0; i < 4; i++) {
+            Rotation2d rotation = wheels[i].getAnalogEncoderValue();
+            offsets[i] = rotation.getRadians();
+            wheels[i].setSwerveOffset(rotation);
+        }
+        
     }
 
 }

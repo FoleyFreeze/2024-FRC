@@ -24,4 +24,6 @@ public interface DriveIO {
     public default void updateInputs(DriveIOInputs inputs) {}
 
     public default void updateFileInputs(FileIOInputs inputs) {}
+
+    public default void writeOffsets(double offset[]) {}
 }

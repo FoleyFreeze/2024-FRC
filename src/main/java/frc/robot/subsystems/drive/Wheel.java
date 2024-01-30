@@ -53,7 +53,11 @@ public class Wheel {
         return optimizedState;
     }
 
-    public void setSwerveOffset(double offset){
+    public void setSwerveOffset(Rotation2d offset){
         io.setSwerveOffset(offset);
+    }
+
+    public Rotation2d getAnalogEncoderValue () {
+        return inputs.analogEncoderAngleRaw;
     }
 }
