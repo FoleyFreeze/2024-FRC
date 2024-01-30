@@ -4,29 +4,45 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.cals.InputsCals;
+import edu.wpi.first.networktables.NetworkTable;
 
 public class Inputs extends SubsystemBase {
     
     public Joystick flysky;
     RobotContainer r;
     InputsCals k;
+    NetworkTableInstance inst;
+    NetworkTable table;
+    StringTopic visionTopic;
+    StringSubscriber visionData;
+    int visionDataPollingCounter;
+    double visionPolling;
 
     public Inputs (RobotContainer r, InputsCals k){
         flysky = new Joystick(0);
 
         this.r = r;
         this.k = k;
+        inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("/Vision");
+        visionTopic = table.getStringTopic("Note Pose Data Header");
+        visionData = visionTopic.subscribe("None"); 
+        visionPolling = Timer.getFPGATimestamp();
     }
 
     public ChassisSpeeds getChassisSpeeds(){
         double y = -flysky.getRawAxis(0);
         double x = -flysky.getRawAxis(1);
-        double z = -flysky.getRawAxis(4);
+        double z = flysky.getRawAxis(4);
         
         if(Math.abs(x) < k.deadband && Math.abs(y) < k.deadband){
             x = 0;  
@@ -103,4 +119,13 @@ public class Inputs extends SubsystemBase {
             return flysky.getRawAxis(2) > .25;
         }
     });
-}
+
+    @Override
+    public void periodic() {
+        // Called once per scheduler run
+        if (Timer.getFPGATimestamp() > visionPolling + 3) {
+            System.out.print(visionData.get());
+            visionPolling = Timer.getFPGATimestamp();
+        }
+
+    }}

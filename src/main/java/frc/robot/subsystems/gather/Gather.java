@@ -1,5 +1,6 @@
 package frc.robot.subsystems.gather;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.cals.GatherCals;
@@ -20,5 +21,11 @@ public class Gather extends SubsystemBase{
 
     public void setMotorPower(double power){
         topGather.setVoltage(power*12);
+    }
+
+    @Override
+    public void periodic(){
+        SmartDashboard.putNumber("GatherCurrent", topGather.getCurrent());
+        SmartDashboard.putNumber("Setpoint", r.inputs.flysky.getRawAxis(7)/2+0.5);
     }
 }
