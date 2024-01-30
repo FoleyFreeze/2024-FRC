@@ -18,7 +18,7 @@ public interface DriveIO {
 
     @AutoLog
     public static class FileIOInputs{
-        public double[] rotationOffsets;
+        public double[] rotationOffsets = new double[4];
     }
 
     public default void updateInputs(DriveIOInputs inputs) {}

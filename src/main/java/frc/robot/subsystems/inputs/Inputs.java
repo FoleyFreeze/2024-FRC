@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.cals.InputsCals;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class Inputs extends SubsystemBase {
     
@@ -22,6 +23,7 @@ public class Inputs extends SubsystemBase {
     InputsCals k;
     NetworkTableInstance inst;
     NetworkTable table;
+    NetworkTableEntry rioTimeNT;
     StringTopic visionTopic;
     StringSubscriber visionData;
     int visionDataPollingCounter;
@@ -32,17 +34,20 @@ public class Inputs extends SubsystemBase {
 
         this.r = r;
         this.k = k;
+        
         inst = NetworkTableInstance.getDefault();
         table = inst.getTable("/Vision");
+        
         visionTopic = table.getStringTopic("Note Pose Data Header");
-        visionData = visionTopic.subscribe("None"); 
+        visionData = visionTopic.subscribe("No Note Data"); 
         visionPolling = Timer.getFPGATimestamp();
+        rioTimeNT = table.getEntry("RIO Time");
     }
 
     public ChassisSpeeds getChassisSpeeds(){
         double y = -flysky.getRawAxis(0);
         double x = -flysky.getRawAxis(1);
-        double z = flysky.getRawAxis(4);
+        double z = -flysky.getRawAxis(4);
         
         if(Math.abs(x) < k.deadband && Math.abs(y) < k.deadband){
             x = 0;  
@@ -107,7 +112,7 @@ public class Inputs extends SubsystemBase {
     public Trigger resetSwerveZeros = new Trigger(new BooleanSupplier() {
         public boolean getAsBoolean(){
             if(flysky != null){
-                return flysky.getRawButton(11);
+                return flysky.getRawButton(11) && flysky.getRawButton(15);
             } else {
                 return false;
             }
@@ -124,8 +129,11 @@ public class Inputs extends SubsystemBase {
     public void periodic() {
         // Called once per scheduler run
         if (Timer.getFPGATimestamp() > visionPolling + 3) {
-            System.out.print(visionData.get());
+            System.out.println(visionData.get());
             visionPolling = Timer.getFPGATimestamp();
         }
 
-    }}
+        rioTimeNT.setDouble(Timer.getFPGATimestamp());      
+        inst.flush();  
+    }
+}

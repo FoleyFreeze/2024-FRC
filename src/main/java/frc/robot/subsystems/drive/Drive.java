@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.cals.DriveCals;
+import frc.robot.subsystems.drive.DriveIO.FileIOInputs;
 
 public class Drive extends SubsystemBase{
     
@@ -21,9 +22,9 @@ public class Drive extends SubsystemBase{
     public DriveCals k;
 
     DriveIO driveIO;
-    DriveIOInputsAutoLogged inputs;
-    FileIOInputsAutoLogged fileInputs;
-    public Pose2d robotPose;
+    DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
+    FileIOInputsAutoLogged fileInputs = new FileIOInputsAutoLogged();
+    public Pose2d robotPose = new Pose2d();
 
     Wheel[] wheels;
     SwerveDriveKinematics kinematics;
@@ -136,13 +137,14 @@ public class Drive extends SubsystemBase{
 
     //get offset for every wheels, apply offset, write to file
     public void learnSwerveOffsets(){
+        System.out.println("Saving new Wheel Offsets...");
         double offsets[] = new double[4];
         for (int i = 0; i < 4; i++) {
             Rotation2d rotation = wheels[i].getAnalogEncoderValue();
             offsets[i] = rotation.getRadians();
             wheels[i].setSwerveOffset(rotation);
         }
-        
+        System.out.println("Done!");
     }
 
 }

@@ -13,7 +13,7 @@ public class Gather extends SubsystemBase{
     RobotContainer r;
 
     GatherIO io;
-    GatherIOInputsAutoLogged inputs;
+    GatherIOInputsAutoLogged inputs = new GatherIOInputsAutoLogged();
     
 
     public Gather (RobotContainer r, GatherCals k){
@@ -37,11 +37,8 @@ public class Gather extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Gather/TopGather", inputs);
-    }
 
-    @Override
-    public void periodic(){
-        SmartDashboard.putNumber("GatherCurrent", topGather.getCurrent());
+        SmartDashboard.putNumber("GatherCurrent", inputs.gatherCurrentAmps);
         SmartDashboard.putNumber("Setpoint", r.inputs.flysky.getRawAxis(7)/2+0.5);
     }
 }

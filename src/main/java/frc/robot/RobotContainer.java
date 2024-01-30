@@ -39,7 +39,7 @@ public class RobotContainer {
   private void configureBindings() {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
 
-//    inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::writeAbsOffset).ignoringDisable(true));
+    inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
 
     inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)/2.0 + 0.5), gather).finallyDo(() -> gather.setMotorPower(0)));
   }
