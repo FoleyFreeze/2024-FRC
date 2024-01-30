@@ -1,21 +1,20 @@
 package frc.robot.subsystems.drive;
 
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.cals.DriveCals.WheelCal;
 import frc.robot.subsystems.motor.Motor;
-import frc.robot.util.FileManager;
 
 public class WheelIO_HW implements WheelIO {
     
     Motor driveMotor;
     Motor swerveMotor;
     AnalogInput swerveAbsoluteEncoder;
-    Rotation2d absoluteEncoderOffset;
-
-    static FileManager fm;
+    Rotation2d swerveOffset;
 
     public WheelIO_HW (WheelCal k){
         driveMotor = Motor.create(k.driveMotor);
@@ -30,14 +29,14 @@ public class WheelIO_HW implements WheelIO {
         inputs.driveCurrentAmps = driveMotor.getCurrent();
         inputs.driveAppliedVolts = driveMotor.getVoltage();
 
-        inputs.swervePosition = swerveMotor.getRotation();
+        inputs.swervePositionRaw = swerveMotor.getRotation();
+        inputs.swervePosition = inputs.swervePositionRaw.minus(swerveOffset);
         inputs.swerveVelocity = swerveMotor.getVelocity();
         inputs.swerveCurrent = driveMotor.getCurrent();
         inputs.swerveVoltage = driveMotor.getVoltage();
 
-        inputs.swerveEncoderPosition = new Rotation2d(
-                swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI)
-                .minus(absoluteEncoderOffset);
+        inputs.analogEncoderAngleRaw = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);
+        inputs.analogEncoderAngle = inputs.analogEncoderAngleRaw.minus(swerveOffset); 
     }
 
     @Override
@@ -47,11 +46,21 @@ public class WheelIO_HW implements WheelIO {
 
     @Override
     public void setSwerveAngle(Rotation2d angle){
-        swerveMotor.setRotation(angle.plus(absoluteEncoderOffset));
+        swerveMotor.setRotation(angle.plus(swerveOffset));
     }
 
     @Override
     public void setDriveBrakemode(boolean enable){
         driveMotor.setBrakeMode(enable);
+    }
+
+    @Override
+    public void setSwerveOffset(Rotation2d analogOffset){
+        Rotation2d rawAnalogEncoder = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);
+        
+        swerveOffset = swerveMotor.getRotation().minus(rawAnalogEncoder.minus(analogOffset));
+
+        Logger.recordOutput("Drive/Offset/AnalogEncOffset", analogOffset.getRadians());
+        Logger.recordOutput("Drive/Offset/NeoEncOffset", swerveOffset.getRadians());
     }
 }

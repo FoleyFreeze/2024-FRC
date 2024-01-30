@@ -12,12 +12,14 @@ public interface WheelIO {
         public double driveAppliedVolts;
         public double driveCurrentAmps;
 
+        public Rotation2d swervePositionRaw;
         public Rotation2d swervePosition;
         public double swerveVelocity;
         public double swerveVoltage;
         public double swerveCurrent;
         
-        public Rotation2d swerveEncoderPosition;
+        public Rotation2d analogEncoderAngle;
+        public Rotation2d analogEncoderAngleRaw;
     }
 
     public default void updateInputs(WheelIOInputs inputs) {}
@@ -27,4 +29,6 @@ public interface WheelIO {
     public default void setSwerveAngle(Rotation2d angle){}
 
     public default void setDriveBrakemode(boolean enable) {}
+
+    public default void setSwerveOffset(Rotation2d analogOffset) {}
 }
