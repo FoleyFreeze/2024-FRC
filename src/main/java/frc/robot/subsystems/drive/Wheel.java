@@ -20,7 +20,7 @@ public class Wheel {
         this.k = k;
       //io = Robot.isReal() ? new WheelIO_HW(k) : new WheelIO() {};
       //Another way to do if 
-        if (Robot.isReal()){
+        if (Robot.isReal() && !k.disable){
             io = new WheelIO_HW(k);
         } else {
             io = new WheelIO() {};

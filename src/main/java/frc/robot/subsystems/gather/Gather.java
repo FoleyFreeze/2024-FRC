@@ -20,7 +20,7 @@ public class Gather extends SubsystemBase{
         this.k = k;
         this.r = r;
 
-        if(Robot.isReal()){
+        if(Robot.isReal() && !k.disable){
             io = new GatherIO_HW(k);
         }else{
             io = new GatherIO(){};

@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.cals.DriveCals;
-import frc.robot.subsystems.drive.DriveIO.FileIOInputs;
 
 public class Drive extends SubsystemBase{
     
@@ -37,7 +36,7 @@ public class Drive extends SubsystemBase{
 
         wheels = new Wheel[4];
     
-        if(Robot.isReal()){
+        if(Robot.isReal() && !k.disable){
             driveIO = new DriveIO_HW();
         }else{
             driveIO = new DriveIO() {};

@@ -7,7 +7,11 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class DriveCals {
 
+    public boolean disable = true;
+
     public class WheelCal{
+        public boolean disable = true;
+
         public MotorCal driveMotor;
         public MotorCal swerveMotor;
         public int encChannel;
