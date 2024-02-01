@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter;
 
 import frc.robot.cals.ShooterCals;
-import frc.robot.subsystems.gather.GatherIO.GatherIOInputs;
 import frc.robot.subsystems.motor.Motor;
 
 public class ShooterIO_HW implements ShooterIO {
