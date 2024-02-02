@@ -65,8 +65,7 @@ public class Drive extends SubsystemBase{
             wheels[i].setSwerveOffset(new Rotation2d(fileInputs.rotationOffsets[i]));
         }
     }
- 
-   
+
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
         boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.02
                         && Math.abs(speeds.vyMetersPerSecond) < 0.02
@@ -98,7 +97,7 @@ public class Drive extends SubsystemBase{
         for(var wheel:wheels){
             wheel.updateInputs();
         }
-        Logger.processInputs("Drive/Gyro", inputs);
+        Logger.processInputs("Drive", inputs);
         for(var wheel:wheels){
             wheel.periodic();
         }

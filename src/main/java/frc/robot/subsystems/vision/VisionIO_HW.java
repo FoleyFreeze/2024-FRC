@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.RawSubscriber;
-import frc.robot.RobotContainer;
 
 public class VisionIO_HW implements VisionIO{
 
@@ -18,7 +17,7 @@ public class VisionIO_HW implements VisionIO{
     VisionData noteData;
     double noteTimeStamp;
     
-    public VisionIO_HW(RobotContainer r){
+    public VisionIO_HW(){
         poseMsgNote = NetworkTableInstance.getDefault().getTable("Vision").getRawTopic("Note Pose Data Bytes").subscribe("raw", null);
         NetworkTableInstance.getDefault().addListener(poseMsgNote,
             EnumSet.of(NetworkTableEvent.Kind.kValueAll),
@@ -47,5 +46,11 @@ public class VisionIO_HW implements VisionIO{
 
 
     @Override
-    public void updateInputs (VisionIOInputs inputs){}
+    public void updateInputs (VisionIOInputs inputs){
+        inputs.noteTimeStamp = noteTimeStamp;
+        inputs.noteSeqData = noteSeqNum;
+        inputs.noteData = noteData;
+
+        inputs.now = Logger.getRealTimestamp()/1000000.0;
+    }
 }

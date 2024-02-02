@@ -8,7 +8,9 @@ public interface VisionIO {
     public static class VisionIOInputs{
         double noteTimeStamp;
         VisionData noteData;
-        public int noteSeqData;
+        int noteSeqData;
+
+        double now;
     }
 
     public default void updateInputs(VisionIOInputs inputs) {}

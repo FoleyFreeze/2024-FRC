@@ -36,7 +36,7 @@ public class Gather extends SubsystemBase{
     @Override
     public void periodic(){
         io.updateInputs(inputs);
-        Logger.processInputs("Gather/TopGather", inputs);
+        Logger.processInputs("Gather", inputs);
 
         SmartDashboard.putNumber("GatherCurrent", inputs.gatherCurrentAmps);
         SmartDashboard.putNumber("Setpoint", r.inputs.flysky.getRawAxis(7)/2+0.5);
