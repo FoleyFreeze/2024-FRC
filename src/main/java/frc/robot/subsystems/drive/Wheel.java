@@ -46,10 +46,14 @@ public class Wheel {
         return new SwerveModuleState(inputs.driveVelocity, inputs.swervePosition);
     }
 
-    public SwerveModuleState moveWheel(SwerveModuleState state){
+    public SwerveModuleState moveWheel(SwerveModuleState state, boolean stopped){
         var optimizedState = SwerveModuleState.optimize(state, inputs.swervePosition);
-        io.setDriveVoltage(12 * optimizedState.speedMetersPerSecond / k.maxSpeed);
-        io.setSwerveAngle(optimizedState.angle);
+        if(stopped){
+            io.setDriveVoltage(0);
+        } else {
+            io.setDriveVoltage(12 * optimizedState.speedMetersPerSecond / k.maxSpeed);
+            io.setSwerveAngle(optimizedState.angle);
+        }
         return optimizedState;
     }
 

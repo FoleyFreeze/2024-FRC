@@ -7,10 +7,10 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class DriveCals {
 
-    public boolean disable = true;
+    public boolean disable = false;
 
     public class WheelCal{
-        public boolean disable = true;
+        public boolean disable = false;
 
         public MotorCal driveMotor;
         public MotorCal swerveMotor;
@@ -45,7 +45,7 @@ public class DriveCals {
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
     public WheelCal wheelFL = new WheelCal();{
-        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6).setRatio(conversionFactor).invert();
+        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6).setRatio(conversionFactor)/*.invert()*/;
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
         wheelFL.wheelLocation = new Translation2d(width, length);
         wheelFL.encChannel = 2;
@@ -54,7 +54,7 @@ public class DriveCals {
 
     public WheelCal wheelFR = new WheelCal();{
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2).setRatio(conversionFactor);
-        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3).setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
+        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
         wheelFR.wheelLocation = new Translation2d(width, -length);
         wheelFR.encChannel = 3;
         wheelFR.name = "FR";

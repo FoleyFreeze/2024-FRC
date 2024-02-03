@@ -5,6 +5,9 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -16,6 +19,8 @@ public class Vision extends SubsystemBase{
     VisionCals k;
     VisionIO io;
     VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+
+    DoubleEntry rioTime = NetworkTableInstance.getDefault().getDoubleTopic("/Vision/RIO Time").getEntry(0);
 
     public class TimestampedPose2d{
         Pose2d pose;
@@ -65,7 +70,7 @@ public class Vision extends SubsystemBase{
         //we must calculate the true distance (hypotenuse)
         //also the camera angle is +cw which is backwards compared to ours
 
-        double dist = inputs.noteData.pose.getZ();
+        double dist = Units.inchesToMeters(inputs.noteData.pose.getZ());
         double angle = inputs.noteData.pose.getRotation().getY();
         double radius = dist / Math.acos(-angle);
         Translation2d camRelNoteLoc = new Translation2d(radius, new Rotation2d(-angle));
@@ -90,7 +95,9 @@ public class Vision extends SubsystemBase{
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Vision", inputs);
-        
+
         updatePoseBuffer();
+
+        rioTime.set(Logger.getRealTimestamp() / 1000000.0);
     }
 }

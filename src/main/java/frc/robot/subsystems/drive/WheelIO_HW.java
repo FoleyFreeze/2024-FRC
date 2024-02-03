@@ -16,7 +16,10 @@ public class WheelIO_HW implements WheelIO {
     AnalogInput swerveAbsoluteEncoder;
     Rotation2d swerveOffset;
 
+    WheelCal k;
+
     public WheelIO_HW (WheelCal k){
+        this.k = k;
         driveMotor = Motor.create(k.driveMotor);
         swerveMotor = Motor.create(k.swerveMotor);
         swerveAbsoluteEncoder = new AnalogInput(k.encChannel);
@@ -57,10 +60,11 @@ public class WheelIO_HW implements WheelIO {
     @Override
     public void setSwerveOffset(Rotation2d analogOffset){
         Rotation2d rawAnalogEncoder = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);
-        
-        swerveOffset = swerveMotor.getRotation().minus(rawAnalogEncoder.minus(analogOffset));
+        Rotation2d deltaToSavedAnalog = rawAnalogEncoder.minus(analogOffset);
+        swerveOffset = swerveMotor.getRotation().minus(deltaToSavedAnalog);
 
-        Logger.recordOutput("Drive/Offset/AnalogEncOffset", analogOffset.getRadians());
-        Logger.recordOutput("Drive/Offset/NeoEncOffset", swerveOffset.getRadians());
+        Logger.recordOutput("Drive/Offset/AnalogOffsetToZero" + k.name, analogOffset.getRadians());
+        Logger.recordOutput("Drive/Offset/AnalogOffset" + k.name, deltaToSavedAnalog.getRadians());
+        Logger.recordOutput("Drive/Offset/NeoEncOffset" + k.name, swerveOffset.getRadians());
     }
 }

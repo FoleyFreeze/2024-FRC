@@ -15,7 +15,7 @@ public class CmdDrive extends Command {
     
     @Override
     public void execute(){
-        r.drive.swerveDrivePwr(r.inputs.getChassisSpeeds(), false);    
+        r.drive.swerveDrivePwr(r.inputs.getChassisSpeeds(), r.inputs.fieldOriented.getAsBoolean());    
     }
 
     @Override

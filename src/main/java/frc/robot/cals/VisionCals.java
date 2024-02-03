@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionCals {
     
-    public boolean disable = true;
+    public boolean disable = false;
 
     public double maxNoteAge = 0.2; //seconds
     public int bufferSize = (int) (maxNoteAge / 0.02) + 1;

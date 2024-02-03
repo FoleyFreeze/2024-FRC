@@ -49,9 +49,11 @@ public class FileManager {
     public void close(){
         if(reader != null){
             reader.close();
+            reader = null;
         }
         if(writer != null){
             writer.close();
+            writer = null;
         }
     }
 }

@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.RawSubscriber;
@@ -13,11 +14,21 @@ public class VisionIO_HW implements VisionIO{
 
     private RawSubscriber poseMsgNote;
     private ByteBuffer poseDataNote;
+
+    private BooleanEntry active;
+    private BooleanEntry notesActive;
+
     int noteSeqNum;
     VisionData noteData = new VisionData();
     double noteTimeStamp;
     
     public VisionIO_HW(){
+        active = NetworkTableInstance.getDefault().getBooleanTopic("Vision/Active").getEntry(true);
+        notesActive = NetworkTableInstance.getDefault().getBooleanTopic("Vision/Note Enable").getEntry(true);
+        active.set(true);
+        notesActive.set(true);
+
+
         poseMsgNote = NetworkTableInstance.getDefault().getTable("Vision").getRawTopic("Note Pose Data Bytes").subscribe("raw", null);
         NetworkTableInstance.getDefault().addListener(poseMsgNote,
             EnumSet.of(NetworkTableEvent.Kind.kValueAll),
@@ -27,11 +38,11 @@ public class VisionIO_HW implements VisionIO{
             byte numTags = poseDataNote.get(13);
             int seqNum = poseDataNote.getInt(0);
             double current = Logger.getRealTimestamp()/1000000.0;
-            double timestamp = current - ((current - poseDataNote.getFloat(4) + poseDataNote.getFloat(4)) / 2.0);
+            double timestamp = current - ((current - poseDataNote.getFloat(4) + poseDataNote.getFloat(8)) / 2.0);
 
             VisionData vd = null;
             if(numTags > 0){
-                vd = new VisionData(type, 0, Math.toRadians(poseDataNote.getFloat(28)), 0, 0, 0, poseDataNote.getFloat(14+18));
+                vd = new VisionData(type, 0, Math.toRadians(poseDataNote.getFloat(14)), 0, 0, 0, poseDataNote.getFloat(18));
             }
             if(vd != null){
                 synchronized (this){

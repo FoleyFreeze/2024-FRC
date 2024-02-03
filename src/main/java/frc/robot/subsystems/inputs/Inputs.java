@@ -21,27 +21,12 @@ public class Inputs extends SubsystemBase {
     public Joystick flysky;
     RobotContainer r;
     InputsCals k;
-    NetworkTableInstance inst;
-    NetworkTable table;
-    NetworkTableEntry rioTimeNT;
-    StringTopic visionTopic;
-    StringSubscriber visionData;
-    int visionDataPollingCounter;
-    double visionPolling;
 
     public Inputs (RobotContainer r, InputsCals k){
-        flysky = new Joystick(0);
-
         this.r = r;
         this.k = k;
         
-        inst = NetworkTableInstance.getDefault();
-        table = inst.getTable("/Vision");
-        
-        visionTopic = table.getStringTopic("Note Pose Data Header");
-        visionData = visionTopic.subscribe("No Note Data"); 
-        visionPolling = Timer.getFPGATimestamp();
-        rioTimeNT = table.getEntry("RIO Time");
+        flysky = new Joystick(0);
     }
 
     public ChassisSpeeds getChassisSpeeds(){
@@ -125,15 +110,14 @@ public class Inputs extends SubsystemBase {
         }
     });
 
+    public Trigger cameraEnable = new Trigger(() -> flysky.getRawButton(5));
+    public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
+    public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
+    public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
+
     @Override
     public void periodic() {
         // Called once per scheduler run
-        if (Timer.getFPGATimestamp() > visionPolling + 3) {
-            System.out.println(visionData.get());
-            visionPolling = Timer.getFPGATimestamp();
-        }
-
-        rioTimeNT.setDouble(Timer.getFPGATimestamp());      
-        inst.flush();  
+        
     }
 }

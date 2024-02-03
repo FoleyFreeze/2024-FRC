@@ -13,6 +13,7 @@ import frc.robot.cals.GatherCals;
 import frc.robot.cals.InputsCals;
 import frc.robot.cals.VisionCals;
 import frc.robot.commands.drive.CmdDrive;
+import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.gather.Gather;
@@ -43,8 +44,11 @@ public class RobotContainer {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
 
     inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
+    inputs.resetFieldOriented.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
+    inputs.resetFieldOdometry.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
 
-    inputs.gatherTrigger.whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)/2.0 + 0.5), gather).finallyDo(() -> gather.setMotorPower(0)));
+    inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(new CmdDriveToNote(this).ignoringDisable(true));
+    inputs.gatherTrigger.and(inputs.cameraEnable.negate()).whileTrue(new RunCommand( () -> gather.setMotorPower(inputs.flysky.getRawAxis(7)/2.0 + 0.5), gather).finallyDo(() -> gather.setMotorPower(0)));
   }
 
   public Command getAutonomousCommand() {
