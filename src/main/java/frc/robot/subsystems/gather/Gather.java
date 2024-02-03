@@ -32,6 +32,10 @@ public class Gather extends SubsystemBase{
         Logger.recordOutput("Gather/SetpointVoltage", power*12);
     }
 
+    public double getCurrent(){
+        return inputs.gatherCurrentAmps;
+    }
+
     
     @Override
     public void periodic(){

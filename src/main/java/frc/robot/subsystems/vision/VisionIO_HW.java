@@ -14,7 +14,7 @@ public class VisionIO_HW implements VisionIO{
     private RawSubscriber poseMsgNote;
     private ByteBuffer poseDataNote;
     int noteSeqNum;
-    VisionData noteData;
+    VisionData noteData = new VisionData();
     double noteTimeStamp;
     
     public VisionIO_HW(){

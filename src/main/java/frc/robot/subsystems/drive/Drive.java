@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -87,8 +88,21 @@ public class Drive extends SubsystemBase{
            optimizedWheelStates[i] = wheels[i].moveWheel(wheelStates[i]);
         }
 
-        Logger.recordOutput("SwerveStates/setpoints", wheelStates);
-        Logger.recordOutput("SwerveStates/SetpoinntsOptimized", optimizedWheelStates);    
+        Logger.recordOutput("Drive/SwerveSetpoints", wheelStates);
+        Logger.recordOutput("Drive/SwerveSetpointsOptimized", optimizedWheelStates);    
+    }
+
+    //return the error magnitude
+    public double driveToLocation(Translation2d location){
+        Translation2d error = location.minus(getPose().getTranslation());
+        Logger.recordOutput("Drive/LocationError", error);
+
+        Translation2d power = new Translation2d(k.autoGatherPower, error.getAngle());
+
+        ChassisSpeeds speeds = new ChassisSpeeds(power.getX(), power.getY(), 0);
+        swerveDrivePwr(speeds, true);
+
+        return error.getNorm();
     }
 
     @Override
@@ -111,7 +125,7 @@ public class Drive extends SubsystemBase{
         
     }
 
-    @AutoLogOutput(key = "Odometry/Robot")
+    @AutoLogOutput(key = "Drive/RobotPose")
     public Pose2d getPose(){
         return robotPose;
     }
@@ -124,7 +138,7 @@ public class Drive extends SubsystemBase{
         return positions;
     }
 
-    @AutoLogOutput(key = "SwerveStates/Measured")
+    @AutoLogOutput(key = "Drive/MeasuredSwerveStates")
     private SwerveModuleState[] getWheelStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
@@ -144,5 +158,4 @@ public class Drive extends SubsystemBase{
         }
         System.out.println("Done!");
     }
-
 }

@@ -11,6 +11,10 @@ public class VisionData implements StructSerializable {
     public double decisionMargin;
     public Pose3d pose;
 
+    public VisionData(){
+        pose = new Pose3d();
+    }
+
     public VisionData(byte type, byte tagId, byte eBits, double decisionMargin, double rotX, double rotY, double rotZ, double transX, double transY, double transZ) {
         this.tagId = tagId;
         this.type = type;

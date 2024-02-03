@@ -7,7 +7,7 @@ public interface VisionIO {
     @AutoLog
     public static class VisionIOInputs{
         double noteTimeStamp;
-        VisionData noteData;
+        VisionData noteData = new VisionData();
         int noteSeqData;
 
         double now;
