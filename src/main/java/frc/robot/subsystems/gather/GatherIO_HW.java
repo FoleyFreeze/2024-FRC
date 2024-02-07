@@ -6,21 +6,34 @@ import frc.robot.subsystems.motor.Motor;
 public class GatherIO_HW implements GatherIO {
     
     Motor topGather;
+    Motor gateMotor;
     
     public GatherIO_HW (GatherCals k){
         topGather = Motor.create(k.topGather);
+        gateMotor = Motor.create(k.gateMotor);
     }
 
     @Override
     public void updateInputs (GatherIOInputs inputs){
-        inputs.gatherPosition = topGather.getPosition();
-        inputs.gatherVelocity = topGather.getVelocity();
-        inputs.gatherCurrentAmps = topGather.getCurrent();
-        inputs.gatherAppliedVolts = topGather.getVoltage();
+        inputs.intakePosition = topGather.getPosition();
+        inputs.intakeVelocity = topGather.getVelocity();
+        inputs.intakeCurrentAmps = topGather.getCurrent();
+        inputs.intakeAppliedVolts = topGather.getVoltage();
     }
 
     @Override
-    public void setGatherVoltage(double voltage){
+    public void setIntakeVoltage(double voltage){
         topGather.setVoltage(voltage);
     }
+
+    @Override
+    public void setGateVoltage(double gateVoltage){
+        gateMotor.setVoltage(gateVoltage);
+    }
+
+    @Override 
+    public void setGatePosition(double positon){
+        gateMotor.setPosition(positon);
+    }
+
 }

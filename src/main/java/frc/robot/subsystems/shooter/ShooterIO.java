@@ -12,7 +12,5 @@ public interface ShooterIO {
 
     public default void setShooterVoltage(double voltage) {}
 
-    public default void setGateVoltage(double gateVoltage) {}
-
     public default void setAngle(double angle) {}
 }

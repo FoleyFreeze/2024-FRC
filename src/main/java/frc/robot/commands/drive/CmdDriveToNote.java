@@ -26,7 +26,7 @@ public class CmdDriveToNote extends Command{
     @Override
     public void execute(){
         if(r.vision.hasNoteImage()){
-            r.gather.setMotorPower(0.5);
+            r.gather.setGatherPower(0.5, 0);
             lastError = r.drive.driveToLocation(r.vision.getNoteLocation());
         } else {
             r.drive.swerveDrivePwr(new ChassisSpeeds(0, 0 , 0), false);
@@ -36,7 +36,7 @@ public class CmdDriveToNote extends Command{
     @Override
     public void end(boolean interrupted){
         r.drive.swerveDrivePwr(new ChassisSpeeds(0, 0, 0), false);
-        r.gather.setMotorPower(0);
+        r.gather.setGatherPower(0, 0);
     }
 
     @Override
