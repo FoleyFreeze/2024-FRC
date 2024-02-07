@@ -114,7 +114,7 @@ public class Inputs extends SubsystemBase {
     public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
     public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
     public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
-
+ 
     @Override
     public void periodic() {
         // Called once per scheduler run

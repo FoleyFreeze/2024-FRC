@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.struct.Struct;
 
-public class VisionDataStruct implements Struct<VisionData>{
+public class VisionTagDataStruct implements Struct<VisionTagData>{
     @Override
-    public Class<VisionData> getTypeClass(){
-        return VisionData.class;
+    public Class<VisionTagData> getTypeClass(){
+        return VisionTagData.class;
     }
 
     @Override public String getTypeString(){
@@ -31,17 +31,17 @@ public class VisionDataStruct implements Struct<VisionData>{
     }
 
     @Override
-    public VisionData unpack (ByteBuffer bb){
+    public VisionTagData unpack (ByteBuffer bb){
         byte tagId = bb.get();
         byte type = bb.get();
         byte eBits = bb.get();
         double d = bb.getDouble();
         Pose3d p = Pose3d.struct.unpack(bb);
-        return new VisionData(tagId, type, eBits, d, p);
+        return new VisionTagData(tagId, type, eBits, d, p);
     }
 
     @Override
-    public void pack(ByteBuffer bb, VisionData value) {
+    public void pack(ByteBuffer bb, VisionTagData value) {
         bb.put(value.tagId);
         bb.put(value.type);
         bb.put(value.eBits);

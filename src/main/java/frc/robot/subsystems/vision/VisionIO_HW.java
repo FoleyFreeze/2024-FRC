@@ -18,9 +18,8 @@ public class VisionIO_HW implements VisionIO{
     private BooleanEntry active;
     private BooleanEntry notesActive;
 
-    int noteSeqNum;
-    VisionData noteData = new VisionData();
-    double noteTimeStamp;
+    VisionNoteData noteData = new VisionNoteData();
+
     
     public VisionIO_HW(){
         active = NetworkTableInstance.getDefault().getBooleanTopic("Vision/Active").getEntry(true);
@@ -37,29 +36,21 @@ public class VisionIO_HW implements VisionIO{
             byte type = poseDataNote.get(12);
             byte numTags = poseDataNote.get(13);
             int seqNum = poseDataNote.getInt(0);
-            double current = Logger.getRealTimestamp()/1000000.0;
-            double timestamp = current - ((current - poseDataNote.getFloat(4) + poseDataNote.getFloat(8)) / 2.0);
+            float current = Logger.getRealTimestamp()/1000000.0f;
+            float timeStamp = current - ((current - poseDataNote.getFloat(4) + poseDataNote.getFloat(8)) / 2.0f);
 
-            VisionData vd = null;
+            VisionNoteData vd = null;
             if(numTags > 0){
-                vd = new VisionData(type, 0, Math.toRadians(poseDataNote.getFloat(14)), 0, 0, 0, poseDataNote.getFloat(18));
+                vd = new VisionNoteData(seqNum, timeStamp, poseDataNote.getFloat(18), (float)Math.toRadians(poseDataNote.getFloat(14)));
             }
             if(vd != null){
-                synchronized (this){
-                    noteSeqNum = seqNum;
-                    noteTimeStamp = timestamp;
-                    noteData = vd;
-                }
+                noteData = vd;
             }
         });
     }
 
-
-
     @Override
     public void updateInputs (VisionIOInputs inputs){
-        inputs.noteTimeStamp = noteTimeStamp;
-        inputs.noteSeqData = noteSeqNum;
         inputs.noteData = noteData;
 
         inputs.now = Logger.getRealTimestamp()/1000000.0;

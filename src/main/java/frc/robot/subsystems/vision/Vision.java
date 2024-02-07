@@ -70,8 +70,8 @@ public class Vision extends SubsystemBase{
         //we must calculate the true distance (hypotenuse)
         //also the camera angle is +cw which is backwards compared to ours
 
-        double dist = Units.inchesToMeters(inputs.noteData.pose.getZ());
-        double angle = inputs.noteData.pose.getRotation().getY();
+        double dist = Units.inchesToMeters(inputs.noteData.distance);
+        double angle = inputs.noteData.angle;
         double radius = dist / Math.acos(-angle);
         Translation2d camRelNoteLoc = new Translation2d(radius, new Rotation2d(-angle));
         Logger.recordOutput("Vision/camRelNoteLoc", camRelNoteLoc);
@@ -79,7 +79,7 @@ public class Vision extends SubsystemBase{
         //camera relative -> bot relative -> field relative
         Translation2d roboRelNoteLocation = camRelNoteLoc.rotateBy(k.camLocation.getRotation()).plus(k.camLocation.getTranslation());
         Logger.recordOutput("Vision/roboRelNoteLocation", roboRelNoteLocation);
-        Pose2d robotPose = posePicker(inputs.noteTimeStamp);
+        Pose2d robotPose = posePicker(inputs.noteData.timeStamp);
         Logger.recordOutput("Vision/robotPose", robotPose);
         Translation2d fieldRelNoteLocation = roboRelNoteLocation.rotateBy(robotPose.getRotation()).plus(robotPose.getTranslation());
 
@@ -88,7 +88,7 @@ public class Vision extends SubsystemBase{
     }
 
     public boolean hasNoteImage(){
-        return inputs.now - inputs.noteTimeStamp < k.maxNoteAge;
+        return inputs.now - inputs.noteData.timeStamp < k.maxNoteAge;
     }
 
      @Override
