@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -50,6 +53,10 @@ public class RobotContainer {
 
     inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(new CmdDriveToNote(this).ignoringDisable(true));
     inputs.gatherTrigger.and(inputs.cameraEnable.negate()).whileTrue(CmdGather.gather(this));
+
+    //TODO: replace with shooter when shooter is built
+    inputs.shootTrigger.whileTrue(CmdGather.unGather(this));
+
   }
 
   public Command getAutonomousCommand() {

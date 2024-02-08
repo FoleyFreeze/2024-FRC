@@ -52,11 +52,11 @@ public class DriveCals {
 
     public WheelCal wheelFL = new WheelCal();{
         //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
-        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 19)
+        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
             .setRatio(conversionFactor)
             .invert();
         //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
-        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
+        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
             .setIZone(swerveIZone)
