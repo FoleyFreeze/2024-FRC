@@ -6,6 +6,11 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 public class GatherCals {
     public boolean disable = false;
     
-    public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14).setCurrLim(30).invert();
+    //public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14)
+    public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 5)
+        .setCurrLim(30)
+        .invert();
 
+    public MotorCal gateWheel = new MotorCal(TypeMotor.SPARK, 6)
+        .setCurrLim(30);
 }

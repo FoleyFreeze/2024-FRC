@@ -45,32 +45,69 @@ public class DriveCals {
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
     public WheelCal wheelFL = new WheelCal();{
-        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6).setRatio(conversionFactor)/*.invert()*/;
-        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
+        //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
+        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 19)
+            .setRatio(conversionFactor)
+            .invert();
+        //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
+        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
+            .invert()
+            .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
+            .setIZone(swerveIZone)
+            .setPIDPwrLim(swerveLim)
+            .setCurrLim(swerveCurrLim)
+            .setRatio(swerveRatio);
         wheelFL.wheelLocation = new Translation2d(width, length);
         wheelFL.encChannel = 2;
         wheelFL.name = "FL";
     }
 
     public WheelCal wheelFR = new WheelCal();{
-        wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2).setRatio(conversionFactor);
-        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
+        //wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2)
+        wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 11)
+            .setRatio(conversionFactor);
+        //wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3)
+        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 2)
+            //.invert()
+            .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
+            .setIZone(swerveIZone)
+            .setPIDPwrLim(swerveLim)
+            .setCurrLim(swerveCurrLim)
+            .setRatio(swerveRatio);
         wheelFR.wheelLocation = new Translation2d(width, -length);
         wheelFR.encChannel = 3;
         wheelFR.name = "FR";
     }
 
     public WheelCal wheelBL = new WheelCal();{
-        wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8).setRatio(conversionFactor);
-        wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
+        //wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
+        wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 15)
+            .setRatio(conversionFactor);
+        //wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
+        wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 10)  
+            .invert()
+            .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
+            .setIZone(swerveIZone)
+            .setPIDPwrLim(swerveLim)
+            .setCurrLim(swerveCurrLim)
+            .setRatio(swerveRatio);
         wheelBL.wheelLocation = new Translation2d(-width, length);
         wheelBL.encChannel = 1;
         wheelBL.name = "BL";
     }
 
     public WheelCal wheelBR = new WheelCal();{
-        wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1).setRatio(conversionFactor);
-        wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20).invert().setPIDF(swerveKp, swerveKi, swerveKd, swerveKf).setIZone(swerveIZone).setPIDPwrLim(swerveLim).setCurrLim(swerveCurrLim).setRatio(swerveRatio);
+        //wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1)
+        wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
+            .setRatio(conversionFactor);
+        //wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
+        wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 17)
+            .invert()
+            .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
+            .setIZone(swerveIZone)
+            .setPIDPwrLim(swerveLim)
+            .setCurrLim(swerveCurrLim)
+            .setRatio(swerveRatio);
         wheelBR.wheelLocation = new Translation2d(-width, -length);
         wheelBR.encChannel = 0;
         wheelBR.name = "BR";
