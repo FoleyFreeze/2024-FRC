@@ -19,6 +19,11 @@ public class GatherIO_HW implements GatherIO {
         inputs.intakeVelocity = topGather.getVelocity();
         inputs.intakeCurrentAmps = topGather.getCurrent();
         inputs.intakeAppliedVolts = topGather.getVoltage();
+
+        inputs.gatePosition = gateMotor.getPosition();
+        inputs.gateVelocity = gateMotor.getVelocity();
+        inputs.gateCurrentAmps = gateMotor.getCurrent();
+        inputs.gateAppliedVolts = gateMotor.getVoltage();
     }
 
     @Override
