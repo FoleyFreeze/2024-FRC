@@ -27,13 +27,31 @@ public class Gather extends SubsystemBase{
         }
     }
 
-    public void setMotorPower(double power){
-        io.setGatherVoltage(power*12);
-        Logger.recordOutput("Gather/SetpointVoltage", power*12);
+    public void setGatherPower(double intakePower, double gatePower){
+        setGatePower(gatePower);
+        setIntakePower(intakePower);
+    }
+
+    public void setIntakePower(double intakePower){
+        io.setIntakeVoltage(intakePower*12);
+        Logger.recordOutput("Gather/IntakeSetpointVoltage", intakePower*12);
+    }
+
+    public void setGatePower(double gatePower){
+        io.setGateVoltage(gatePower*12);
+        Logger.recordOutput("Gather/GateSetpointVoltage", gatePower*12);
     }
 
     public double getCurrent(){
-        return inputs.gatherCurrentAmps;
+        return inputs.intakeCurrentAmps;
+    }
+
+    public double getGateCurrent(){
+        return inputs.gateCurrentAmps;
+    }
+
+    public void setGatePosition(double delta){
+        io.setGatePosition(inputs.gatePosition + delta);
     }
 
     
@@ -42,7 +60,7 @@ public class Gather extends SubsystemBase{
         io.updateInputs(inputs);
         Logger.processInputs("Gather", inputs);
 
-        SmartDashboard.putNumber("GatherCurrent", inputs.gatherCurrentAmps);
+        SmartDashboard.putNumber("GatherCurrent", inputs.intakeCurrentAmps);
         SmartDashboard.putNumber("Setpoint", r.inputs.flysky.getRawAxis(7)/2+0.5);
     }
 }

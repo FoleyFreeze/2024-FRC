@@ -7,7 +7,6 @@ public class ShooterCals {
     public boolean disable = true;
     
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 0);
-    public MotorCal gateMotor = new MotorCal(TypeMotor.SPARK, 0);
     public MotorCal shootMotorTop = new MotorCal(TypeMotor.SPARK, 0);
     public MotorCal shootMotorBottom = new MotorCal(TypeMotor.SPARK, 0);
 }    

@@ -8,13 +8,11 @@ public class ShooterIO_HW implements ShooterIO {
     ShooterCals k;
 
     Motor angleMotor;
-    Motor gateMotor;
     Motor shootMotorTop;
     Motor shootMotorBottom;
 
     public ShooterIO_HW (ShooterCals k){
         angleMotor = Motor.create(k.angleMotor);
-        gateMotor = Motor.create(k.gateMotor);
         shootMotorTop = Motor.create(k.shootMotorTop);
         shootMotorBottom = Motor.create(k.shootMotorBottom);
     }
@@ -30,10 +28,6 @@ public class ShooterIO_HW implements ShooterIO {
         shootMotorBottom.setVoltage(voltage);
     }
 
-    @Override
-    public void setGateVoltage(double gateVoltage){
-        gateMotor.setVoltage(gateVoltage);
-    }
 
     @Override
     public void setAngle(double angle){

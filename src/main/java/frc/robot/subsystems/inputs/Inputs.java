@@ -104,17 +104,15 @@ public class Inputs extends SubsystemBase {
         }
     });
 
-    public Trigger gatherTrigger = new Trigger (new BooleanSupplier() {
-        public boolean getAsBoolean(){
-            return flysky.getRawAxis(2) > .25;
-        }
-    });
 
+    public Trigger gatherTrigger = new Trigger(() -> flysky.getRawAxis(2) > .25);
+    public Trigger shootTrigger = new Trigger(() -> flysky.getRawAxis(3) > .25);
     public Trigger cameraEnable = new Trigger(() -> flysky.getRawButton(5));
     public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
     public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
     public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
 
+ 
     @Override
     public void periodic() {
         // Called once per scheduler run

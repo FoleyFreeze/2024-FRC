@@ -8,9 +8,10 @@ public class GatherCals {
     
     //public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14)
     public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 5)
+        .setRatio(0.5)
         .setCurrLim(30)
         .invert();
-
-    public MotorCal gateWheel = new MotorCal(TypeMotor.SPARK, 6)
+    
+    public MotorCal gateMotor = new MotorCal(TypeMotor.SPARK, 6)
         .setCurrLim(30);
 }

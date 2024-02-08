@@ -44,6 +44,12 @@ public class DriveCals {
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
+    public double fieldModePwr = 0.95;
+    public double pitModePwr = 0.3;
+
+    public double autoGatherPower = 0.1;
+
+
     public WheelCal wheelFL = new WheelCal();{
         //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
         wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 19)
@@ -114,11 +120,5 @@ public class DriveCals {
     }
 
     public WheelCal[] wheelCals = {wheelFL, wheelFR, wheelBL, wheelBR};
-
-    public double fieldModePwr = 0.95;
-    public double pitModePwr = 0.3;
-
-    public double autoGatherPower = 0.1;
-
-    
+   
 }
