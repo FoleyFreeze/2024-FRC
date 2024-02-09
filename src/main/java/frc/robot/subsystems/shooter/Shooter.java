@@ -14,7 +14,9 @@ public class Shooter extends SubsystemBase {
     ShooterIO io;
     ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-    
+    double angleSetpoint;
+    double rpmSetpoint;
+
     public Shooter (RobotContainer r, ShooterCals k){
 
         this.k = k;
@@ -27,10 +29,39 @@ public class Shooter extends SubsystemBase {
         }
     }
 
+    public void setAngle(double angle){
+        io.setAngle(angle);
+        angleSetpoint = angle;
+
+    }
+
+    public void fixedPrime (){
+        int index = r.inputs.getFixedTarget();
+        setAngle(k.fixedAngle[index]);
+        setRPM(k.fixedRPM[index]);
+    }
+
+    public void setRPM(double rpm){
+        io.setShooterRPM(rpm);
+        rpmSetpoint = rpm;
+    }
+
+    public boolean checkAngleError(){
+        return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
+    }
+
+    public boolean checkRPMError(){
+        double avg = (inputs.shootBottomVelocity + inputs.shootTopVelocity)/2;
+        return Math.abs(rpmSetpoint - avg) < k.allowedRPMError;
+    }
+
+    public void goHome(){
+        setRPM(0);
+        setAngle(k.homePosition);
+    }
+
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);
-    
-        
     }
 }

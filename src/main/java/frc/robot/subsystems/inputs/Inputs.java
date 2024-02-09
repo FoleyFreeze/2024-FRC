@@ -22,6 +22,13 @@ public class Inputs extends SubsystemBase {
     RobotContainer r;
     InputsCals k;
 
+    public Trigger gatherTrigger = new Trigger(() -> flysky.getRawAxis(2) > .25);
+    public Trigger shootTrigger = new Trigger(() -> flysky.getRawAxis(3) > .25);
+    public Trigger cameraEnable = new Trigger(() -> flysky.getRawButton(5));
+    public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
+    public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
+    public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
+
     public Inputs (RobotContainer r, InputsCals k){
         this.r = r;
         this.k = k;
@@ -104,14 +111,17 @@ public class Inputs extends SubsystemBase {
         }
     });
 
+    public int getFixedTarget(){
+        //8 down 9 up
+        //right triggr 3pos switch 
+        //up is layup mid is freethrow down is threepoint
+        if(flysky.getRawButton(8)){
+            return 0;
+        } else if(flysky.getRawButton(9)){
+            return 2;
+        }else {return 1;}
 
-    public Trigger gatherTrigger = new Trigger(() -> flysky.getRawAxis(2) > .25);
-    public Trigger shootTrigger = new Trigger(() -> flysky.getRawAxis(3) > .25);
-    public Trigger cameraEnable = new Trigger(() -> flysky.getRawButton(5));
-    public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
-    public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
-    public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
-
+    }
  
     @Override
     public void periodic() {

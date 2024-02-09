@@ -41,10 +41,15 @@ public class ShooterIO_HW implements ShooterIO {
         shootMotorBottom.setVoltage(voltage);
     }
 
+    @Override
+    public void setShooterRPM(double rpm){
+        shootMotorTop.setVelocity(rpm);
+        shootMotorBottom.setVelocity(rpm);
+    }
 
     @Override
     public void setAngle(double angle){
-        //make this
+        angleMotor.setPosition(angle);
     }
 
 }
