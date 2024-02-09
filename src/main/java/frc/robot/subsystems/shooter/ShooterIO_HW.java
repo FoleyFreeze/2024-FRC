@@ -24,7 +24,7 @@ public class ShooterIO_HW implements ShooterIO {
         inputs.shootTopCurrentAmps = shootMotorBottom.getCurrent();
         inputs.shootTopAppliedVolts = shootMotorBottom.getVoltage();
 
-         inputs.shootTopPosition = shootMotorTop.getPosition();
+        inputs.shootTopPosition = shootMotorTop.getPosition();
         inputs.shootTopVelocity = shootMotorTop.getVelocity();
         inputs.shootTopCurrentAmps = shootMotorTop.getCurrent();
         inputs.shootTopAppliedVolts = shootMotorTop.getVoltage();
