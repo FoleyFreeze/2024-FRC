@@ -35,7 +35,7 @@ public class CmdGather {
             .finallyDo(() -> r.gather.setIntakePower(0));
 
         c.addRequirements(r.gather);
-
+        c.setName("CmdGather");
         return c;
     }
 
@@ -43,6 +43,7 @@ public class CmdGather {
         Command c = (new RunCommand(() -> r.gather.setGatherPower(reverseGatePower, reverseIntakePower))).finallyDo(() -> r.gather.setGatherPower(0, 0));
 
         c.addRequirements(r.gather);
+        c.setName("CmdUngather");
         return c;
     }
 }
