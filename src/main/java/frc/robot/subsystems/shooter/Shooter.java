@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -23,5 +25,12 @@ public class Shooter extends SubsystemBase {
         }else{
             io = new ShooterIO(){};
         }
+    }
+
+    public void periodic(){
+        io.updateInputs(inputs);
+        Logger.processInputs("shooter", inputs);
+    
+        
     }
 }
