@@ -6,6 +6,11 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 public class ShooterCals {
     public boolean disable = true;
 
+    public double initAngleJog = 0;
+    public double initSpeedJog = 0;
+    public double jogAngleIncriment = .5;
+    public double jogSpeedIncriment = 200;
+
     public double camDistance[] = {0, 0};
     public double camAngle[] = {0, 0};
     public double camVelocity[] = {0, 0};
@@ -24,5 +29,4 @@ public class ShooterCals {
 
     public double allowedAngleError = 1;
     public double allowedRPMError = 100;
-
 }    

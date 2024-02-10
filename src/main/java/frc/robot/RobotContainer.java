@@ -11,9 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.cals.ClimberCals;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.GatherCals;
 import frc.robot.cals.InputsCals;
+import frc.robot.cals.ShooterCals;
+import frc.robot.cals.SlappahCals;
 import frc.robot.cals.VisionCals;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveToNote;
@@ -41,6 +44,9 @@ public class RobotContainer {
     drive = new Drive(this, new DriveCals());
     gather = new Gather(this, new GatherCals());
     vision = new Vision(this, new VisionCals());
+    shooter = new Shooter(this, new ShooterCals());
+    slappah = new Slappah(this, new SlappahCals());
+    climber = new Climber(this, new ClimberCals());
     configureBindings();
   }
 

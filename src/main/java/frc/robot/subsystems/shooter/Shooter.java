@@ -17,6 +17,9 @@ public class Shooter extends SubsystemBase {
     double angleSetpoint;
     double rpmSetpoint;
 
+    double speedJog;
+    double angleJog;
+
     public Shooter (RobotContainer r, ShooterCals k){
 
         this.k = k;
@@ -27,22 +30,26 @@ public class Shooter extends SubsystemBase {
         }else{
             io = new ShooterIO(){};
         }
+
+        speedJog = k.initSpeedJog;
+        angleJog = k.initAngleJog;
     }
+
+    //TODO: jog up/down functions
 
     public void setAngle(double angle){
         io.setAngle(angle);
         angleSetpoint = angle;
-
     }
 
     public void fixedPrime (){
         int index = r.inputs.getFixedTarget();
-        setAngle(k.fixedAngle[index]);
-        setRPM(k.fixedRPM[index]);
+        setAngle(k.fixedAngle[index] + angleJog);
+        setRPM(k.fixedRPM[index] + speedJog);
     }
 
     public void unShoot (){
-        setAngle(45);
+        setAngle(28);
         setRPM(0);
     }
 

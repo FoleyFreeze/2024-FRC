@@ -3,7 +3,7 @@ package frc.robot.subsystems.motor;
 public class MotorCal {
     
     public enum TypeMotor {
-        SPARK, NULL
+        SPARK, FALCON, NULL
     }
 
     public TypeMotor type;

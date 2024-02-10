@@ -16,6 +16,8 @@ public interface Motor {
         switch(cal.type){
             case SPARK:
                 return new SparkMotor(cal);
+            case FALCON:
+                return new TalonFXMotor(cal);
             default:
                 return new NullMotor(cal);
         }
