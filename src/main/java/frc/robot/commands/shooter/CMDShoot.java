@@ -29,8 +29,7 @@ public class CMDShoot {
     }
 
     public static Command unShoot(RobotContainer r){
-        Command c = (new RunCommand(() -> r.shooter.unShoot()));
-                c = c.alongWith(new InstantCommand(() -> r.gather.setGatePower(-1)));
+        Command c = (new RunCommand(() -> {r.shooter.unShoot(); r.gather.setGatePower(-1);}));
                 c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
 
 
