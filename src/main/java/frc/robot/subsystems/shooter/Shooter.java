@@ -41,6 +41,11 @@ public class Shooter extends SubsystemBase {
         setRPM(k.fixedRPM[index]);
     }
 
+    public void unShoot (){
+        setAngle(45);
+        setRPM(0);
+    }
+
     public void setRPM(double rpm){
         io.setShooterRPM(rpm);
         rpmSetpoint = rpm;
