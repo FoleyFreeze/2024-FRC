@@ -25,6 +25,9 @@ public class Climber extends SubsystemBase{
             io = new ClimberIO(){};
         }
     }
+    public void balancedClimb(double power){
+        //TODO:This. ¯\_(ツ)_/¯
+    }
 
     public double getCurrent(){
         return inputs.winchRCurrentAmps + inputs.winchLCurrentAmps;

@@ -8,7 +8,7 @@ public class Lights extends SubsystemBase {
     
     AddressableLED leds;
     AddressableLEDBuffer ledBuffer;
-
+ 
     public Lights(){
         leds = new AddressableLED(0);
         ledBuffer = new AddressableLEDBuffer(300);
@@ -32,6 +32,7 @@ public class Lights extends SubsystemBase {
 
         firstPixel += 3;
         firstPixel %= 180;
+        leds.setData(ledBuffer);
     }
 
 }

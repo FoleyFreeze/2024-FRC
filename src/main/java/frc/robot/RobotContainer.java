@@ -25,6 +25,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.gather.Gather;
 import frc.robot.subsystems.inputs.Inputs;
+import frc.robot.subsystems.lights.Lights;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.slappah.Slappah;
 import frc.robot.subsystems.vision.Vision;
@@ -38,6 +39,7 @@ public class RobotContainer {
   public Slappah slappah;
   public Inputs inputs;
   public Vision vision;
+  public Lights lights;
 
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
@@ -47,6 +49,7 @@ public class RobotContainer {
     shooter = new Shooter(this, new ShooterCals());
     slappah = new Slappah(this, new SlappahCals());
     climber = new Climber(this, new ClimberCals());
+    lights = new Lights();
     configureBindings();
   }
 
