@@ -8,7 +8,7 @@ import frc.robot.RobotContainer;
 import frc.robot.cals.ShooterCals;
 
 public class Shooter extends SubsystemBase {
-    ShooterCals k;
+    public ShooterCals k;
     RobotContainer r;
 
     ShooterIO io;
@@ -36,6 +36,14 @@ public class Shooter extends SubsystemBase {
     }
 
     //TODO: jog up/down functions
+
+    public void jogSpeed(double delta){
+        speedJog += delta;
+    }
+
+    public void jogAngle(double delta){
+        angleJog += delta;
+    }
 
     public void setAngle(double angle){
         io.setAngle(angle);
