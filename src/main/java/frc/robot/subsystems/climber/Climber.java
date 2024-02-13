@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase{
         this.r = r;
         this.k = k;
 
-        if(Robot.isReal() && !k.disabled){
+        if(Robot.isReal() && !k.disable){
             io = new ClimberIO_HW(k);
         }else{
             io = new ClimberIO(){};
