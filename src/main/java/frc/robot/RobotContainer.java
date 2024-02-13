@@ -63,6 +63,10 @@ public class RobotContainer {
     //TODO: replace with shooter when shooter is built
     inputs.shootTrigger.whileTrue(CmdGather.unGather(this));
 
+    //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
+    //inputs.shift.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+    //inputs.shift.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
+    //inputs.shift.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
   }
 
   public Command getAutonomousCommand() {

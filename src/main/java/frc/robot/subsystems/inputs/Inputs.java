@@ -29,11 +29,18 @@ public class Inputs extends SubsystemBase {
     public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
     public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
 
+    public Joystick controlBoard;
+
+    public Trigger shootAngleJogUp = new Trigger(() -> controlBoard.getRawButton(0));
+    public Trigger shootAngleJogDn = new Trigger(() -> controlBoard.getRawButton(0));
+    public Trigger shift = new Trigger(() -> controlBoard.getRawButton(0));
+
     public Inputs (RobotContainer r, InputsCals k){
         this.r = r;
         this.k = k;
         
         flysky = new Joystick(0);
+        //controlBoard = new Joystick(1);
     }
 
     public ChassisSpeeds getChassisSpeeds(){
