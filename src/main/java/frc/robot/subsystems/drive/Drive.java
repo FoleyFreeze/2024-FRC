@@ -22,7 +22,7 @@ public class Drive extends SubsystemBase{
     public DriveCals k;
 
     DriveIO driveIO;
-    DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
+    public DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
     FileIOInputsAutoLogged fileInputs = new FileIOInputsAutoLogged();
 
     Wheel[] wheels;

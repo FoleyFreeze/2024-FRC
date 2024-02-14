@@ -8,4 +8,6 @@ public class SlappahCals {
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 0);
     public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 0);
+
+    public double allowedAngleError;
 }

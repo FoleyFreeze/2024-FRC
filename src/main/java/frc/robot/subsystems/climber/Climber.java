@@ -25,8 +25,21 @@ public class Climber extends SubsystemBase{
             io = new ClimberIO(){};
         }
     }
-    public void balancedClimb(double power){
-        //TODO:This. ¯\_(ツ)_/¯
+    public void evenClimb(double power){
+        double error = r.drive.inputs.roll.getDegrees();
+        //navx is cc pos
+        //navX y-axis points backwards
+        //pos cc on y-axis looks like c rot on -y axis
+        //pos roll = right side is higher then left
+        double offset = error * k.balanceKP;
+        offset = Math.min(Math.abs(offset), Math.abs(power)) * Math.signum(offset);
+        setWinchPower(power + offset, power - offset);
+    
+        Logger.recordOutput("Climb/Winch", offset);
+    }
+
+    public void setWinchPower(double leftPower, double rightPower){
+        io.setWinchVoltage(leftPower, rightPower);
     }
 
     public double getCurrent(){

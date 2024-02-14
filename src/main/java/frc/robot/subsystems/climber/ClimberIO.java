@@ -19,6 +19,6 @@ public interface ClimberIO {
 
     public default void updateInputs(ClimberIOInputs inputs){}
 
-    public default void setWinchVoltage(double voltage){}
+    public default void setWinchVoltage(double voltageL, double voltageR){}
 
 }

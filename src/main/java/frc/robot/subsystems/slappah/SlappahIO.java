@@ -13,7 +13,8 @@ public interface SlappahIO {
         public double anglePosition;
         public double angleVelocity;
         public double angleAppliedVolts;
-        public double angleCurrentAmps;    
+        public double angleCurrentAmps;  
+        
     }
 
     public default void updateInputs(SlappahIOInputs inputs){}

@@ -26,11 +26,26 @@ public class Slappah extends SubsystemBase {
         }
     }
 
+    public boolean checkAngleError(){
+        double angleSetpoint = 0;
+        return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
+    }
+
+    public double getTransferCurrent(){
+        return inputs.transferCurrentAmps;
+    }
+
+    public void setTransferPosition(double position){
+        io.setPosition(position);
+    }
+
+    public void setAngle(double position){
+        io.setPosition(position);
+    }
+
     @Override
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Slappah", inputs);
-    
-        
     }
 }

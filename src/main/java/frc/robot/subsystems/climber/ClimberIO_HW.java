@@ -27,8 +27,8 @@ public class ClimberIO_HW  implements ClimberIO{
     }
 
     @Override
-    public void setWinchVoltage(double voltage){
-        winchR.setVoltage(voltage);
-        winchL.setVoltage(voltage);
+    public void setWinchVoltage(double voltageL, double voltageR){
+        winchR.setVoltage(voltageR);
+        winchL.setVoltage(voltageL);
     }
 }

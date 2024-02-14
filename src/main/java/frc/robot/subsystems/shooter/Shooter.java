@@ -35,7 +35,6 @@ public class Shooter extends SubsystemBase {
         angleJog = k.initAngleJog;
     }
 
-    //TODO: jog up/down functions
 
     public void jogSpeed(double delta){
         speedJog += delta;
