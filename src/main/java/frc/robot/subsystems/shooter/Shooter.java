@@ -65,6 +65,10 @@ public class Shooter extends SubsystemBase {
         rpmSetpoint = rpm;
     }
 
+    public void setShootPower(double power){
+        io.setShooterVoltage(power*12);
+    }
+
     public boolean checkAngleError(){
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }

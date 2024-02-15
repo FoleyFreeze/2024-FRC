@@ -31,12 +31,17 @@ public class Slappah extends SubsystemBase {
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }
 
+
+    public void setTransferPower(double power){
+        io.setTransferVoltage(power*12);
+    }
+
     public double getTransferCurrent(){
         return inputs.transferCurrentAmps;
     }
 
-    public void setTransferPosition(double position){
-        io.setPosition(position);
+    public void setTransferPosition(double delta){
+        io.setPosition(inputs.transferPosition + delta);
     }
 
     public void setAngle(double position){
