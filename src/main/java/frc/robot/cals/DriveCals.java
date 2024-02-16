@@ -29,6 +29,8 @@ public class DriveCals {
 
     public double maxWheelSpeed = Units.feetToMeters(16);
     
+    //TODO: current limits
+
     //not the actual numbers
     double swerveKp = 0.4;//0.4;
     double swerveKi = 0;//0.000001;

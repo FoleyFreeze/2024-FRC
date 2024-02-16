@@ -3,6 +3,8 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,10 +29,11 @@ public class Drive extends SubsystemBase{
 
     Wheel[] wheels;
     SwerveDriveKinematics kinematics;
-    SwerveDriveOdometry odometry;
+    SwerveDrivePoseEstimator odometry;
 
     public Pose2d robotPose = new Pose2d();
     public Rotation2d robotAngle = new Rotation2d();
+    public Translation2d robotVelocity = new Translation2d();
 
     Rotation2d fieldOffsetAngle = new Rotation2d();
     
@@ -65,10 +68,13 @@ public class Drive extends SubsystemBase{
             k.wheelCals[3].wheelLocation
             );
 
-        odometry = new SwerveDriveOdometry(
+        odometry = new SwerveDrivePoseEstimator(
             kinematics, 
             new Rotation2d(),
-            getWheelPositions()
+            getWheelPositions(),
+            new Pose2d(),
+            VecBuilder.fill(0.1, 0.1, 0.1),
+            VecBuilder.fill(0.9, 0.9, 0.9)
         );
     }
 
@@ -127,11 +133,17 @@ public class Drive extends SubsystemBase{
         robotAngle = inputs.yaw.minus(fieldOffsetAngle);
 
         //update odometry
-        robotPose = odometry.update(
+        odometry.update(
             getAngle(), 
             getWheelPositions()
         );
 
+        //update apriltags
+        //coming soon to a robot near you
+
+        Pose2d currPose = odometry.getEstimatedPosition();
+        robotVelocity = currPose.getTranslation().minus(robotPose.getTranslation()).div(0.02);
+        robotPose = currPose;
         
     }
 
@@ -143,6 +155,11 @@ public class Drive extends SubsystemBase{
     @AutoLogOutput(key = "Drive/RobotAngle")
     public Rotation2d getAngle(){
         return robotAngle;
+    }
+
+    @AutoLogOutput(key = "Drive/RobotVelocity")
+    public Translation2d getVelocity(){
+        return robotVelocity;
     }
 
     public void resetFieldOrientedAngle(){
