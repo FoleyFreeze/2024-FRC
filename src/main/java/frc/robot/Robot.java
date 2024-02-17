@@ -46,10 +46,22 @@ public class Robot extends LoggedRobot {
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
            // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
         } else {
-            setUseTiming(false); // Run as fast as possible
-            String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-            Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+            String logPath;
+            try{
+                logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+            } catch(StringIndexOutOfBoundsException e){
+                logPath = "";
+            }
+            
+            if(logPath.isBlank()){
+                //do nothing, in normal sim mode
+                
+            } else {
+                //replay the log file
+                setUseTiming(false); // Run as fast as possible
+                Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+                Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+            }
         }
 
         // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
@@ -70,7 +82,10 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {}
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+
+        m_robotContainer.determineAuton();
+    }
 
     @Override
     public void disabledExit() {}

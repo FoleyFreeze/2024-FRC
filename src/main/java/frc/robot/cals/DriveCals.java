@@ -1,5 +1,9 @@
 package frc.robot.cals;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.motor.MotorCal;
@@ -122,5 +126,13 @@ public class DriveCals {
     }
 
     public WheelCal[] wheelCals = {wheelFL, wheelFR, wheelBL, wheelBR};
+
+    public HolonomicPathFollowerConfig notePathFollowerConfig = new HolonomicPathFollowerConfig(
+        new PIDConstants(5, 0, 0),
+        new PIDConstants(5, 0, 0),
+        maxWheelSpeed,
+        wheelFL.wheelLocation.getNorm(),
+        new ReplanningConfig()
+    );
    
 }

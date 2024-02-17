@@ -21,7 +21,7 @@ public class CmdGather {
 
     static double detectGateCurrent = 10;
 
-    public static Command gather(RobotContainer r){
+    public static Command gather (RobotContainer r){
         //start spinning things and wait for start up current to decay
         Command c = new WaitCommand(startupTime)
             .deadlineWith(new RunCommand( () -> r.gather.setGatherPower(intakePower, gatePower)));

@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -41,6 +43,22 @@ public class RobotContainer {
   public Vision vision;
   public Lights lights;
 
+  
+  public enum AutonType{
+    DO_NOTHING, PREGEN, DENIAL, SELECTABLE, TEST
+  }
+
+  private LoggedDashboardChooser<AutonType> autoChooser = new LoggedDashboardChooser<>("AutonType");
+  private LoggedDashboardChooser<Integer> notePriorityA = new LoggedDashboardChooser<>("A Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityB = new LoggedDashboardChooser<>("B Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityC = new LoggedDashboardChooser<>("C Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityD = new LoggedDashboardChooser<>("D Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityE = new LoggedDashboardChooser<>("E Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityF = new LoggedDashboardChooser<>("F Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityG = new LoggedDashboardChooser<>("G Note Priority");
+  private LoggedDashboardChooser<Integer> notePriorityH = new LoggedDashboardChooser<>("H Note Priority");
+  private LoggedDashboardChooser<Integer> totalNotes = new LoggedDashboardChooser<>("Total Notes");
+
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
     drive = new Drive(this, new DriveCals());
@@ -51,6 +69,13 @@ public class RobotContainer {
     climber = new Climber(this, new ClimberCals());
     lights = new Lights();
     configureBindings();
+
+
+    //TODO: fill in auto choosers
+    autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
+    autoChooser.addOption("PREGEN", AutonType.PREGEN);
+
+    Shuffleboard.getTab("Auton").add(autoChooser.getSendableChooser()).withPosition(0, 0);
   }
 
   private void configureBindings() {
@@ -75,5 +100,43 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+  
+  private Command autonCommand;
+  private String lastSelectedAuton = "";
+  
+  public void determineAuton(){
+    String selectedAuton = "";
+    selectedAuton += autoChooser.get().ordinal();
+    selectedAuton += notePriorityA.get();
+    selectedAuton += notePriorityB.get();
+    selectedAuton += notePriorityC.get();
+    selectedAuton += notePriorityD.get();
+    selectedAuton += notePriorityE.get();
+    selectedAuton += notePriorityF.get();
+    selectedAuton += notePriorityG.get();
+    selectedAuton += notePriorityH.get();
+    selectedAuton += totalNotes.get();
 
+    if (!selectedAuton.equals(lastSelectedAuton)){
+      switch(autoChooser.get()){
+        case DENIAL:
+          autonCommand = new InstantCommand();
+          break;
+        case PREGEN:
+          autonCommand = new InstantCommand();
+          break;
+        case SELECTABLE:
+          autonCommand = new InstantCommand();
+          break;
+        case TEST:
+          autonCommand = new InstantCommand();
+          break;
+
+        case DO_NOTHING:
+        default:
+          autonCommand = new InstantCommand();
+          break;
+      }
+    }
+  }
 }

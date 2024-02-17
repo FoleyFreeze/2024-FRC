@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,7 +34,7 @@ public class Drive extends SubsystemBase{
 
     public Pose2d robotPose = new Pose2d();
     public Rotation2d robotAngle = new Rotation2d();
-    public Translation2d robotVelocity = new Translation2d();
+    public ChassisSpeeds robotVelocity = new ChassisSpeeds();
 
     Rotation2d fieldOffsetAngle = new Rotation2d();
     
@@ -76,6 +77,10 @@ public class Drive extends SubsystemBase{
             VecBuilder.fill(0.1, 0.1, 0.1),
             VecBuilder.fill(0.9, 0.9, 0.9)
         );
+    }
+
+    public void swerveDrivePwr(ChassisSpeeds speeds){
+        swerveDrivePwr(speeds, false);
     }
 
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
@@ -124,6 +129,7 @@ public class Drive extends SubsystemBase{
         for(var wheel:wheels){
             wheel.updateInputs();
         }
+        
         Logger.processInputs("Drive", inputs);
         for(var wheel:wheels){
             wheel.periodic();
@@ -133,18 +139,13 @@ public class Drive extends SubsystemBase{
         robotAngle = inputs.yaw.minus(fieldOffsetAngle);
 
         //update odometry
-        odometry.update(
-            getAngle(), 
-            getWheelPositions()
-        );
+        odometry.update(getAngle(), getWheelPositions());
 
         //update apriltags
         //coming soon to a robot near you
 
-        Pose2d currPose = odometry.getEstimatedPosition();
-        robotVelocity = currPose.getTranslation().minus(robotPose.getTranslation()).div(0.02);
-        robotPose = currPose;
-        
+        robotPose = odometry.getEstimatedPosition();
+        robotVelocity = kinematics.toChassisSpeeds(getWheelStates());
     }
 
     @AutoLogOutput(key = "Drive/RobotPose")
@@ -158,7 +159,7 @@ public class Drive extends SubsystemBase{
     }
 
     @AutoLogOutput(key = "Drive/RobotVelocity")
-    public Translation2d getVelocity(){
+    public ChassisSpeeds getVelocity(){
         return robotVelocity;
     }
 
