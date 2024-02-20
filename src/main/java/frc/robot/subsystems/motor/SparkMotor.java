@@ -48,7 +48,7 @@ public class SparkMotor implements Motor{
 
         if(k.currLim != 0){
             motor.setSmartCurrentLimit((int) k.currLim);
-            motor.setSecondaryCurrentLimit(k.currLim);
+            motor.setSecondaryCurrentLimit(k.currLim2);
         }
 
         if(k.brakeMode){

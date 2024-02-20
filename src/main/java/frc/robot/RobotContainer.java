@@ -23,6 +23,7 @@ import frc.robot.cals.VisionCals;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.commands.gather.CmdGather;
+import frc.robot.subsystems.RoboState;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.gather.Gather;
@@ -42,6 +43,7 @@ public class RobotContainer {
   public Inputs inputs;
   public Vision vision;
   public Lights lights;
+  public RoboState state;
 
   
   public enum AutonType{
@@ -68,6 +70,7 @@ public class RobotContainer {
     slappah = new Slappah(this, new SlappahCals());
     climber = new Climber(this, new ClimberCals());
     lights = new Lights();
+    state = new RoboState();
     configureBindings();
 
 

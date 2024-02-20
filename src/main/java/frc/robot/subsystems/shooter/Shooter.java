@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -49,10 +51,18 @@ public class Shooter extends SubsystemBase {
         angleSetpoint = angle;
     }
 
-    public void fixedPrime (){
+    public void fixedPrime(){
         int index = r.inputs.getFixedTarget();
         setAngle(k.fixedAngle[index] + angleJog);
         setRPM(k.fixedRPM[index] + speedJog);
+    }
+
+    public void visionPrime(){
+        double distToTarget = r.vision.k.shootTarget.minus(r.drive.getPose().getTranslation()).getNorm();
+        double angle = interp(distToTarget, k.camDistance, k.camAngle);
+        double rpm = interp(distToTarget, k.camDistance, k.camRPM);
+        setAngle(angle + angleJog);
+        setRPM(rpm + speedJog);
     }
 
     public void unShoot (){
@@ -86,5 +96,21 @@ public class Shooter extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);
+    }
+
+    public double interp(double value, double axis[], double table[]){
+        if (value < axis[0]){
+            return table[0];
+        }else if(value > axis[axis.length - 1]){
+            return table[table.length - 1];
+        }
+
+        for (int i = 1; i < axis.length; i++){
+            if (value < axis[i]){
+                double t = MathUtil.inverseInterpolate(axis[i - 1], axis[i], value);
+                return MathUtil.interpolate(table[i - 1], table[i], t);
+            }
+        }
+        return table[table.length - 1];
     }
 }

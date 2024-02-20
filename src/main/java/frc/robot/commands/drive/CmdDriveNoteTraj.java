@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
@@ -30,7 +31,13 @@ public class CmdDriveNoteTraj extends Command{
 
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
+    double singleStepThresh = Units.inchesToMeters(8);
+    double totalThresh = Units.inchesToMeters(18);
+
     Command driveCommand;
+
+    Translation2d robotOffset;
+    Translation2d pathEndLocation;
 
     public CmdDriveNoteTraj(RobotContainer r){
         this.r = r;
@@ -44,7 +51,24 @@ public class CmdDriveNoteTraj extends Command{
 
     @Override
     public void execute(){
-        //TODO: recreate path if note moved
+        //if there is new note data
+        //  calculate the new path offset so it can be applied to the robot pose
+        if(r.vision.hasNoteImage()){
+            Translation2d prevOffset = robotOffset;
+
+            robotOffset = pathEndLocation.minus(r.vision.getNoteLocation());
+            
+            Translation2d delta = robotOffset.minus(prevOffset);
+
+            //if path has diverged too far, make a new one
+            if(delta.getNorm() > singleStepThresh || robotOffset.getNorm() > totalThresh) {
+                driveCommand.end(true); //call this because its doing logging things we dont understand
+                                        //and we would rather not break anything
+                driveCommand = createPathFollower();
+                driveCommand.initialize();
+            }
+        }
+        
         driveCommand.execute();
     }
 
@@ -59,9 +83,13 @@ public class CmdDriveNoteTraj extends Command{
     }
 
     public Command createPathFollower(){
+        //no offset because this path is new
+        robotOffset = new Translation2d();
+        pathEndLocation = r.vision.getNoteLocation();
+        
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
             new Pose2d(r.drive.getPose().getTranslation(), getVelocityAngle(r.drive.getVelocity())),
-            new Pose2d(r.vision.getNoteLocation(), r.drive.getAngle())
+            new Pose2d(pathEndLocation, r.drive.getAngle())
         );
 
         PathPlannerPath path = new PathPlannerPath(
@@ -72,7 +100,7 @@ public class CmdDriveNoteTraj extends Command{
 
         return new FollowPathHolonomic(
             path, 
-            r.drive::getPose, 
+            this::getRelativePose, 
             r.drive::getVelocity, 
             r.drive::swerveDrivePwr, 
             r.drive.k.notePathFollowerConfig, 
@@ -83,5 +111,12 @@ public class CmdDriveNoteTraj extends Command{
 
     private Rotation2d getVelocityAngle(ChassisSpeeds speed){
         return new Rotation2d(Math.atan2(speed.vyMetersPerSecond, speed.vxMetersPerSecond));
+    }
+
+    public Pose2d getRelativePose(){
+        //return a pose that is offset by the difference between 
+        //the original note location and the current one
+        return new Pose2d(r.drive.getPose().getTranslation().plus(robotOffset),
+                          r.drive.getPose().getRotation());
     }
 }

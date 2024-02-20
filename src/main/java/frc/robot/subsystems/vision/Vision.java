@@ -16,7 +16,7 @@ import frc.robot.cals.VisionCals;
 
 public class Vision extends SubsystemBase{
     RobotContainer r;
-    VisionCals k;
+    public VisionCals k;
     VisionIO io;
     VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 

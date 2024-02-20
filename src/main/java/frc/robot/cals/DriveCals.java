@@ -58,11 +58,11 @@ public class DriveCals {
 
     public WheelCal wheelFL = new WheelCal();{
         //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
-        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
+        wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 10)
             .setRatio(conversionFactor)
             .invert();
         //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
-        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)
+        wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 11)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
             .setIZone(swerveIZone)
@@ -76,10 +76,10 @@ public class DriveCals {
 
     public WheelCal wheelFR = new WheelCal();{
         //wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2)
-        wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 11)
+        wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
             .setRatio(conversionFactor);
         //wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3)
-        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 2)
+        wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
             //.invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
             .setIZone(swerveIZone)
@@ -93,10 +93,10 @@ public class DriveCals {
 
     public WheelCal wheelBL = new WheelCal();{
         //wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
-        wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 15)
+        wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
             .setRatio(conversionFactor);
         //wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
-        wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 10)  
+        wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)  
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
             .setIZone(swerveIZone)
@@ -110,10 +110,10 @@ public class DriveCals {
 
     public WheelCal wheelBR = new WheelCal();{
         //wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1)
-        wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
+        wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
             .setRatio(conversionFactor);
         //wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
-        wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 17)
+        wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
             .setIZone(swerveIZone)

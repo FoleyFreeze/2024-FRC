@@ -29,7 +29,8 @@ public class CmdGather {
         c = c.andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > detectGateCurrent))
             .finallyDo(() -> r.gather.setGatePower(0));
         //move the piece to it's final holding position
-        c = c.andThen(new InstantCommand(() -> r.gather.setGatePosition(extraGateRevs)));
+        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevs);
+                                                r.state.hasNote = true;}));
         //intake pushes note all the way to the gate then stops; gate holds it at constant position
         c = c.andThen(new WaitCommand(extraIntakeTime))
             .finallyDo(() -> r.gather.setIntakePower(0));
@@ -40,7 +41,9 @@ public class CmdGather {
     }
 
     public static Command unGather(RobotContainer r){
-        Command c = (new RunCommand(() -> r.gather.setGatherPower(reverseGatePower, reverseIntakePower))).finallyDo(() -> r.gather.setGatherPower(0, 0));
+        Command c = (new RunCommand(() -> r.gather.setGatherPower(reverseGatePower, reverseIntakePower)))
+                         .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
+                                           r.state.hasNote = false;});
 
         c.addRequirements(r.gather);
         c.setName("CmdUngather");

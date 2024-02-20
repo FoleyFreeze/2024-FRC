@@ -43,8 +43,10 @@ public class CmdTransfer {
                 .andThen(new WaitCommand(startupDelay))
                 .andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > gateCurrentLim))
                 .finallyDo(() -> {r.shooter.setShootPower(unShootPower);
-                                    r.gather.setGatePower(unGatePower);
-                                    r.gather.setGatePosition(extraGate);})
+                                  r.gather.setGatePower(unGatePower);
+                                  r.gather.setGatePosition(extraGate);
+                                  r.state.hasTransfer = false;
+                                })
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         Command c = new SequentialCommandGroup(setup(r), unTransfer, end(r));
@@ -62,8 +64,10 @@ public class CmdTransfer {
                 .andThen(new WaitCommand(startupDelay))
                 .andThen(new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLim))
                 .finallyDo(() -> {r.shooter.setShootPower(shootPower); 
-                                    r.gather.setGatePower(gatePower); 
-                                    r.slappah.setTransferPosition(extraTransfer);})
+                                  r.gather.setGatePower(gatePower); 
+                                  r.slappah.setTransferPosition(extraTransfer);
+                                  r.state.hasTransfer = true;
+                                })
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         Command c = new SequentialCommandGroup(setup(r), transfer, end(r));

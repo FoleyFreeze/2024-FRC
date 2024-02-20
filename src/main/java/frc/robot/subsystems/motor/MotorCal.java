@@ -24,6 +24,8 @@ public class MotorCal {
     public double gearRatio = 1;
 
     public double currLim = 0;
+    public double currLim2 = 0;
+
     public double rampRate = 0;
 
     public boolean brakeMode = false;
@@ -75,6 +77,13 @@ public class MotorCal {
 
     public MotorCal setCurrLim(double lim){
         currLim = lim;
+        currLim2 = lim;
+        return this;
+    }
+
+    public MotorCal setCurrLim(double lim1, double lim2){
+        currLim = lim1;
+        currLim2 = lim2;
         return this;
     }
 

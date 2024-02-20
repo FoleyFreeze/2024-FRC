@@ -24,8 +24,8 @@ public class ShooterCals {
     public double homePosition = 0;
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 0);
-    public MotorCal shootMotorTop = new MotorCal(TypeMotor.SPARK, 0);
-    public MotorCal shootMotorBottom = new MotorCal(TypeMotor.SPARK, 0);
+    public MotorCal shootMotorTop = new MotorCal(TypeMotor.FALCON, 13);
+    public MotorCal shootMotorBottom = new MotorCal(TypeMotor.FALCON, 14);
 
     public double allowedAngleError = 1;
     public double allowedRPMError = 100;

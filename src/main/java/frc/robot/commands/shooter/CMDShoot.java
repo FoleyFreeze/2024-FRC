@@ -16,12 +16,10 @@ public class CMDShoot {
 
     public static Command simpleShoot(RobotContainer r){
         Command c = new RunCommand( () -> r.shooter.fixedPrime());
-                c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError());
-                c = c.andThen(new InstantCommand(() -> r.gather.setGatePower(1)));
+                c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTrigger.getAsBoolean());
+                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false;}));
                 c = c.andThen(new WaitCommand(shootWaitTime)); 
                 c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
-
-
 
                 c.addRequirements(r.shooter, r.gather);
                 c.setName("CmdSimpleShoot");
@@ -32,10 +30,30 @@ public class CMDShoot {
         Command c = (new RunCommand(() -> {r.shooter.unShoot(); r.gather.setGatePower(-1);}));
                 c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
 
-
-
                 c.addRequirements(r.shooter, r.gather);
                 c.setName("CmdUnShoot");
         return c;
+    }
+
+    public static Command fixedPrime(RobotContainer r){
+        Command c = new InstantCommand( () -> r.shooter.fixedPrime());
+
+                c.addRequirements(r.shooter, r.gather);
+                c.setName("fixedPrime");
+
+        return c;
+    }
+
+    public static Command visionShoot(RobotContainer r){
+        Command c = new RunCommand( () -> r.shooter.fixedPrime());
+                c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTrigger.getAsBoolean());
+                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false;}));
+                c = c.andThen(new WaitCommand(shootWaitTime)); 
+                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
+
+                c.addRequirements(r.shooter, r.gather);
+                c.setName("VisionPrime");
+
+        return c;    
     }
 }
