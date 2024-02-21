@@ -21,6 +21,7 @@ import frc.robot.cals.ShooterCals;
 import frc.robot.cals.SlappahCals;
 import frc.robot.cals.VisionCals;
 import frc.robot.commands.drive.CmdDrive;
+import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.commands.gather.CmdGather;
 import frc.robot.subsystems.RoboState;
@@ -88,7 +89,8 @@ public class RobotContainer {
     inputs.resetFieldOriented.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
     inputs.resetFieldOdometry.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
 
-    inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(new CmdDriveToNote(this).ignoringDisable(true));
+    inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
+    //inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(new CmdDriveToNote(this).ignoringDisable(true));
     inputs.gatherTrigger.and(inputs.cameraEnable.negate()).whileTrue(CmdGather.gather(this));
 
     //TODO: replace with shooter when shooter is built

@@ -54,5 +54,8 @@ public class VisionIO_HW implements VisionIO{
         inputs.noteData = noteData;
 
         inputs.now = Logger.getRealTimestamp()/1000000.0;
+
+        active.set(true);
+        notesActive.set(true);
     }
 }

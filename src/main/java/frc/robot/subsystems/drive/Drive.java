@@ -80,13 +80,14 @@ public class Drive extends SubsystemBase{
     }
 
     public void swerveDrivePwr(ChassisSpeeds speeds){
-        swerveDrivePwr(speeds, false);
+        System.out.println("Called PID Drive with: " + speeds.toString());
+        swerveDrivePwr(speeds.div(k.maxWheelSpeed), false);
     }
 
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
-        boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.02
-                        && Math.abs(speeds.vyMetersPerSecond) < 0.02
-                        && Math.abs(speeds.omegaRadiansPerSecond) < 0.02;
+        boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.002
+                        && Math.abs(speeds.vyMetersPerSecond) < 0.002
+                        && Math.abs(speeds.omegaRadiansPerSecond) < 0.002;
         
         //scale to m/s
         speeds = speeds.times(k.maxWheelSpeed);

@@ -2,6 +2,8 @@ package frc.robot.subsystems.inputs;
 
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -55,22 +57,23 @@ public class Inputs extends SubsystemBase {
 
         z = deadband(z);
 
-        /*
-        x = Math.pow(x, k.expo) * Math.signum(x);
-        y = Math.pow(y, k.expo) * Math.signum(y);
-        z = Math.pow(z, k.expo) * Math.signum(z);
-        
+        x = Math.pow(Math.abs(x), k.expo) * Math.signum(x);
+        y = Math.pow(Math.abs(y), k.expo) * Math.signum(y);
+        z = Math.pow(Math.abs(z), k.expo) * Math.signum(z);
+
+        Logger.recordOutput("Drive/Inputs y", y);
 
         Translation2d newXY = mapSqrToCirc(x, y);
         x = newXY.getX();
         y = newXY.getY();
-        */
 
         x *= k.maxDrivePwr;
         y *= k.maxDrivePwr;
         z *= k.maxDrivePwr;
 
-        return new ChassisSpeeds(x, y, z);
+        ChassisSpeeds speeds = new ChassisSpeeds(x, y, z);
+        Logger.recordOutput("Drive/Inputs", speeds);
+        return speeds;
     }
 
     public Translation2d mapSqrToCirc(double x, double y){
@@ -78,13 +81,25 @@ public class Inputs extends SubsystemBase {
         double theta = Math.atan2(y, x);
         double slope;
 
+        /*
         if (Math.abs(theta % Math.PI/2) > Math.PI/4){
             slope = x/y;
-            if(y == 0) slope = 1;
+            if(Math.abs(y) < 0.01) slope = 1;
         }else{
             slope = y/x;
-            if(x == 0) slope = 1;
+            if(Math.abs(x) < 0.01) slope = 1;
         }
+        */
+
+        if(Math.abs(x) < 0.01 && Math.abs(y) < 0.01){
+            slope = 1;
+        }
+        else if(Math.abs(x) > Math.abs(y)){
+            slope = y / x;
+        } else {
+            slope = x / y;
+        }
+
 
         double length2 = Math.sqrt(1 + slope*slope);
         double r = length1/length2;

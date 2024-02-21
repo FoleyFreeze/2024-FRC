@@ -3,6 +3,8 @@ package frc.robot.commands.drive;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -24,10 +26,10 @@ public class CmdDriveNoteTraj extends Command{
 
     RobotContainer r;
 
-    double maxVelocity;
-    double maxAccel;
-    double maxAngularAccel;
-    double maxAngularVelocity;
+    double maxVelocity = 0.5;//m/s
+    double maxAccel = 1;//m/s/s
+    double maxAngularAccel = 1;//rad/s
+    double maxAngularVelocity = 0.25;//rad/s/s
 
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
@@ -41,12 +43,15 @@ public class CmdDriveNoteTraj extends Command{
 
     public CmdDriveNoteTraj(RobotContainer r){
         this.r = r;
+        addRequirements(r.drive);
     }
 
     @Override
     public void initialize(){
-        driveCommand = createPathFollower();
-        driveCommand.initialize();
+        if(r.vision.hasNoteImage()){
+            driveCommand = createPathFollower();
+            driveCommand.initialize();
+        }
     }
 
     @Override
@@ -54,32 +59,43 @@ public class CmdDriveNoteTraj extends Command{
         //if there is new note data
         //  calculate the new path offset so it can be applied to the robot pose
         if(r.vision.hasNoteImage()){
-            Translation2d prevOffset = robotOffset;
-
-            robotOffset = pathEndLocation.minus(r.vision.getNoteLocation());
-            
-            Translation2d delta = robotOffset.minus(prevOffset);
-
-            //if path has diverged too far, make a new one
-            if(delta.getNorm() > singleStepThresh || robotOffset.getNorm() > totalThresh) {
-                driveCommand.end(true); //call this because its doing logging things we dont understand
-                                        //and we would rather not break anything
+            if(driveCommand == null){
                 driveCommand = createPathFollower();
                 driveCommand.initialize();
+            } else {
+                Translation2d prevOffset = robotOffset;
+
+                robotOffset = pathEndLocation.minus(r.vision.getNoteLocation());
+                Logger.recordOutput("Vision/RobotOffset", robotOffset);
+                Translation2d delta = robotOffset.minus(prevOffset);
+
+                //if path has diverged too far, make a new one
+                if(delta.getNorm() > singleStepThresh || robotOffset.getNorm() > totalThresh) {
+                    System.out.println("Path diverged, creating new one");
+                    
+                    driveCommand.end(true); //call this because its doing logging things we dont understand
+                                            //and we would rather not break anything
+                    driveCommand = createPathFollower();
+                    driveCommand.initialize();
+                }
             }
         }
         
-        driveCommand.execute();
+        if(driveCommand != null) driveCommand.execute();
     }
 
     @Override 
     public void end(boolean interrupted){
-        driveCommand.end(interrupted);
+        if(driveCommand != null) driveCommand.end(interrupted);
     }
 
     @Override
     public boolean isFinished(){
-        return driveCommand.isFinished();
+        if(driveCommand != null){
+            return driveCommand.isFinished();
+        } else {
+            return false;
+        }
     }
 
     public Command createPathFollower(){
@@ -91,6 +107,9 @@ public class CmdDriveNoteTraj extends Command{
             new Pose2d(r.drive.getPose().getTranslation(), getVelocityAngle(r.drive.getVelocity())),
             new Pose2d(pathEndLocation, r.drive.getAngle())
         );
+
+        System.out.println("Created path starting at: " + bezierPoints.get(0).toString());
+        System.out.println("and Ending at: " + bezierPoints.get(bezierPoints.size()-1).toString());
 
         PathPlannerPath path = new PathPlannerPath(
             bezierPoints, 
