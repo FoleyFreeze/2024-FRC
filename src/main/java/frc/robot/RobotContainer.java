@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
+import com.pathplanner.lib.util.PathPlannerLogging;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -74,6 +78,15 @@ public class RobotContainer {
     state = new RoboState();
     configureBindings();
 
+    //log path data with advantage scope
+    PathPlannerLogging.setLogActivePathCallback((path) -> {
+      //TODO: idk if this works how we think it does
+      for(Pose2d p : path){
+        Logger.recordOutput("PathPlanner/ActivePath", p);
+      }
+    });
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> Logger.recordOutput("PathPlanner/CurrentPose", pose));
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> Logger.recordOutput("PathPlanner/TargetPose", pose));
 
     //TODO: fill in auto choosers
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);

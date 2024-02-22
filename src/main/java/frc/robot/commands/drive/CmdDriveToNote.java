@@ -27,7 +27,7 @@ public class CmdDriveToNote extends Command{
     public void execute(){
         if(r.vision.hasNoteImage()){
             r.gather.setGatherPower(0.5, 0);
-            lastError = r.drive.driveToLocation(r.vision.getNoteLocation());
+            lastError = r.drive.driveToLocation(r.vision.calcNoteLocation());
         } else {
             r.drive.swerveDrivePwr(new ChassisSpeeds(0, 0 , 0), false);
         }

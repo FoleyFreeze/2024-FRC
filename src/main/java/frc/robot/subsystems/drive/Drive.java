@@ -34,7 +34,7 @@ public class Drive extends SubsystemBase{
 
     public Pose2d robotPose = new Pose2d();
     public Rotation2d robotAngle = new Rotation2d();
-    public ChassisSpeeds robotVelocity = new ChassisSpeeds();
+    public ChassisSpeeds robotRelVelocity = new ChassisSpeeds();
 
     Rotation2d fieldOffsetAngle = new Rotation2d();
     
@@ -80,14 +80,18 @@ public class Drive extends SubsystemBase{
     }
 
     public void swerveDrivePwr(ChassisSpeeds speeds){
-        System.out.println("Called PID Drive with: " + speeds.toString());
-        swerveDrivePwr(speeds.div(k.maxWheelSpeed), false);
+        ChassisSpeeds power = speeds.div(k.maxWheelSpeed);
+        limitSpeeds(power, k.autoDrivePower);
+        
+        swerveDrivePwr(power, false);
     }
 
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
         boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.002
                         && Math.abs(speeds.vyMetersPerSecond) < 0.002
                         && Math.abs(speeds.omegaRadiansPerSecond) < 0.002;
+
+        limitSpeeds(speeds, k.fieldModePwr);
         
         //scale to m/s
         speeds = speeds.times(k.maxWheelSpeed);
@@ -146,7 +150,7 @@ public class Drive extends SubsystemBase{
         //coming soon to a robot near you
 
         robotPose = odometry.getEstimatedPosition();
-        robotVelocity = kinematics.toChassisSpeeds(getWheelStates());
+        robotRelVelocity = kinematics.toChassisSpeeds(getWheelStates());
     }
 
     @AutoLogOutput(key = "Drive/RobotPose")
@@ -159,9 +163,9 @@ public class Drive extends SubsystemBase{
         return robotAngle;
     }
 
-    @AutoLogOutput(key = "Drive/RobotVelocity")
-    public ChassisSpeeds getVelocity(){
-        return robotVelocity;
+    @AutoLogOutput(key = "Drive/RobotRelVelocity")
+    public ChassisSpeeds getRelVelocity(){
+        return robotRelVelocity;
     }
 
     public void resetFieldOrientedAngle(){
@@ -170,7 +174,7 @@ public class Drive extends SubsystemBase{
     }
 
     public void resetFieldOdometry(){
-        odometry.resetPosition(getAngle(), getWheelPositions(), new Pose2d(0, 0, getAngle()));
+        odometry.resetPosition(getAngle(), getWheelPositions(), new Pose2d(5, 5, getAngle()));
     }
 
     private SwerveModulePosition[] getWheelPositions() {
@@ -201,5 +205,18 @@ public class Drive extends SubsystemBase{
         }
         driveIO.writeOffsets(offsets);
         System.out.println("Done!");
+    }
+
+    //note this modifies the object in place
+    public void limitSpeeds(ChassisSpeeds speeds, double limit){
+        if(Math.abs(speeds.vxMetersPerSecond) > limit) {
+            speeds.vxMetersPerSecond = limit * Math.signum(speeds.vxMetersPerSecond);
+        }
+        if(Math.abs(speeds.vyMetersPerSecond) > limit) {
+            speeds.vyMetersPerSecond = limit * Math.signum(speeds.vyMetersPerSecond);
+        }
+        if(Math.abs(speeds.omegaRadiansPerSecond) > limit) {
+            speeds.omegaRadiansPerSecond = limit * Math.signum(speeds.omegaRadiansPerSecond);
+        }
     }
 }

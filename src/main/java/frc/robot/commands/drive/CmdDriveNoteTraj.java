@@ -26,19 +26,20 @@ public class CmdDriveNoteTraj extends Command{
 
     RobotContainer r;
 
-    double maxVelocity = 0.5;//m/s
+    double maxVelocity = 1;//m/s
     double maxAccel = 1;//m/s/s
     double maxAngularAccel = 1;//rad/s
     double maxAngularVelocity = 0.25;//rad/s/s
 
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
-    double singleStepThresh = Units.inchesToMeters(8);
-    double totalThresh = Units.inchesToMeters(18);
+    //only recalc path if the note has moved more than x distance
+    double recalcError = Units.inchesToMeters(4);
+    //only recalc path if the note is further away than x distance
+    double recalcBounds = Units.inchesToMeters(9999);
 
     Command driveCommand;
 
-    Translation2d robotOffset;
     Translation2d pathEndLocation;
 
     public CmdDriveNoteTraj(RobotContainer r){
@@ -51,6 +52,8 @@ public class CmdDriveNoteTraj extends Command{
         if(r.vision.hasNoteImage()){
             driveCommand = createPathFollower();
             driveCommand.initialize();
+        } else {
+            driveCommand = null;
         }
     }
 
@@ -63,14 +66,13 @@ public class CmdDriveNoteTraj extends Command{
                 driveCommand = createPathFollower();
                 driveCommand.initialize();
             } else {
-                Translation2d prevOffset = robotOffset;
+                Translation2d distToGoal = pathEndLocation.minus(r.drive.robotPose.getTranslation());
 
-                robotOffset = pathEndLocation.minus(r.vision.getNoteLocation());
-                Logger.recordOutput("Vision/RobotOffset", robotOffset);
-                Translation2d delta = robotOffset.minus(prevOffset);
+                Translation2d noteError = pathEndLocation.minus(r.vision.getCachedNoteLocation());
+                Logger.recordOutput("Vision/NoteError", noteError);
 
-                //if path has diverged too far, make a new one
-                if(delta.getNorm() > singleStepThresh || robotOffset.getNorm() > totalThresh) {
+                //if path has diverged too far, and we are not close, make a new one
+                if(distToGoal.getNorm() > recalcBounds && noteError.getNorm() > recalcError) {
                     System.out.println("Path diverged, creating new one");
                     
                     driveCommand.end(true); //call this because its doing logging things we dont understand
@@ -99,12 +101,12 @@ public class CmdDriveNoteTraj extends Command{
     }
 
     public Command createPathFollower(){
-        //no offset because this path is new
-        robotOffset = new Translation2d();
-        pathEndLocation = r.vision.getNoteLocation();
+        pathEndLocation = r.vision.getCachedNoteLocation();
+        Translation2d pathStart = r.drive.getPose().getTranslation();
+        Translation2d pathVector = pathEndLocation.minus(pathStart);
         
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-            new Pose2d(r.drive.getPose().getTranslation(), getVelocityAngle(r.drive.getVelocity())),
+            new Pose2d(pathStart, getVelocityAngle(r.drive.getRelVelocity(), pathVector)),
             new Pose2d(pathEndLocation, r.drive.getAngle())
         );
 
@@ -119,8 +121,8 @@ public class CmdDriveNoteTraj extends Command{
 
         return new FollowPathHolonomic(
             path, 
-            this::getRelativePose, 
-            r.drive::getVelocity, 
+            r.drive::getPose, 
+            r.drive::getRelVelocity, 
             r.drive::swerveDrivePwr, 
             r.drive.k.notePathFollowerConfig, 
             () -> false, 
@@ -128,14 +130,28 @@ public class CmdDriveNoteTraj extends Command{
         );
     }
 
-    private Rotation2d getVelocityAngle(ChassisSpeeds speed){
-        return new Rotation2d(Math.atan2(speed.vyMetersPerSecond, speed.vxMetersPerSecond));
+    Rotation2d positiveY = new Rotation2d(Math.PI/2.0);
+    Rotation2d negativeY = new Rotation2d(-Math.PI/2.0);
+
+    private Rotation2d getVelocityAngle(ChassisSpeeds speed, Translation2d pathVector){
+        if(Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond) < 0.2){
+            //if we are not moving, start our path perpendicular to the target orientation
+            System.out.println("Zero init vel");
+            Rotation2d botAngle = r.drive.getAngle();
+            return (pathVector.getAngle().minus(botAngle).getSin() > 0 ? positiveY : negativeY).plus(botAngle);
+        } else {
+            System.out.println("Nonzero init vel");
+            ChassisSpeeds fieldRel = ChassisSpeeds.fromRobotRelativeSpeeds(speed, r.drive.getAngle());
+            return new Rotation2d(Math.atan2(fieldRel.vyMetersPerSecond, fieldRel.vxMetersPerSecond));
+        }
     }
 
+    /*
     public Pose2d getRelativePose(){
         //return a pose that is offset by the difference between 
         //the original note location and the current one
         return new Pose2d(r.drive.getPose().getTranslation().plus(robotOffset),
                           r.drive.getPose().getRotation());
     }
+    */
 }

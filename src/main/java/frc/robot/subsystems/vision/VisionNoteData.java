@@ -7,6 +7,7 @@ public class VisionNoteData implements StructSerializable{
     public float timeStamp;
     public float distance;
     public float angle;
+    public boolean isProcessed;
 
     public static final VisionNoteDataStruct struct = new VisionNoteDataStruct();
 
@@ -15,6 +16,7 @@ public class VisionNoteData implements StructSerializable{
         this.timeStamp = timeStamp;
         this.distance = distance;
         this.angle = angle;
+        isProcessed = false;
     }
 
     public VisionNoteData(){}

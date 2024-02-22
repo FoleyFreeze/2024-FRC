@@ -20,6 +20,8 @@ public class Vision extends SubsystemBase{
     VisionIO io;
     VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
+    Translation2d lastNoteLocation;
+
     DoubleEntry rioTime = NetworkTableInstance.getDefault().getDoubleTopic("/Vision/RIO Time").getEntry(0);
 
     public class TimestampedPose2d{
@@ -63,7 +65,7 @@ public class Vision extends SubsystemBase{
         return robotPoseBuffer.getLast().pose;
     }
 
-    public Translation2d getNoteLocation(){
+    public Translation2d calcNoteLocation(){
         //data from camera has the field in (x,z) plane and rotation around the y axis
         //we turn that into a pose2d representation 
         //distance provided is only the z component (on axis)
@@ -71,9 +73,9 @@ public class Vision extends SubsystemBase{
         //also the camera angle is +cw which is backwards compared to ours
 
         double dist = Units.inchesToMeters(inputs.noteData.distance);
-        double angle = inputs.noteData.angle;
-        double radius = dist / Math.acos(-angle);
-        Translation2d camRelNoteLoc = new Translation2d(radius, new Rotation2d(-angle));
+        double angle = -inputs.noteData.angle;
+        double radius = dist / Math.cos(angle);
+        Translation2d camRelNoteLoc = new Translation2d(radius, new Rotation2d(angle));
         Logger.recordOutput("Vision/camRelNoteLoc", camRelNoteLoc);
 
         //camera relative -> bot relative -> field relative
@@ -83,13 +85,27 @@ public class Vision extends SubsystemBase{
         Logger.recordOutput("Vision/robotPose", robotPose);
         Translation2d fieldRelNoteLocation = roboRelNoteLocation.rotateBy(robotPose.getRotation()).plus(robotPose.getTranslation());
 
-        Logger.recordOutput("Vision/fieldRelNoteLocation", fieldRelNoteLocation);
+        //done in periodic
+        //Logger.recordOutput("Vision/fieldRelNoteLocation", fieldRelNoteLocation);
+
+        //mark as processed
+        inputs.noteData.isProcessed = true;
+
         return fieldRelNoteLocation;
+    }
+    public Translation2d getCachedNoteLocation(){
+        return lastNoteLocation;
     }
 
     public boolean hasNoteImage(){
         return inputs.now - inputs.noteData.timeStamp < k.maxNoteAge;
     }
+
+    public boolean hasNewNoteImage(){
+        return hasNoteImage() && !inputs.noteData.isProcessed;
+    }
+
+    static final Translation2d zeroT2D = new Translation2d();
 
      @Override
     public void periodic(){
@@ -99,5 +115,13 @@ public class Vision extends SubsystemBase{
         updatePoseBuffer();
 
         rioTime.set(Logger.getRealTimestamp() / 1000000.0);
+
+        if(hasNewNoteImage()){
+            lastNoteLocation = calcNoteLocation();
+            Logger.recordOutput("Vision/fieldRelNoteLocation", lastNoteLocation);
+        } else {
+            //Logger.recordOutput("Vision/fieldRelNoteLocation", zeroT2D);
+        }
+        
     }
 }

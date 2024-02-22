@@ -18,12 +18,12 @@ public class VisionNoteDataStruct implements Struct<VisionNoteData>{
 
     @Override
     public int getSize() {
-        return kSizeInt32 + kSizeFloat *3;
+        return kSizeInt32 + kSizeFloat*3 + 1;
     }
 
     @Override
     public String getSchema() {
-        return "int seqNum;float timeStamp;float distance;float angle";
+        return "int seqNum;float timeStamp;float distance;float angle;boolean isProcessed";
     }
 
     @Override
@@ -33,6 +33,7 @@ public class VisionNoteDataStruct implements Struct<VisionNoteData>{
         v.timeStamp = bb.getFloat();
         v.distance = bb.getFloat();
         v.angle = bb.getFloat();
+        v.isProcessed = bb.get() > 0;
         return v;
     }
 
@@ -42,6 +43,7 @@ public class VisionNoteDataStruct implements Struct<VisionNoteData>{
         bb.putFloat(value.timeStamp);
         bb.putFloat(value.distance);
         bb.putFloat(value.angle);
+        bb.put(value.isProcessed ? (byte) 1 : (byte) 0);
     }
     
 }
