@@ -50,7 +50,7 @@ public class DriveCals {
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
-    public double fieldModePwr = 0.3;
+    public double fieldModePwr = 0.75;
     public double pitModePwr = 0.3;
     public double autoDrivePower = 0.3;
 
@@ -61,7 +61,8 @@ public class DriveCals {
         //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
         wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 10)
             .setRatio(conversionFactor)
-            .invert();
+            .invert()
+            .setBrakeMode(false);
         //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 11)
             .invert()
@@ -69,7 +70,8 @@ public class DriveCals {
             .setIZone(swerveIZone)
             .setPIDPwrLim(swerveLim)
             .setCurrLim(swerveCurrLim)
-            .setRatio(swerveRatio);
+            .setRatio(swerveRatio)
+            .setBrakeMode(true);
         wheelFL.wheelLocation = new Translation2d(width, length);
         wheelFL.encChannel = 2;
         wheelFL.name = "FL";
@@ -78,7 +80,8 @@ public class DriveCals {
     public WheelCal wheelFR = new WheelCal();{
         //wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2)
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
-            .setRatio(conversionFactor);
+            .setRatio(conversionFactor)
+            .setBrakeMode(false);
         //wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3)
         wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
             //.invert()
@@ -86,7 +89,8 @@ public class DriveCals {
             .setIZone(swerveIZone)
             .setPIDPwrLim(swerveLim)
             .setCurrLim(swerveCurrLim)
-            .setRatio(swerveRatio);
+            .setRatio(swerveRatio)
+            .setBrakeMode(true);
         wheelFR.wheelLocation = new Translation2d(width, -length);
         wheelFR.encChannel = 3;
         wheelFR.name = "FR";
@@ -95,7 +99,8 @@ public class DriveCals {
     public WheelCal wheelBL = new WheelCal();{
         //wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
         wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
-            .setRatio(conversionFactor);
+            .setRatio(conversionFactor)
+            .setBrakeMode(false);
         //wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
         wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)  
             .invert()
@@ -103,7 +108,8 @@ public class DriveCals {
             .setIZone(swerveIZone)
             .setPIDPwrLim(swerveLim)
             .setCurrLim(swerveCurrLim)
-            .setRatio(swerveRatio);
+            .setRatio(swerveRatio)
+            .setBrakeMode(true);
         wheelBL.wheelLocation = new Translation2d(-width, length);
         wheelBL.encChannel = 1;
         wheelBL.name = "BL";
@@ -112,7 +118,8 @@ public class DriveCals {
     public WheelCal wheelBR = new WheelCal();{
         //wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1)
         wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
-            .setRatio(conversionFactor);
+            .setRatio(conversionFactor)
+            .setBrakeMode(false);
         //wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
         wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1)
             .invert()
@@ -120,7 +127,8 @@ public class DriveCals {
             .setIZone(swerveIZone)
             .setPIDPwrLim(swerveLim)
             .setCurrLim(swerveCurrLim)
-            .setRatio(swerveRatio);
+            .setRatio(swerveRatio)
+            .setBrakeMode(true);
         wheelBR.wheelLocation = new Translation2d(-width, -length);
         wheelBR.encChannel = 0;
         wheelBR.name = "BR";

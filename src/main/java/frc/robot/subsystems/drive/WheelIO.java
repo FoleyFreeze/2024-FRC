@@ -17,6 +17,9 @@ public interface WheelIO {
         public double swerveVelocity;
         public double swerveVoltage;
         public double swerveCurrent;
+
+        public double driveTemp;
+        public double swerveTemp;
         
         public Rotation2d analogEncoderAngle = new Rotation2d();
         public Rotation2d analogEncoderAngleRaw = new Rotation2d();
