@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.auton.Locations;
 import frc.robot.cals.ShooterCals;
 
 public class Shooter extends SubsystemBase {
@@ -58,7 +59,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void visionPrime(){
-        double distToTarget = r.vision.k.shootTarget.minus(r.drive.getPose().getTranslation()).getNorm();
+        double distToTarget = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getNorm();
         double angle = interp(distToTarget, k.camDistance, k.camAngle);
         double rpm = interp(distToTarget, k.camDistance, k.camRPM);
         setAngle(angle + angleJog);

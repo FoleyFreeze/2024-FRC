@@ -14,16 +14,7 @@ public class VisionCals {
     public double maxNoteAge = 0.2; //seconds
     public int bufferSize = (int) (maxNoteAge / 0.02) + 1;
 
-    public AprilTagFieldLayout tagLayout;
-    public Translation2d shootTarget;
-    {
-        try{
-            tagLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-            shootTarget = new Translation2d(tagLayout.getTagPose(7).get().getTranslation().getX(),tagLayout.getTagPose(7).get().getTranslation().getZ());
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+   
 
-    public Pose2d camLocation = new Pose2d(Units.inchesToMeters(18), 0, Rotation2d.fromDegrees(0)); 
+    public Pose2d camLocation = new Pose2d(Units.inchesToMeters(13 ), 0, Rotation2d.fromDegrees(0)); 
 }

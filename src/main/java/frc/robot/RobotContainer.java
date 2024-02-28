@@ -64,7 +64,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> notePriorityF = new LoggedDashboardChooser<>("F Note Priority");
   private LoggedDashboardChooser<Integer> notePriorityG = new LoggedDashboardChooser<>("G Note Priority");
   private LoggedDashboardChooser<Integer> notePriorityH = new LoggedDashboardChooser<>("H Note Priority");
-  private LoggedDashboardChooser<Integer> totalNotes = new LoggedDashboardChooser<>("Total Notes");
+  private LoggedDashboardChooser<Integer> totalNotes = new LoggedDashboardChooser<>("Total Notes"); //stop after this many notes
 
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
