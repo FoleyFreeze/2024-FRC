@@ -38,7 +38,17 @@ public class Shooter extends SubsystemBase {
         speedJog = k.initSpeedJog;
         angleJog = k.initAngleJog;
 
-        io.setAngleEncoder(k.startAngle);
+        //TODO: see if this works here
+        io.updateInputs(inputs);
+        Logger.processInputs("shooter", inputs);
+
+        if(Math.abs(inputs.anglePosition) < 0.1){ 
+            io.setAngleEncoder(k.startAngle);
+            System.out.println("Successfully reset shoot angle position from: " + inputs.anglePosition);
+             
+        } else {
+            System.out.println("Did not need to reset shooter angle. Already at: " + inputs.anglePosition);
+        }
         angleSetpoint = k.startAngle;
         rpmSetpoint = 0;
     }
@@ -57,10 +67,25 @@ public class Shooter extends SubsystemBase {
         angleSetpoint = angle;
     }
 
+    public double getTestAngle(){
+        double angleIdx = r.inputs.getLeftDial();
+        double output = angleIdx * (k.maxFixedAngle - k.minFixedAngle) + k.minFixedAngle;
+        return output;
+    }
+
+    public double getTestSpeed(){
+        double speedIdx = r.inputs.getRightDial();
+        double output = speedIdx * (k.maxFixedSpeed - k.minFixedSpeed) + k.minFixedSpeed;
+        return output;
+    }
     public void fixedPrime(){
-        int index = r.inputs.getFixedTarget();
-        setAngle(k.fixedAngle[index] + angleJog);
-        setRPM(k.fixedRPM[index] + speedJog);
+        //TODO: go back to this when done testing
+        //int index = r.inputs.getFixedTarget();
+        //setAngle(k.fixedAngle[index] + angleJog);
+        //setRPM(k.fixedRPM[index] + speedJog);
+
+        setAngle(getTestAngle());
+        setRPM(getTestSpeed());
     }
 
     public void visionPrime(){
@@ -108,6 +133,9 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shoot angle", inputs.anglePosition);
         SmartDashboard.putNumber("shoot speeds bottom", inputs.shootBottomVelocity);
         SmartDashboard.putNumber("shoot speeds top", inputs.shootTopVelocity);
+
+        SmartDashboard.putNumber("Test Angle", getTestAngle());
+        SmartDashboard.putNumber("Test Speed", getTestSpeed());
     }
 
     public double interp(double value, double axis[], double table[]){

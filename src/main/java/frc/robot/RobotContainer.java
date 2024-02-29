@@ -103,9 +103,11 @@ public class RobotContainer {
     inputs.resetFieldOrientedLTRIM.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
     inputs.resetFieldOdometryRTRIM.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
 
+    //gather commands
     inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD).whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
     inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD.negate()).whileTrue(CmdGather.gather(this));
 
+    //shoot commands
     inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT.negate()).onTrue(CMDShoot.fixedPrime(this));
     inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT).onTrue(CMDShoot.simpleShoot(this));
 

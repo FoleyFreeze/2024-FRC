@@ -19,10 +19,10 @@ public class ShooterIO_HW implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs){
-        inputs.shootTopPosition = shootMotorBottom.getPosition();
-        inputs.shootTopVelocity = shootMotorBottom.getVelocity();
-        inputs.shootTopCurrentAmps = shootMotorBottom.getCurrent();
-        inputs.shootTopAppliedVolts = shootMotorBottom.getVoltage();
+        inputs.shootBottomPosition = shootMotorBottom.getPosition();
+        inputs.shootBottomVelocity = shootMotorBottom.getVelocity();
+        inputs.shootBottomCurrentAmps = shootMotorBottom.getCurrent();
+        inputs.shootBottomAppliedVolts = shootMotorBottom.getVoltage();
 
         inputs.shootTopPosition = shootMotorTop.getPosition();
         inputs.shootTopVelocity = shootMotorTop.getVelocity();

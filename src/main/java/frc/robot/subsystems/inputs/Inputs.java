@@ -153,6 +153,14 @@ public class Inputs extends SubsystemBase {
             return 1;
         }
     }
+
+    public double getLeftDial(){
+        return (flysky.getRawAxis(5) + 1) / 2.0;
+    }
+
+    public double getRightDial(){
+        return (flysky.getRawAxis(6) + 1) / 2.0;
+    }
  
     @Override
     public void periodic() {
