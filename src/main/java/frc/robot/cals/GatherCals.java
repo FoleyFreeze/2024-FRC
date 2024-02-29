@@ -4,7 +4,7 @@ import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class GatherCals {
-    public boolean disable = true;
+    public boolean disable = false;
     
     //public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14)
     public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 7)

@@ -4,7 +4,7 @@ import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class ShooterCals {
-    public boolean disable = true;
+    public boolean disable = false;
 
     public double initAngleJog = 0;
     public double initSpeedJog = 0;
@@ -16,8 +16,8 @@ public class ShooterCals {
     public double camVelocity[] = {0, 0};
     public double camRPM[] = {0, 0};
  
-    public double fixedAngle[] = {0, 0, 0};
-    public double fixedRPM[] = {0, 0, 0};
+    public double fixedAngle[] = {25, 50, 80};
+    public double fixedRPM[] = {4000, 3000, 2000};
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.slappah;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -52,5 +53,7 @@ public class Slappah extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Slappah", inputs);
+
+        SmartDashboard.putNumber("Slappah Angle", inputs.anglePosition);
     }
 }

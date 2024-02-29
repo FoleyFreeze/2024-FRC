@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -96,6 +97,10 @@ public class Shooter extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);
+
+        SmartDashboard.putNumber("shoot angle", inputs.anglePosition);
+        SmartDashboard.putNumber("shoot speeds bottom", inputs.shootBottomVelocity);
+        SmartDashboard.putNumber("shoot speeds top", inputs.shootTopVelocity);
     }
 
     public double interp(double value, double axis[], double table[]){

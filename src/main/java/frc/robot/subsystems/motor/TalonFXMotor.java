@@ -115,8 +115,13 @@ public class TalonFXMotor implements Motor {
 
     @Override
     public void setVelocity(double velocity) {
-        targetVelocity.Velocity = velocity;
+        targetVelocity.Velocity = velocity / k.gearRatio / 60.0;//convert to revs per second
         motor.setControl(targetVelocity);
+    }
+
+    @Override
+    public double getVelocity(){
+        return motor.getVelocity().getValueAsDouble() * k.gearRatio * 60.0;//convert to rpm
     }
     
 }
