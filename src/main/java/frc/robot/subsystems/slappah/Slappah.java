@@ -16,6 +16,8 @@ public class Slappah extends SubsystemBase {
     SlappahIO io;
     SlappahIOInputsAutoLogged inputs = new SlappahIOInputsAutoLogged();
 
+    double angleSetpoint;
+
     public Slappah (RobotContainer r, SlappahCals k){
         this.k = k;
         this.r = r;
@@ -25,10 +27,12 @@ public class Slappah extends SubsystemBase {
         }else{
             io = new SlappahIO(){};
         }
+
+        io.setArmEncoderPosition(k.startAngle);
+        angleSetpoint = k.startAngle;
     }
 
     public boolean checkAngleError(){
-        double angleSetpoint = 0;
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }
 
@@ -46,6 +50,7 @@ public class Slappah extends SubsystemBase {
     }
 
     public void setAngle(double position){
+        angleSetpoint = position;
         io.setPosition(position);
     }
 

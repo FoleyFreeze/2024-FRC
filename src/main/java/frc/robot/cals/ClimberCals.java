@@ -11,5 +11,4 @@ public class ClimberCals {
 
     public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 0);
     public MotorCal winchL = new MotorCal(TypeMotor.SPARK, 0);
-
 }

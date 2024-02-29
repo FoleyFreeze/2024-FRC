@@ -28,6 +28,7 @@ import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.commands.gather.CmdGather;
+import frc.robot.commands.shooter.CMDShoot;
 import frc.robot.subsystems.RoboState;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
@@ -64,7 +65,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> notePriorityF = new LoggedDashboardChooser<>("F Note Priority");
   private LoggedDashboardChooser<Integer> notePriorityG = new LoggedDashboardChooser<>("G Note Priority");
   private LoggedDashboardChooser<Integer> notePriorityH = new LoggedDashboardChooser<>("H Note Priority");
-  private LoggedDashboardChooser<Integer> totalNotes = new LoggedDashboardChooser<>("Total Notes");
+  private LoggedDashboardChooser<Integer> totalNotes = new LoggedDashboardChooser<>("Total Notes"); //stop after this many notes
 
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
@@ -98,17 +99,21 @@ public class RobotContainer {
   private void configureBindings() {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
 
-    inputs.resetSwerveZeros.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
-    inputs.resetFieldOriented.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
-    inputs.resetFieldOdometry.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
+    inputs.resetSwerveZerosTRIM2DN.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
+    inputs.resetFieldOrientedLTRIM.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
+    inputs.resetFieldOdometryRTRIM.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
 
-    inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
-    //inputs.gatherTrigger.and(inputs.cameraEnable).whileTrue(new CmdDriveToNote(this).ignoringDisable(true));
-    inputs.gatherTrigger.and(inputs.cameraEnable.negate()).whileTrue(CmdGather.gather(this));
+    inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD).whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
+    inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD.negate()).whileTrue(CmdGather.gather(this));
 
-    //TODO: replace with shooter when shooter is built
-    inputs.shootTrigger.whileTrue(CmdGather.unGather(this));
+    inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT.negate()).onTrue(CMDShoot.fixedPrime(this));
+    inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT).onTrue(CMDShoot.simpleShoot(this));
 
+    //TODO: map here for now
+    inputs.SWC.whileTrue(CmdGather.unGather(this));
+
+
+    //TODO: uncomment once there is a control board
     //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
     //inputs.shift.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
     //inputs.shift.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));

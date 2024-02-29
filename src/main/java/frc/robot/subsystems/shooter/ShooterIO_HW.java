@@ -52,4 +52,9 @@ public class ShooterIO_HW implements ShooterIO {
         angleMotor.setPosition(angle);
     }
 
+    @Override
+    public void setAngleEncoder(double angle){
+        angleMotor.setEncoderPosition(angle);
+    }
+
 }

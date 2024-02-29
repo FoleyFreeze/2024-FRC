@@ -28,4 +28,6 @@ public interface ShooterIO {
     public default void setShooterRPM(double rpm) {}
 
     public default void setAngle(double angle) {}
+
+    public default void setAngleEncoder(double angle){}
 }

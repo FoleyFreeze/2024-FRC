@@ -31,6 +31,11 @@ public class SlappahIO_HW implements SlappahIO {
         angle.setPosition(position);
     }
 
+    @Override
+    public void setArmEncoderPosition(double position){
+        angle.setEncoderPosition(position);
+    }
+
     @Override 
     public void setTransferVoltage(double voltage){
         transfer.setVoltage(voltage);

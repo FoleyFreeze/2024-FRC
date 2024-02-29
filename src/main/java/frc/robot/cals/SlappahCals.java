@@ -6,8 +6,21 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 public class SlappahCals {
     public boolean disable = true;
 
-    public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 0);
-    public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 0);
+    public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 5)
+                                    .invert()
+                                    .setPIDF(0.05, 0, 0.8, 0)
+                                    .setBrakeMode(true)
+                                    .setPIDPwrLim(0.25, -0.25)
+                                    .setCurrLim(30)
+                                    .setRatio(100 / 20.0); //something like 100deg / 20rotations
 
-    public double allowedAngleError;
+    public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 3)
+                                    .invert()
+                                    .setBrakeMode(true)
+                                    .setCurrLim(20)
+                                    .setRampRate(0.1);
+
+    public double allowedAngleError = 4; //degrees
+
+    public double startAngle = 0; //degrees
 }
