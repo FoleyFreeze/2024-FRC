@@ -36,6 +36,10 @@ public class Shooter extends SubsystemBase {
 
         speedJog = k.initSpeedJog;
         angleJog = k.initAngleJog;
+
+        io.setAngleEncoder(k.startAngle);
+        angleSetpoint = k.startAngle;
+        rpmSetpoint = 0;
     }
 
 
@@ -66,10 +70,12 @@ public class Shooter extends SubsystemBase {
         setRPM(rpm + speedJog);
     }
 
+    //TODO: is this still used?
+    /*
     public void unShoot (){
-        setAngle(28);
+        setAngle(k.homePosition);
         setRPM(0);
-    }
+    }*/
 
     public void setRPM(double rpm){
         io.setShooterRPM(rpm);
@@ -85,7 +91,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean checkRPMError(){
-        double avg = (inputs.shootBottomVelocity + inputs.shootTopVelocity)/2;
+        double avg = (inputs.shootBottomVelocity + inputs.shootTopVelocity)/2.0;
         return Math.abs(rpmSetpoint - avg) < k.allowedRPMError;
     }
 

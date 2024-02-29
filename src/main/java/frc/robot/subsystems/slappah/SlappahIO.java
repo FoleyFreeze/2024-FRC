@@ -21,6 +21,8 @@ public interface SlappahIO {
 
     public default void setPosition(double angle){}
 
+    public default void setArmEncoderPosition(double angle){}
+
     public default void setTransferVoltage(double voltage){}
 
     public default void setTransferPosition(double position){}

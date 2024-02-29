@@ -100,7 +100,7 @@ public class SparkMotor implements Motor{
     public void setEncoderPosition(double position) {
         REVLibError err = encoder.setPosition(position / k.gearRatio);
         if(!err.equals(REVLibError.kOk)){
-            System.out.println("Error resetting wheel: " + err.toString());
+            System.out.println("Error resetting encoder: " + err.toString());
         }
     }
 

@@ -47,6 +47,7 @@ public class DriveCals {
     double swerveRatio = 7 / 150.0;
     
     double driveRatio = 14 / 50.0 * 28 / 16.0 * 15 / 45.0; //mk4i L3
+    double driveCurrLim = 60;
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
@@ -62,7 +63,8 @@ public class DriveCals {
         wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 10)
             .setRatio(conversionFactor)
             .invert()
-            .setBrakeMode(false);
+            .setBrakeMode(false)
+            .setCurrLim(driveCurrLim);
         //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 11)
             .invert()
@@ -81,6 +83,7 @@ public class DriveCals {
         //wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2)
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
             .setRatio(conversionFactor)
+            .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
         //wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3)
         wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
@@ -100,6 +103,7 @@ public class DriveCals {
         //wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
         wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
             .setRatio(conversionFactor)
+            .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
         //wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
         wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)  
@@ -119,6 +123,7 @@ public class DriveCals {
         //wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1)
         wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
             .setRatio(conversionFactor)
+            .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
         //wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
         wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1)
