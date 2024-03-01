@@ -24,6 +24,7 @@ import frc.robot.cals.InputsCals;
 import frc.robot.cals.ShooterCals;
 import frc.robot.cals.SlappahCals;
 import frc.robot.cals.VisionCals;
+import frc.robot.commands.climber.CmdClimb;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.drive.CmdDriveToNote;
@@ -108,8 +109,22 @@ public class RobotContainer {
     inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD.negate()).whileTrue(CmdGather.gather(this));
 
     //shoot commands
-    inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT.negate()).onTrue(CMDShoot.fixedPrime(this));
-    inputs.shootTriggerSWH.and(inputs.cameraEnableSWD.negate()).and(state.isPrimeT).onTrue(CMDShoot.simpleShoot(this));
+    inputs.shootTriggerSWH
+        .and(inputs.cameraEnableSWD.negate())
+        .and(state.isPrimeT.negate())
+        .and(inputs.SWBHi.negate())
+        .and(inputs.SWBLo.negate())
+        .onTrue(CMDShoot.fixedPrime(this));
+
+    inputs.shootTriggerSWH
+        .and(inputs.cameraEnableSWD.negate())
+        .and(state.isPrimeT)
+        .and(inputs.SWBHi.negate())
+        .and(inputs.SWBLo.negate())
+        .onTrue(CMDShoot.simpleShoot(this));
+
+    //climber commands
+    inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
 
     //TODO: map here for now
     inputs.SWC.whileTrue(CmdGather.unGather(this));

@@ -15,7 +15,7 @@ public class ClimberCals {
                                                                 .setBrakeMode(true)
                                                                 .setRatio(1/40.0);
 
-    public MotorCal winchL = new MotorCal(TypeMotor.SPARK, 16)  .setCurrLim(40)
+    public MotorCal winchL = new MotorCal(TypeMotor.SPARK, 15)  .setCurrLim(40)
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
                                                                 .setRatio(1/40.0);

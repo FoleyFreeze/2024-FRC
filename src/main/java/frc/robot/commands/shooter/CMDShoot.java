@@ -57,7 +57,7 @@ public class CMDShoot {
                 c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean());
                 c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false;}));
                 c = c.andThen(new WaitCommand(shootWaitTime)); 
-                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
+                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0); r.state.isPrime = false;});
 
                 c.addRequirements(r.shooter, r.gather);
                 c.setName("VisionPrime");

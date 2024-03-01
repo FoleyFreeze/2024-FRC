@@ -39,7 +39,16 @@ public class Climber extends SubsystemBase{
     }
 
     public void setTestPower(){
-        
+        double power = r.inputs.getRightDial();
+        if (r.inputs.SWBHi.getAsBoolean()){
+            //do nothing
+        }else if(r.inputs.SWBLo.getAsBoolean()){
+            power = -power;
+        }else{
+            power = 0;
+        }
+        setWinchPower(power, power);
+
     }
 
     public void setWinchPower(double leftPower, double rightPower){

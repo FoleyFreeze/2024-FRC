@@ -28,7 +28,7 @@ public class ShooterCals {
     public double startAngle = 55;
     public double homePosition = 35;
 
-    public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 15)
+    public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 16)
                                         .setBrakeMode(true)
                                         .setCurrLim(30)
                                         .setPIDF(2, 0, 0, 0)

@@ -1,6 +1,7 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.RobotContainer;
 
@@ -11,10 +12,22 @@ public class CmdClimb {
 
     public static Command simpleWinch(RobotContainer r){
         Command c = new RunCommand( () -> r.climber.evenClimb(climbPower));
-         c = c.finallyDo(() -> r.climber.setWinchPower(0, 0));
+                c = c.finallyDo(() -> r.climber.setWinchPower(0, 0));
 
         c.addRequirements(r.climber);
         c.setName("CmdSimpleWinch");
+
+        return c;
+    }
+
+    public static Command testClimb(RobotContainer r){
+        Command c = new FunctionalCommand   (() -> {}, 
+                                            r.climber::setTestPower, 
+                                            (interrupted) -> {r.climber.setWinchPower(0, 0);}, 
+                                            () -> false);
+
+        c.addRequirements(r.climber);
+        c.setName("CmdTestClimb");
 
         return c;
     }
