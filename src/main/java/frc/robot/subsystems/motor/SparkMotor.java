@@ -100,7 +100,7 @@ public class SparkMotor implements Motor{
     public void setEncoderPosition(double position) {
         REVLibError err = encoder.setPosition(position / k.gearRatio);
         if(!err.equals(REVLibError.kOk)){
-            System.out.println("Error resetting wheel: " + err.toString());
+            System.out.println("Error resetting motor " + k.channel + ": " + err.toString());
         }
     }
 
@@ -137,6 +137,7 @@ public class SparkMotor implements Motor{
         }
     }
 
+    //TODO: are these rpm/rps conversions are backwards for sparks?
     @Override
     public double getVelocity(){
         return encoder.getVelocity()*k.gearRatio / 60.0;

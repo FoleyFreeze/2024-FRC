@@ -17,14 +17,15 @@ public class CmdGather {
     static double reverseIntakePower = -0.5;
     static double reverseGatePower = -0.3;
 
-    static double extraGateRevs = 2.5;
+    static double extraGateRevs = 3.85;
 
-    static double detectGateCurrent = 10;
+    static double detectGateCurrent = 12;
 
     public static Command gather (RobotContainer r){
         //start spinning things and wait for start up current to decay
         Command c = new WaitCommand(startupTime)
-            .deadlineWith(new RunCommand( () -> r.gather.setGatherPower(intakePower, gatePower)));
+            .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                 r.shooter.goHome();}));
         //detect when the piece has made it to the gate wheel
         c = c.andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > detectGateCurrent))
             .finallyDo(() -> r.gather.setGatePower(0));
@@ -35,17 +36,20 @@ public class CmdGather {
         c = c.andThen(new WaitCommand(extraIntakeTime))
             .finallyDo(() -> r.gather.setIntakePower(0));
 
-        c.addRequirements(r.gather);
+        c.addRequirements(r.gather, r.shooter);
         c.setName("CmdGather");
         return c;
     }
 
     public static Command unGather(RobotContainer r){
-        Command c = (new RunCommand(() -> r.gather.setGatherPower(reverseGatePower, reverseIntakePower)))
+        Command c = (new RunCommand(() -> {r.gather.setGatherPower(reverseGatePower, reverseIntakePower);
+                                            r.shooter.setShootPower(-0.15);
+                                            r.shooter.goHome();}))
                          .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
-                                           r.state.hasNote = false;});
+                                            r.shooter.setShootPower(0);
+                                            r.state.hasNote = false;});
 
-        c.addRequirements(r.gather);
+        c.addRequirements(r.gather, r.shooter);
         c.setName("CmdUngather");
         return c;
     }

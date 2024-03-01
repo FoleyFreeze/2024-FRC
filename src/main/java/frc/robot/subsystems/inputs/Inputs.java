@@ -24,12 +24,20 @@ public class Inputs extends SubsystemBase {
     RobotContainer r;
     InputsCals k;
 
-    public Trigger gatherTrigger = new Trigger(() -> flysky.getRawAxis(2) > .25);
-    public Trigger shootTrigger = new Trigger(() -> flysky.getRawAxis(3) > .25);
-    public Trigger cameraEnable = new Trigger(() -> flysky.getRawButton(5));
-    public Trigger fieldOriented = new Trigger(() -> flysky.getRawButton(1));
-    public Trigger resetFieldOriented = new Trigger(() -> flysky.getRawButton(10));
-    public Trigger resetFieldOdometry = new Trigger(() -> flysky.getRawButton(14));
+    public Trigger gatherTriggerSWE = new Trigger(() -> flysky.getRawAxis(2) > .25);
+    public Trigger shootTriggerSWH = new Trigger(() -> flysky.getRawAxis(3) > .25);
+    public Trigger cameraEnableSWD = new Trigger(() -> flysky.getRawButton(5));
+    public Trigger fieldOrientedSWA = new Trigger(() -> flysky.getRawButton(1));
+    public Trigger resetFieldOrientedLTRIM = new Trigger(() -> flysky.getRawButton(10));
+    public Trigger resetFieldOdometryRTRIM = new Trigger(() -> flysky.getRawButton(14));
+
+    public Trigger SWBHi = new Trigger(() -> flysky.getRawButton(2));
+    public Trigger SWBLo = new Trigger(() -> flysky.getRawButton(3));
+    public Trigger SWC = new Trigger(() -> flysky.getRawButton(4));
+    public Trigger SWEHi = new Trigger(() -> flysky.getRawButton(7));
+    public Trigger SWELo = new Trigger(() -> flysky.getRawButton(6));
+    public Trigger SWGHi = new Trigger(() -> flysky.getRawButton(9));
+    public Trigger SWGLo = new Trigger(() -> flysky.getRawButton(8));
 
     public Joystick controlBoard;
 
@@ -123,7 +131,7 @@ public class Inputs extends SubsystemBase {
         }
     }
 
-    public Trigger resetSwerveZeros = new Trigger(new BooleanSupplier() {
+    public Trigger resetSwerveZerosTRIM2DN = new Trigger(new BooleanSupplier() {
         public boolean getAsBoolean(){
             if(flysky != null){
                 return flysky.getRawButton(11) && flysky.getRawButton(15);
@@ -137,12 +145,21 @@ public class Inputs extends SubsystemBase {
         //8 down 9 up
         //right triggr 3pos switch 
         //up is layup mid is freethrow down is threepoint
-        if(flysky.getRawButton(8)){
+        if(SWGLo.getAsBoolean()){
             return 0;
-        } else if(flysky.getRawButton(9)){
+        } else if(SWGHi.getAsBoolean()){
             return 2;
-        }else {return 1;}
+        }else {
+            return 1;
+        }
+    }
 
+    public double getLeftDial(){
+        return (flysky.getRawAxis(5) + 1) / 2.0;
+    }
+
+    public double getRightDial(){
+        return (flysky.getRawAxis(6) + 1) / 2.0;
     }
  
     @Override

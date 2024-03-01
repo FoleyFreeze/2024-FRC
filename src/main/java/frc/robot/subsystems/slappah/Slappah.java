@@ -2,6 +2,7 @@ package frc.robot.subsystems.slappah;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -15,6 +16,8 @@ public class Slappah extends SubsystemBase {
     SlappahIO io;
     SlappahIOInputsAutoLogged inputs = new SlappahIOInputsAutoLogged();
 
+    double angleSetpoint;
+
     public Slappah (RobotContainer r, SlappahCals k){
         this.k = k;
         this.r = r;
@@ -24,10 +27,12 @@ public class Slappah extends SubsystemBase {
         }else{
             io = new SlappahIO(){};
         }
+
+        io.setArmEncoderPosition(k.startAngle);
+        angleSetpoint = k.startAngle;
     }
 
     public boolean checkAngleError(){
-        double angleSetpoint = 0;
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }
 
@@ -45,6 +50,7 @@ public class Slappah extends SubsystemBase {
     }
 
     public void setAngle(double position){
+        angleSetpoint = position;
         io.setPosition(position);
     }
 
@@ -52,5 +58,7 @@ public class Slappah extends SubsystemBase {
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("Slappah", inputs);
+
+        SmartDashboard.putNumber("Slappah Angle", inputs.anglePosition);
     }
 }

@@ -59,6 +59,10 @@ public class TalonFXMotor implements Motor {
         cfg.Voltage.PeakReverseVoltage = k.pidLimDn * 12;
 
         motor.getConfigurator().apply(cfg);
+
+        targetPosition = new PositionVoltage(0);
+        targetVelocity = new VelocityVoltage(0);
+        targetVoltage = new VoltageOut(0);
     }
 
     @Override
@@ -115,8 +119,13 @@ public class TalonFXMotor implements Motor {
 
     @Override
     public void setVelocity(double velocity) {
-        targetVelocity.Velocity = velocity;
+        targetVelocity.Velocity = velocity / k.gearRatio / 60.0;//convert to revs per second
         motor.setControl(targetVelocity);
+    }
+
+    @Override
+    public double getVelocity(){
+        return motor.getVelocity().getValueAsDouble() * k.gearRatio * 60.0;//convert to rpm
     }
     
 }

@@ -9,7 +9,7 @@ public class ClimberCals {
     //twenty percent power at 10 degrees
     public double balanceKP = .2/10;
 
-    public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 0)   .invert()
+    public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 6)   .invert()
                                                                 .setCurrLim(40)
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
