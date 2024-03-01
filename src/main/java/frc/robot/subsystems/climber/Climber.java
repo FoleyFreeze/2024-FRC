@@ -38,6 +38,10 @@ public class Climber extends SubsystemBase{
         Logger.recordOutput("Climb/Winch", offset);
     }
 
+    public void setTestPower(){
+        
+    }
+
     public void setWinchPower(double leftPower, double rightPower){
         io.setWinchVoltage(leftPower, rightPower);
     }

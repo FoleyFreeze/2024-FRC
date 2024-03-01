@@ -24,8 +24,8 @@ public class Locations {
 
     public static final Translation2d notes[] = {noteA, noteB, noteC, noteD, noteE, noteF,noteG, noteH};
 
-    public static final Translation2d podium = new Translation2d (0,0);
-    public static final Translation2d stageLeft = new Translation2d (0,0);//opposite of l+r fro  drivers station
+    public static final Translation2d podium = new Translation2d (fieldWidth/2, 120.5);
+    public static final Translation2d stageLeft = new Translation2d (0,0);//opposite of l+r from drivers station
     public static final Translation2d stageRight = new Translation2d (0,0);
 
     public static final Translation2d shootingPositions[] = {new Translation2d(0,0),
