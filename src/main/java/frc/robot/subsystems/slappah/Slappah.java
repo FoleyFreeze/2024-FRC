@@ -66,6 +66,10 @@ public class Slappah extends SubsystemBase {
         io.setPosition(position);
     }
 
+    public void setAnglePwr(double power){
+        io.setAngleVoltage(power*12);
+    }
+
     @Override
     public void periodic(){
         io.updateInputs(inputs);

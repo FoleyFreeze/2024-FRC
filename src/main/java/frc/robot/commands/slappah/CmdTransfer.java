@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class CmdTransfer {
@@ -18,11 +19,11 @@ public class CmdTransfer {
     static double slapHomePos = 0;
     static double slapTransferPos = 12;
     static double slapPreTransPos = 30;
-    static double slapPreClimbPos = 20;
+    static double slapPreClimbPos = 20;//unused, just use preTrans
     static double slapPreAmpPos = 64;
     static double slapAmpScorePos = 72;
-    static double slapPreTrapPos = 75;
-    static double slapTrapScorePos = 95; 
+    static double slapPreTrapPos = 75;//unused, go straight to trap score
+    static double slapTrapScorePos = 72; //TODO: find actual number
 
     //shooter positions in degrees
     static double shootPreTransPos = 60;
@@ -63,7 +64,7 @@ public class CmdTransfer {
         return c;
     }
 
-    public static Command transferForAmp(RobotContainer r){
+    public static Command transfer(RobotContainer r){
         Command transfer = new SequentialCommandGroup(
                         new InstantCommand(() -> {r.shooter.setShootPower(shootPower);
                                                   r.gather.setGatePower(gatePower); 
@@ -82,8 +83,12 @@ public class CmdTransfer {
                         new PrintCommand("stage 6")
                         );
 
+        return transfer;
 
-        Command c = new SequentialCommandGroup(setup(r), transfer, end(r));
+    }
+
+    public static Command transferForAmp(RobotContainer r){
+        Command c = new SequentialCommandGroup(setup(r), transfer(r), end(r));
         c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         c.addRequirements(r.shooter, r.slappah, r.gather);
         c.setName("CmdTransfer");
@@ -91,7 +96,7 @@ public class CmdTransfer {
         return c;
     }
 
-    private static Command setup(RobotContainer r){
+    public static Command setup(RobotContainer r){
         //move shooter and arm to the right angle
 
         Command setUp = new SequentialCommandGroup(
@@ -124,5 +129,11 @@ public class CmdTransfer {
         );
 
         return end;
+    }
+
+    public static Command goToTrap(RobotContainer r){
+        Command move = new InstantCommand(() -> r.slappah.setAngle(slapTrapScorePos));
+
+        return move;
     }
 }
