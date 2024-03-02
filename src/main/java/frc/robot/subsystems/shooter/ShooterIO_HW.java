@@ -11,6 +11,8 @@ public class ShooterIO_HW implements ShooterIO {
     Motor shootMotorTop;
     Motor shootMotorBottom;
 
+    boolean negativePowerEnabled = false;
+
     public ShooterIO_HW (ShooterCals k){
         angleMotor = Motor.create(k.angleMotor);
         shootMotorTop = Motor.create(k.shootMotorTop);
@@ -37,12 +39,22 @@ public class ShooterIO_HW implements ShooterIO {
 
     @Override
     public void setShooterVoltage(double voltage){
+        if(voltage < 0 && !negativePowerEnabled){
+            negativePowerEnabled = true;
+            shootMotorTop.setPIDPwrLim(1);
+            shootMotorBottom.setPIDPwrLim(1);
+        }
         shootMotorTop.setVoltage(voltage);
         shootMotorBottom.setVoltage(voltage);
     }
 
     @Override
     public void setShooterRPM(double rpm){
+        if(negativePowerEnabled){
+            negativePowerEnabled = false;
+            shootMotorTop.setPIDPwrLim(1, 0);
+            shootMotorBottom.setPIDPwrLim(1, 0);
+        }
         shootMotorTop.setVelocity(rpm);
         shootMotorBottom.setVelocity(rpm);
     }

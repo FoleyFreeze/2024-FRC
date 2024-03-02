@@ -4,6 +4,7 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.cals.DriveCals.WheelCal;
@@ -27,16 +28,18 @@ public class WheelIO_HW implements WheelIO {
 
     @Override
     public void updateInputs (WheelIOInputs inputs){
-        inputs.drivePosition = driveMotor.getPosition();
-        inputs.driveVelocity = driveMotor.getVelocity();
-        inputs.driveCurrentAmps = driveMotor.getCurrent();
-        inputs.driveAppliedVolts = driveMotor.getVoltage();
+        double swervePosition = swerveMotor.getPosition();
 
-        inputs.swervePositionRaw = swerveMotor.getRotation();
+        inputs.swervePositionRaw = new Rotation2d(Units.rotationsToRadians(swervePosition));
         inputs.swervePosition = inputs.swervePositionRaw.minus(swerveOffset);
         inputs.swerveVelocity = swerveMotor.getVelocity();
         inputs.swerveCurrent = driveMotor.getCurrent();
         inputs.swerveVoltage = driveMotor.getVoltage();
+
+        inputs.drivePosition = driveMotor.getPosition() + swervePosition*k.rotationToDriveRatio; //account for offcenter swerve bevel
+        inputs.driveVelocity = driveMotor.getVelocity();
+        inputs.driveCurrentAmps = driveMotor.getCurrent();
+        inputs.driveAppliedVolts = driveMotor.getVoltage();
 
         inputs.swerveTemp = swerveMotor.getTemp();
         inputs.driveTemp = driveMotor.getTemp();

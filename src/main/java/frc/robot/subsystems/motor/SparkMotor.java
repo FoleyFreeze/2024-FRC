@@ -137,6 +137,15 @@ public class SparkMotor implements Motor{
         }
     }
 
+    @Override
+    public void setPIDPwrLim(double pwrLimPos, double pwrLimNeg) {
+        if(pwrLimPos != powerLimMax || pwrLimNeg != powerLimMin){
+            PIDController.setOutputRange(pwrLimNeg,pwrLimPos);
+            powerLimMax = pwrLimPos;
+            powerLimMin = pwrLimNeg;
+        }
+    }
+
     //TODO: are these rpm/rps conversions are backwards for sparks?
     @Override
     public double getVelocity(){
