@@ -20,10 +20,10 @@ public class ClimberIO_HW  implements ClimberIO{
         inputs.winchRCurrentAmps = winchR.getCurrent();
         inputs.winchRAppliedVolts = winchR.getVoltage();
 
-        inputs.winchRPosition = winchL.getPosition();
-        inputs.winchRVelocity = winchL.getVelocity();
-        inputs.winchRCurrentAmps = winchL.getCurrent();
-        inputs.winchRAppliedVolts = winchL.getVoltage();
+        inputs.winchLPosition = winchL.getPosition();
+        inputs.winchLVelocity = winchL.getVelocity();
+        inputs.winchLCurrentAmps = winchL.getCurrent();
+        inputs.winchLAppliedVolts = winchL.getVoltage();
     }
 
     @Override
