@@ -16,6 +16,8 @@ public class TalonFXMotor implements Motor {
     MotorCal k;
     TalonFX motor;
 
+    TalonFXConfiguration cfg;
+
     VoltageOut targetVoltage;
     PositionVoltage targetPosition;
     VelocityVoltage targetVelocity;
@@ -25,7 +27,7 @@ public class TalonFXMotor implements Motor {
 
         motor = new TalonFX(k.channel);
 
-        TalonFXConfiguration cfg = new TalonFXConfiguration();
+        cfg = new TalonFXConfiguration();
 
         Slot0Configs pidConfig = new Slot0Configs();
         pidConfig.kP = k.p;
@@ -105,6 +107,13 @@ public class TalonFXMotor implements Motor {
     @Override
     public void setPIDPwrLim(double pwrLim) {
         throw new UnsupportedOperationException("Unimplemented method 'setPIDPwrLim'");
+    }
+
+    @Override
+    public void setPIDPwrLim(double pwrLimPos, double pwrLimNeg){
+        cfg.Voltage.PeakForwardVoltage = pwrLimPos*12;
+        cfg.Voltage.PeakReverseVoltage = pwrLimNeg*12;
+        motor.getConfigurator().apply(cfg.Voltage);
     }
 
     @Override

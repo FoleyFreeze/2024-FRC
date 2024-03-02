@@ -32,6 +32,7 @@ public interface Motor {
     public abstract double getTemp();
     public abstract void setBrakeMode(boolean brakeMode);
     public abstract void setPIDPwrLim(double pwrLim);
+    public abstract void setPIDPwrLim(double posLim, double negLim);
     public abstract Rotation2d getRotation();
     public abstract void setRotation(Rotation2d angle);
     public abstract void setVelocity(double velocity);

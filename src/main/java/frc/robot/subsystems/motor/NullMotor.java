@@ -52,6 +52,11 @@ public class NullMotor implements Motor{
     public void setPIDPwrLim(double pwrLim) {
         
     }
+    
+    @Override
+    public void setPIDPwrLim(double pwrLimPos, double pwrLimNeg) {
+        
+    }
 
     @Override 
     public Rotation2d getRotation(){

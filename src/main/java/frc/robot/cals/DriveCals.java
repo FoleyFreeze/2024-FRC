@@ -25,6 +25,10 @@ public class DriveCals {
         public String name;
 
         public double maxSpeed = maxWheelSpeed;
+
+        //due to offset bevel gear in the swerve module the drive wheel moves when the module rotates
+        //account for this when returning the drive wheel position
+        public double rotationToDriveRatio = 15 / 45.0 * 28 / 16.0;
     }
 
     //wheel locations
@@ -59,13 +63,11 @@ public class DriveCals {
 
 
     public WheelCal wheelFL = new WheelCal();{
-        //wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 6)
         wheelFL.driveMotor = new MotorCal(TypeMotor.SPARK, 10)
             .setRatio(conversionFactor)
             .invert()
             .setBrakeMode(false)
             .setCurrLim(driveCurrLim);
-        //wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 7)
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 11)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
@@ -80,12 +82,10 @@ public class DriveCals {
     }
 
     public WheelCal wheelFR = new WheelCal();{
-        //wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 2)
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
             .setRatio(conversionFactor)
             .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
-        //wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 3)
         wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
             //.invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
@@ -100,12 +100,10 @@ public class DriveCals {
     }
 
     public WheelCal wheelBL = new WheelCal();{
-        //wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
         wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
             .setRatio(conversionFactor)
             .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
-        //wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
         wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)  
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
@@ -120,12 +118,10 @@ public class DriveCals {
     }
 
     public WheelCal wheelBR = new WheelCal();{
-        //wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 1)
         wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
             .setRatio(conversionFactor)
             .setCurrLim(driveCurrLim)
             .setBrakeMode(false);
-        //wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 20)
         wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
