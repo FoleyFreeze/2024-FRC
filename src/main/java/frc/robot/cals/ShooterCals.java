@@ -32,7 +32,7 @@ public class ShooterCals {
                                         .setBrakeMode(true)
                                         .setCurrLim(30)
                                         .setPIDF(2, 0, 0, 0)
-                                        .setPIDPwrLim(0.4, -0.4)
+                                        .setPIDPwrLim(0.3, -0.3)//TODO: go back to 0.4
                                         .setRatio(85 / 32.0 * 30/24.0); //32 rotations of the screw, but gear ratio of 30/24
                                                                         //so a real ratio of 95deg / 25.6 (yes its geared up)
 

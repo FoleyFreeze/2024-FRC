@@ -43,6 +43,7 @@ public class ShooterIO_HW implements ShooterIO {
             negativePowerEnabled = true;
             shootMotorTop.setPIDPwrLim(1);
             shootMotorBottom.setPIDPwrLim(1);
+            System.out.println("Enable Falcon negative power");
         }
         shootMotorTop.setVoltage(voltage);
         shootMotorBottom.setVoltage(voltage);
@@ -54,6 +55,7 @@ public class ShooterIO_HW implements ShooterIO {
             negativePowerEnabled = false;
             shootMotorTop.setPIDPwrLim(1, 0);
             shootMotorBottom.setPIDPwrLim(1, 0);
+            System.out.println("Disable Falcon negative power");
         }
         shootMotorTop.setVelocity(rpm);
         shootMotorBottom.setVelocity(rpm);

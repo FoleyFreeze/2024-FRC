@@ -4,7 +4,7 @@ import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class SlappahCals {
-    public boolean disable = true;
+    public boolean disable = false;
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 5)
                                     .invert()
@@ -19,7 +19,8 @@ public class SlappahCals {
                                     .setBrakeMode(true)
                                     .setCurrLim(20)
                                     .setRampRate(0.1)
-                                    .setPIDF(0.3, 0.001, 0, 0)
+                                    .setPIDF(0.1, 0.001, 0, 0)
+                                    .setRatio(1 / 4.0)
                                     .setPIDPwrLim(0.6);
 
     public double allowedAngleError = 4; //degrees

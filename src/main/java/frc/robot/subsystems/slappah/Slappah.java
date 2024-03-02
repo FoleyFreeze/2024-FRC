@@ -29,8 +29,14 @@ public class Slappah extends SubsystemBase {
             io = new SlappahIO(){};
         }
 
-        io.setArmEncoderPosition(k.startAngle);
-        angleSetpoint = k.startAngle;
+        if(inputs.anglePosition < 0.1){ 
+            io.setArmEncoderPosition(k.startAngle);
+            System.out.println("Successfully reset slap angle position from: " + inputs.anglePosition);
+            angleSetpoint = k.startAngle;
+        } else {
+            System.out.println("Did not need to reset slapper angle. Already at: " + inputs.anglePosition);
+            angleSetpoint = inputs.anglePosition;
+        }
     }
 
     public boolean checkAngleError(){
