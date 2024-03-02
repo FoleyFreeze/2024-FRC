@@ -8,12 +8,14 @@ public interface SlappahIO {
         public double transferPosition;
         public double transferVelocity;
         public double transferAppliedVolts;
-        public double transferCurrentAmps;    
+        public double transferCurrentAmps; 
+        public double transferTemp;   
 
         public double anglePosition;
         public double angleVelocity;
         public double angleAppliedVolts;
         public double angleCurrentAmps;  
+        public double angleTemp;
         
     }
 
