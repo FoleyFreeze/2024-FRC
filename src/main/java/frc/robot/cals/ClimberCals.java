@@ -4,7 +4,7 @@ import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
 public class ClimberCals {
-    public boolean disable = true;
+    public boolean disable = false;
 
     //twenty percent power at 10 degrees
     public double balanceKP = .2/10;

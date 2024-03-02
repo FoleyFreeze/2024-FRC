@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.cals.ClimberCals;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.GatherCals;
@@ -30,6 +31,7 @@ import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.commands.gather.CmdGather;
 import frc.robot.commands.shooter.CMDShoot;
+import frc.robot.commands.slappah.CmdTransfer;
 import frc.robot.subsystems.RoboState;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
@@ -127,8 +129,11 @@ public class RobotContainer {
     inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
 
     //TODO: map here for now
-    inputs.SWC.whileTrue(CmdGather.unGather(this));
+    inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
+    //if in climb mode, ungather will transfer
+    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this));
 
+    SmartDashboard.putData("TestTransport", new InstantCommand(() -> slappah.setTransferPower(0.6)).raceWith(new WaitCommand(10)).finallyDo(() -> slappah.setTransferPower(0)));
 
     //TODO: uncomment once there is a control board
     //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));

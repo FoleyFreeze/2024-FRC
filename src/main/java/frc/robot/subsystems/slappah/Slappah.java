@@ -17,6 +17,7 @@ public class Slappah extends SubsystemBase {
     SlappahIOInputsAutoLogged inputs = new SlappahIOInputsAutoLogged();
 
     double angleSetpoint;
+    double transferSetPoint;
 
     public Slappah (RobotContainer r, SlappahCals k){
         this.k = k;
@@ -36,6 +37,9 @@ public class Slappah extends SubsystemBase {
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }
 
+    public boolean checkTransferError(){
+        return Math.abs(inputs.transferPosition - transferSetPoint) < k.allowedTransferError;
+    }
 
     public void setTransferPower(double power){
         io.setTransferVoltage(power*12);

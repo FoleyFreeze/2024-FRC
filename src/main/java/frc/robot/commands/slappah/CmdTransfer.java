@@ -14,31 +14,23 @@ public class CmdTransfer {
     static double startupDelay = .1;
 
     //slappah positions in degrees
-    public double slapTransferPos = 5;
-    public double slapPreTransPos = 25;
-    public double slapPreClimbPos = 20;
-    public double slapPreAmpPos = 75;
-    public double slapAmpScorePos = 95;
-    public double slapPreTrapPos = 75;
-    public double slapTrapScorePos = 95; 
+    static double slapHomePos = 0;
+    static double slapTransferPos = 5;
+    static double slapPreTransPos = 25;
+    static double slapPreClimbPos = 20;
+    static double slapPreAmpPos = 75;
+    static double slapAmpScorePos = 95;
+    static double slapPreTrapPos = 75;
+    static double slapTrapScorePos = 95; 
 
     //shooter positions in degrees
-    public double shootPreTransPos = 60;
-    public double shootTransPos = 90;
-
-    //startUp
-    static double transferPosArmAngle = 0;
-    static double transferPosShootAngle = 0;
-
-    //end
-    static double shootHomeAngle = 0;
-    static double armHomeAngle = 0;
-    static double noteArmPos = 0;
+    static double shootPreTransPos = 60;
+    static double shootTransPos = 90;
 
     //transfer
-    static double shootPower = .1;
-    static double gatePower = .1;
-    static double transferPower = .1;
+    static double shootPower = .2;
+    static double gatePower = .3;
+    static double transferPower = .6;
     static double transferCurrentLim = 8;
     static double extraTransfer = 8;
 
@@ -78,17 +70,17 @@ public class CmdTransfer {
                                                  }),
                         new WaitCommand(startupDelay),
                         new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLim)
+                                            .raceWith(new WaitCommand(2)),//make sure we cant get stuck here
+                        new InstantCommand(() -> r.slappah.setTransferPosition(extraTransfer)),
+                        new WaitUntilCommand(r.slappah::checkTransferError),
+                        new InstantCommand(() -> {r.shooter.setShootPower(0);
+                                                  r.gather.setGatePower(0);
+                                                  r.state.hasTransfer = true;})
                         );
 
-                transfer.finallyDo(() -> {r.shooter.setShootPower(shootPower); 
-                                          r.gather.setGatePower(gatePower); 
-                                          r.slappah.setTransferPosition(extraTransfer);
-                                          r.state.hasTransfer = true;
-                                         })
-                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         Command c = new SequentialCommandGroup(setup(r), transfer, end(r));
-        
+        c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         c.addRequirements(r.shooter, r.slappah, r.gather);
         c.setName("CmdTransfer");
 
@@ -97,21 +89,29 @@ public class CmdTransfer {
 
     private static Command setup(RobotContainer r){
         //move shooter and arm to the right angle
-        Command setUp = new FunctionalCommand(
-            () -> {r.shooter.setAngle(transferPosShootAngle); r.slappah.setAngle(transferPosArmAngle);},//init
-            () -> {},//execute
-            (i) -> {if(i){r.shooter.setAngle(shootHomeAngle); r.slappah.setAngle(armHomeAngle);}},//end
-            () -> r.slappah.checkAngleError() && r.shooter.checkAngleError());//isFinished
+
+        Command setUp = new SequentialCommandGroup(
+                    new InstantCommand(() -> {r.shooter.setAngle(shootPreTransPos);
+                                              r.slappah.setAngle(slapPreTransPos);
+                                            }),
+                    new WaitUntilCommand(r.slappah::checkAngleError),
+                    new InstantCommand(() -> r.shooter.setAngle(shootTransPos)),
+                    new WaitUntilCommand(r.shooter::checkAngleError),
+                    new InstantCommand(() -> r.slappah.setAngle(slapTransferPos)),
+                    new WaitUntilCommand(r.slappah::checkAngleError)
+                    );
 
         return setUp;
     }
 
     private static Command end(RobotContainer r){
-        Command end = new FunctionalCommand(
-            () -> {r.shooter.setAngle(shootHomeAngle); r.slappah.setAngle(noteArmPos);},
-            () -> {},
-            (i) -> {},
-            () -> r.slappah.checkAngleError() && r.shooter.checkAngleError());
+        Command end = new SequentialCommandGroup(
+                      new InstantCommand(() -> r.slappah.setAngle(slapPreTransPos)),
+                      new WaitUntilCommand(r.slappah::checkAngleError),
+                      new InstantCommand(r.shooter::goHome),
+                      new WaitUntilCommand(r.shooter::checkAngleError),
+                      new InstantCommand(() -> r.slappah.setAngle(slapPreAmpPos))
+        );
 
         return end;
     }
