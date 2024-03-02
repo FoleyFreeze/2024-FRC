@@ -6,8 +6,8 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 public class ClimberCals {
     public boolean disable = false;
 
-    //twenty percent power at 10 degrees
-    public double balanceKP = .2/10;
+    //15 percent power at 10 degrees
+    public double balanceKP = .15/10;
 
     public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 6)   .setCurrLim(40)
                                                                 .setRampRate(0.1)

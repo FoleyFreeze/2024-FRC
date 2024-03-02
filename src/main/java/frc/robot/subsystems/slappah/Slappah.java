@@ -76,5 +76,6 @@ public class Slappah extends SubsystemBase {
         Logger.processInputs("Slappah", inputs);
 
         SmartDashboard.putNumber("Slappah Angle", inputs.anglePosition);
+        SmartDashboard.putNumber("Slappah Temp", inputs.angleTemp);
     }
 }

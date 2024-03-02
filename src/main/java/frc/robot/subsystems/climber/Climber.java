@@ -27,11 +27,17 @@ public class Climber extends SubsystemBase{
         }
     }
     public void evenClimb(double power){
-        double error = r.drive.inputs.roll.getDegrees();
+        double error = 0;
+        if(r.drive.inputs.navXconnected){
+            error = r.drive.inputs.pitch.getDegrees();
+        } else {
+            //use the dial if the navX is not working
+            error = r.inputs.getLeftDial() * 10 - 5;
+        }
         //navx is cc pos
         //navX y-axis points backwards
         //pos cc on y-axis looks like c rot on -y axis
-        //pos roll = right side is higher then left
+        //pos pitch = right side is higher then left
         double offset = error * k.balanceKP;
         offset = Math.min(Math.abs(offset), Math.abs(power)) * Math.signum(offset);
         setWinchPower(power + offset, power - offset);
@@ -56,7 +62,8 @@ public class Climber extends SubsystemBase{
         }else{
             power = 0;
         }
-        setWinchPower(power, power);
+        evenClimb(power);
+        //setWinchPower(power, power);
 
     }
 

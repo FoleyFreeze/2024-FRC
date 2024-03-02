@@ -140,6 +140,8 @@ public class Drive extends SubsystemBase{
             wheel.periodic();
         }
 
+        Logger.recordOutput("Drive/RobotRoll", inputs.pitch.getDegrees());
+
         //update angle
         robotAngle = inputs.yaw.minus(fieldOffsetAngle);
 

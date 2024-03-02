@@ -19,11 +19,13 @@ public class SlappahIO_HW implements SlappahIO {
         inputs.transferVelocity = transfer.getVelocity();
         inputs.transferCurrentAmps = transfer.getCurrent();
         inputs.transferAppliedVolts = transfer.getVoltage();
+        inputs.transferTemp = transfer.getTemp();
 
         inputs.anglePosition = angle.getPosition();
         inputs.angleVelocity = angle.getVelocity();
         inputs.angleCurrentAmps = angle.getCurrent();
         inputs.angleAppliedVolts = angle.getVoltage();
+        inputs.angleTemp = angle.getTemp();
     }
 
     @Override

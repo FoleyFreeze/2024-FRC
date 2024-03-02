@@ -30,11 +30,13 @@ public class CmdClimb {
 
     public static Command testClimb(RobotContainer r){
         Command c = new FunctionalCommand   (() -> {}, 
-                                            r.climber::setTestPower, 
-                                            (interrupted) -> {r.climber.setWinchPower(0, 0);}, 
+                                            () -> {r.climber.setTestPower();
+                                                   r.slappah.setAnglePwr(0.07);}, 
+                                            (interrupted) -> {r.climber.setWinchPower(0, 0);
+                                                              r.slappah.setAnglePwr(0);}, 
                                             () -> false);
 
-        c.addRequirements(r.climber);
+        c.addRequirements(r.climber, r.slappah);
         c.setName("CmdTestClimb");
 
         return c;
@@ -54,11 +56,13 @@ public class CmdClimb {
                             .deadlineWith(new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.01,0,0), false))),
             new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower)), //force the arm against the wall to maintain robot pitch while climbing
             waitForShootToggle(r),//wait for trigger before actually winching
-            new RunCommand(() -> r.climber.triggerEvenClimb(climbPower);),
+            new RunCommand(() -> r.climber.triggerEvenClimb(climbPower))
             
 
             
         );
+
+        return climb;
     }
 
     private static Command waitForShootToggle(RobotContainer r){
