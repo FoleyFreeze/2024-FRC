@@ -126,6 +126,10 @@ public class Shooter extends SubsystemBase {
         setAngle(k.homePosition);
     }
 
+    public double getShooterCurrent(){
+        return (inputs.shootBottomCurrentAmps + inputs.shootTopCurrentAmps) / 2.0;
+    }
+
     public void periodic(){
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);

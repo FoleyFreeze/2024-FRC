@@ -62,6 +62,9 @@ public class TalonFXMotor implements Motor {
 
         motor.getConfigurator().apply(cfg);
 
+        //TODO: make cals for this
+        motor.getStatorCurrent().setUpdateFrequency(50);
+
         targetPosition = new PositionVoltage(0);
         targetVelocity = new VelocityVoltage(0);
         targetVoltage = new VoltageOut(0);
@@ -69,7 +72,12 @@ public class TalonFXMotor implements Motor {
 
     @Override
     public void setPower(double power) {
-        targetVoltage.Output = power * 12;
+        setVoltage(power*12);
+    }
+
+    @Override
+    public void setVoltage(double voltage){
+        targetVoltage.Output = voltage;
         motor.setControl(targetVoltage);
     }
 
