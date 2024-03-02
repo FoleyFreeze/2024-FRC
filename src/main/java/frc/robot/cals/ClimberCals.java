@@ -12,12 +12,12 @@ public class ClimberCals {
     public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 6)   .invert()
                                                                 .setCurrLim(40)
                                                                 .setRampRate(0.1)
-                                                                .setBrakeMode(true)
+                                                                .setBrakeMode(false)
                                                                 .setRatio(1/40.0);
 
     public MotorCal winchL = new MotorCal(TypeMotor.SPARK, 15)  .setCurrLim(40)
                                                                 .setRampRate(0.1)
-                                                                .setBrakeMode(true)
+                                                                .setBrakeMode(false)
                                                                 .setRatio(1/40.0);
 
 

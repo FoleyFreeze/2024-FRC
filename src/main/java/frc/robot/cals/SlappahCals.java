@@ -23,4 +23,6 @@ public class SlappahCals {
     public double allowedAngleError = 4; //degrees
 
     public double startAngle = 0; //degrees
+
+   
 }

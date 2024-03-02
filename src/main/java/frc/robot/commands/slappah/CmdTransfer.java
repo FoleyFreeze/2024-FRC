@@ -13,6 +13,19 @@ public class CmdTransfer {
 
     static double startupDelay = .1;
 
+    //slappah positions in degrees
+    public double slapTransferPos = 5;
+    public double slapPreTransPos = 25;
+    public double slapPreClimbPos = 20;
+    public double slapPreAmpPos = 75;
+    public double slapAmpScorePos = 95;
+    public double slapPreTrapPos = 75;
+    public double slapTrapScorePos = 95; 
+
+    //shooter positions in degrees
+    public double shootPreTransPos = 60;
+    public double shootTransPos = 90;
+
     //startUp
     static double transferPosArmAngle = 0;
     static double transferPosShootAngle = 0;
