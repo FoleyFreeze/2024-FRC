@@ -2,6 +2,7 @@ package frc.robot.subsystems.climber;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -52,7 +53,7 @@ public class Climber extends SubsystemBase{
     }
 
     public void setWinchPower(double leftPower, double rightPower){
-        io.setWinchVoltage(leftPower, rightPower);
+        io.setWinchVoltage(leftPower*12, rightPower*12);
     }
 
     public double getCurrent(){
@@ -72,5 +73,11 @@ public class Climber extends SubsystemBase{
         io.updateInputs(inputs);
         Logger.processInputs("Climber", inputs);
 
+        double power = r.inputs.getRightDial(); 
+        if(r.inputs.SWBLo.getAsBoolean()){
+            power = -power;
+        }
+        SmartDashboard.putNumber("Climb Power", power);
+        SmartDashboard.putBoolean("ClimbEnabled", r.inputs.SWBHi.getAsBoolean() || r.inputs.SWBLo.getAsBoolean());
     }
 }
