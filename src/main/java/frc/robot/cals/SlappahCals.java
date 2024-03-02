@@ -15,7 +15,6 @@ public class SlappahCals {
                                     .setRatio(100 / 20.0); //something like 100deg / 20rotations
 
     public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 3)
-                                    .invert()
                                     .setBrakeMode(true)
                                     .setCurrLim(20)
                                     .setRampRate(0.1)

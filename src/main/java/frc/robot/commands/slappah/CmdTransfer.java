@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
+import frc.robot.commands.gather.CmdGather;
 
 public class CmdTransfer {
 
@@ -31,37 +32,45 @@ public class CmdTransfer {
     //transfer
     static double shootPower = 0.12;
     static double gatePower = 0.8;
-    static double transferPower = -0.3;
-    static double transferCurrentLim = 5;
+    static double transferPower = 0.3;
     static double shooterCurrentLim = 30;
     static double extraTransfer = 10;
 
     //unTransfer
-    static double unShootPower = -.1;
-    static double unGatePower = -.1;
-    static double unTransferPower = -.1;
-    static double gateCurrentLim = 8;
-    static double extraGate = -2.5;
+    static double unShootPower = -0.12;
+    static double unGatePower = -0.3;
+    static double unTransferPower = -0.3;
+    static double extraGate = -1;
 
-    public static Command unTransfer(RobotContainer r){
-        Command unTransfer = new InstantCommand(() -> {r.shooter.setShootPower(unShootPower);
-                                                       r.gather.setGatePower(unGatePower);
-                                                       r.slappah.setTransferPower(unTransferPower);})
-                .andThen(new WaitCommand(startupDelay))
-                .andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > gateCurrentLim))
-                .finallyDo(() -> {r.shooter.setShootPower(unShootPower);
-                                  r.gather.setGatePower(unGatePower);
-                                  r.gather.setGatePosition(extraGate);
-                                  r.state.hasTransfer = false;
-                                })
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-
-        Command c = new SequentialCommandGroup(setup(r), unTransfer, end(r));
-        
+    public static Command unTransferFull(RobotContainer r){
+        Command c = new SequentialCommandGroup(setup(r), unTransfer(r), end(r));
+                c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                
         c.addRequirements(r.shooter, r.slappah, r.gather);
         c.setName("CmdUnTransfer");
 
         return c;
+    }
+
+    public static Command unTransfer(RobotContainer r){
+                Command transfer = new SequentialCommandGroup(
+                        new InstantCommand(() -> {r.shooter.setShootPower(unShootPower);
+                                                  r.gather.setGatePower(unGatePower); 
+                                                  r.slappah.setTransferPower(unTransferPower);
+                                                 }),
+                        new PrintCommand("stage 4"),
+                        new WaitCommand(startupDelay),
+                        new WaitUntilCommand(() -> r.gather.getGateCurrent() > CmdGather.detectGateCurrent)
+                                            .raceWith(new WaitCommand(5)),//make sure we cant get stuck here
+                        new PrintCommand("stage 5"),
+                        new InstantCommand(() -> {r.shooter.setShootPower(0);
+                                                  r.gather.setGatePower(0);
+                                                  r.slappah.setTransferPower(0);
+                                                  r.state.hasTransfer = false;}),
+                        new PrintCommand("stage 6")
+                        );
+
+        return transfer;
     }
 
     public static Command transfer(RobotContainer r){

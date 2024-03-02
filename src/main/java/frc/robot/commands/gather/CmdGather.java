@@ -19,7 +19,7 @@ public class CmdGather {
 
     static double extraGateRevs = 3.85;
 
-    static double detectGateCurrent = 12;
+    public static double detectGateCurrent = 12;
 
     public static Command gather (RobotContainer r){
         //start spinning things and wait for start up current to decay
