@@ -27,7 +27,7 @@ public class CmdTransfer {
     static double gatePower = .1;
     static double transferPower = .1;
     static double transferCurrentLim = 8;
-    static double extraTransfer = 2;
+    static double extraTransfer = 8;
 
     //unTransfer
     static double unShootPower = -.1;
@@ -57,18 +57,22 @@ public class CmdTransfer {
         return c;
     }
 
-    public static Command transfer(RobotContainer r){
-        Command transfer = new InstantCommand(() -> {r.shooter.setShootPower(shootPower);
-                                                     r.gather.setGatePower(gatePower); 
-                                                     r.slappah.setTransferPower(transferPower);})
-                .andThen(new WaitCommand(startupDelay))
-                .andThen(new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLim))
-                .finallyDo(() -> {r.shooter.setShootPower(shootPower); 
-                                  r.gather.setGatePower(gatePower); 
-                                  r.slappah.setTransferPosition(extraTransfer);
-                                  r.state.hasTransfer = true;
-                                })
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    public static Command transferForAmp(RobotContainer r){
+        Command transfer = new SequentialCommandGroup(
+                        new InstantCommand(() -> {r.shooter.setShootPower(shootPower);
+                                                  r.gather.setGatePower(gatePower); 
+                                                  r.slappah.setTransferPower(transferPower);
+                                                 }),
+                        new WaitCommand(startupDelay),
+                        new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLim)
+                        );
+
+                transfer.finallyDo(() -> {r.shooter.setShootPower(shootPower); 
+                                          r.gather.setGatePower(gatePower); 
+                                          r.slappah.setTransferPosition(extraTransfer);
+                                          r.state.hasTransfer = true;
+                                         })
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         Command c = new SequentialCommandGroup(setup(r), transfer, end(r));
         
