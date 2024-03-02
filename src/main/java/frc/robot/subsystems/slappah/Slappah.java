@@ -29,6 +29,8 @@ public class Slappah extends SubsystemBase {
             io = new SlappahIO(){};
         }
 
+        io.updateInputs(inputs);
+        Logger.processInputs("Slappah", inputs);        
         if(inputs.anglePosition < 0.1){ 
             io.setArmEncoderPosition(k.startAngle);
             System.out.println("Successfully reset slap angle position from: " + inputs.anglePosition);

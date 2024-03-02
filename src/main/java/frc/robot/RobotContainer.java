@@ -133,7 +133,7 @@ public class RobotContainer {
     //if in climb mode, ungather will transfer
     inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this));
 
-    //SmartDashboard.putData("TestTransport", new InstantCommand(() -> slappah.setTransferPower(0.6)).raceWith(new WaitCommand(10)).finallyDo(() -> slappah.setTransferPower(0)));
+    SmartDashboard.putData("TestCmd", new RunCommand(() -> shooter.setShootPower(0.2)).raceWith(new WaitCommand(10)).finallyDo(() -> shooter.setShootPower(0)));
 
     //TODO: uncomment once there is a control board
     //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));

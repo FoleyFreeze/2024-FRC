@@ -106,7 +106,7 @@ public class TalonFXMotor implements Motor {
 
     @Override
     public void setPIDPwrLim(double pwrLim) {
-        throw new UnsupportedOperationException("Unimplemented method 'setPIDPwrLim'");
+        setPIDPwrLim(pwrLim, -pwrLim);
     }
 
     @Override

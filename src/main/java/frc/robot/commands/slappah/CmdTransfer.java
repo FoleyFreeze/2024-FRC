@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 
 public class CmdTransfer {
 
-    static double startupDelay = .1;
+    static double startupDelay = 0.25;
 
     //slappah positions in degrees
     static double slapHomePos = 0;
