@@ -8,17 +8,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class CmdTransfer {
 
-    static double startupDelay = 0.25;
+    static double startupDelay = 0.2;
 
     //slappah positions in degrees
     static double slapHomePos = 0;
-    static double slapTransferPos = 12;
-    static double slapPreTransPos = 30;
+    static double slapTransferPos = 8;
+    static double slapPreTransPos = 27;
     static double slapPreClimbPos = 20;//unused, just use preTrans
     static double slapPreAmpPos = 64;
     static double slapAmpScorePos = 72;
@@ -30,10 +29,11 @@ public class CmdTransfer {
     static double shootTransPos = 98;
 
     //transfer
-    static double shootPower = 0.2;
-    static double gatePower = 0.9;
-    static double transferPower = 0.6;
+    static double shootPower = 0.12;
+    static double gatePower = 0.8;
+    static double transferPower = -0.3;
     static double transferCurrentLim = 5;
+    static double shooterCurrentLim = 30;
     static double extraTransfer = 10;
 
     //unTransfer
@@ -72,13 +72,14 @@ public class CmdTransfer {
                                                  }),
                         new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
-                        new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLim)
-                                            .raceWith(new WaitCommand(2)),//make sure we cant get stuck here
-                        new InstantCommand(() -> r.slappah.setTransferPosition(extraTransfer)),
+                        new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
+                                            .raceWith(new WaitCommand(1)),//dont get stuck
+                        new WaitUntilCommand(() -> r.shooter.getShooterCurrent() < shooterCurrentLim)
+                                            .raceWith(new WaitCommand(3)),//make sure we cant get stuck here
                         new PrintCommand("stage 5"),
-                        new WaitUntilCommand(r.slappah::checkTransferError),
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
+                                                  r.slappah.setTransferPower(0);
                                                   r.state.hasTransfer = true;}),
                         new PrintCommand("stage 6")
                         );
@@ -124,7 +125,7 @@ public class CmdTransfer {
                       new InstantCommand(r.shooter::goHome),
                       new PrintCommand("stage 8"),
                       new WaitUntilCommand(r.shooter::checkAngleError),
-                      new InstantCommand(() -> r.slappah.setAngle(slapPreAmpPos)),
+                      new InstantCommand(() -> r.slappah.setAngle(slapHomePos)),
                       new PrintCommand("stage done")
         );
 
