@@ -32,8 +32,18 @@ public class DriveCals {
     }
 
     //wheel locations
-    private double width = Units.inchesToMeters(20.75 /2.0); //robo dimensions 
-    private double length = Units.inchesToMeters(21 /2.0);
+    private double bumperWidth = Units.inchesToMeters(32.75);
+    private double bumperLength = Units.inchesToMeters(38.25);
+    private double wheelWidth = Units.inchesToMeters(20.75);
+    private double wheelLength = Units.inchesToMeters(23.25);
+    //calculate correct center offset
+    //this assumes that the side delta to the bumper is the 
+    //  same as the back distance to the bumper and
+    //  all of the remaining length difference is in front
+    private double centerOffsetX = (bumperLength - wheelLength - (bumperWidth - wheelWidth)/2.0) /2.0;
+    private double centerOffsetY = 0;
+    private double wheelLocationX = wheelLength / 2.0;
+    private double wheelLocationY = wheelWidth / 2.0;
 
     public double maxWheelSpeed = Units.feetToMeters(16);
     
@@ -76,7 +86,7 @@ public class DriveCals {
             .setCurrLim(swerveCurrLim)
             .setRatio(swerveRatio)
             .setBrakeMode(true);
-        wheelFL.wheelLocation = new Translation2d(width, length);
+        wheelFL.wheelLocation = new Translation2d(wheelLocationX - centerOffsetX, wheelLocationY - centerOffsetY);
         wheelFL.encChannel = 2;
         wheelFL.name = "FL";
     }
@@ -94,7 +104,7 @@ public class DriveCals {
             .setCurrLim(swerveCurrLim)
             .setRatio(swerveRatio)
             .setBrakeMode(true);
-        wheelFR.wheelLocation = new Translation2d(width, -length);
+        wheelFR.wheelLocation = new Translation2d(wheelLocationX - centerOffsetX, -wheelLocationY - centerOffsetY);
         wheelFR.encChannel = 3;
         wheelFR.name = "FR";
     }
@@ -112,7 +122,7 @@ public class DriveCals {
             .setCurrLim(swerveCurrLim)
             .setRatio(swerveRatio)
             .setBrakeMode(true);
-        wheelBL.wheelLocation = new Translation2d(-width, length);
+        wheelBL.wheelLocation = new Translation2d(-wheelLocationX - centerOffsetX, wheelLocationY - centerOffsetY);
         wheelBL.encChannel = 1;
         wheelBL.name = "BL";
     }
@@ -130,7 +140,7 @@ public class DriveCals {
             .setCurrLim(swerveCurrLim)
             .setRatio(swerveRatio)
             .setBrakeMode(true);
-        wheelBR.wheelLocation = new Translation2d(-width, -length);
+        wheelBR.wheelLocation = new Translation2d(-wheelLocationX - centerOffsetX, -wheelLocationY - centerOffsetY);
         wheelBR.encChannel = 0;
         wheelBR.name = "BR";
     }
