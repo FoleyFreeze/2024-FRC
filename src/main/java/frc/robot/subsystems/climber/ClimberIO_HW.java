@@ -15,15 +15,35 @@ public class ClimberIO_HW  implements ClimberIO{
 
     @Override
     public void updateInputs(ClimberIOInputs inputs){
-        inputs.winchRPosition = winchR.getPosition();
-        inputs.winchRVelocity = winchR.getVelocity();
-        inputs.winchRCurrentAmps = winchR.getCurrent();
-        inputs.winchRAppliedVolts = winchR.getVoltage();
+        int errorCount = winchR.getErrorCount();
+        double position = winchR.getPosition();
+        double velocity = winchR.getVelocity();
+        double current = winchR.getCurrent();
+        double voltage = winchR.getVoltage();
+        double temp = winchR.getTemp();
 
-        inputs.winchLPosition = winchL.getPosition();
-        inputs.winchLVelocity = winchL.getVelocity();
-        inputs.winchLCurrentAmps = winchL.getCurrent();
-        inputs.winchLAppliedVolts = winchL.getVoltage();
+        if(winchR.getErrorCount() == errorCount){
+            inputs.winchRPosition = position;
+            inputs.winchRVelocity = velocity;
+            inputs.winchRCurrentAmps = current;
+            inputs.winchRAppliedVolts = voltage;
+            inputs.winchRTemp = temp;
+        }
+
+        errorCount = winchL.getErrorCount();
+        position = winchL.getPosition();
+        velocity = winchL.getVelocity();
+        current = winchL.getCurrent();
+        voltage = winchL.getVoltage();
+        temp = winchL.getTemp();
+
+        if(winchL.getErrorCount() == errorCount){
+            inputs.winchLPosition = position;
+            inputs.winchLVelocity = velocity;
+            inputs.winchLCurrentAmps = current;
+            inputs.winchLAppliedVolts = voltage;
+            inputs.winchLTemp = temp;
+        }
     }
 
     @Override

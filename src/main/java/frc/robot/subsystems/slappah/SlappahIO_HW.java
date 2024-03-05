@@ -15,17 +15,35 @@ public class SlappahIO_HW implements SlappahIO {
 
     @Override
     public void updateInputs(SlappahIOInputs inputs){
-        inputs.transferPosition = transfer.getPosition();
-        inputs.transferVelocity = transfer.getVelocity();
-        inputs.transferCurrentAmps = transfer.getCurrent();
-        inputs.transferAppliedVolts = transfer.getVoltage();
-        inputs.transferTemp = transfer.getTemp();
+        int errorCount = transfer.getErrorCount();
+        double position = transfer.getPosition();
+        double velocity = transfer.getVelocity();
+        double current = transfer.getCurrent();
+        double voltage = transfer.getVoltage();
+        double temp = transfer.getTemp();
 
-        inputs.anglePosition = angle.getPosition();
-        inputs.angleVelocity = angle.getVelocity();
-        inputs.angleCurrentAmps = angle.getCurrent();
-        inputs.angleAppliedVolts = angle.getVoltage();
-        inputs.angleTemp = angle.getTemp();
+        if(transfer.getErrorCount() == errorCount){
+            inputs.transferPosition = position;
+            inputs.transferVelocity = velocity;
+            inputs.transferCurrentAmps = current;
+            inputs.transferAppliedVolts = voltage;
+            inputs.transferTemp = temp;
+        }
+
+        errorCount = angle.getErrorCount();
+        position = angle.getPosition();
+        velocity = angle.getVelocity();
+        current = angle.getCurrent();
+        voltage = angle.getVoltage();
+        temp = angle.getTemp();
+
+        if(angle.getErrorCount() == errorCount){
+            inputs.anglePosition = position;
+            inputs.angleVelocity = velocity;
+            inputs.angleCurrentAmps = current;
+            inputs.angleAppliedVolts = voltage;
+            inputs.angleTemp = temp;
+        }
     }
 
     @Override

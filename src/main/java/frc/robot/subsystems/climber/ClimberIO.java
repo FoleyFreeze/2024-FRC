@@ -9,11 +9,13 @@ public interface ClimberIO {
         public double winchRVelocity;
         public double winchRAppliedVolts;
         public double winchRCurrentAmps; 
+        public double winchRTemp;
 
         public double winchLPosition;
         public double winchLVelocity;
         public double winchLAppliedVolts;
-        public double winchLCurrentAmps; 
+        public double winchLCurrentAmps;
+        public double winchLTemp;
     }
 
 

@@ -9,11 +9,13 @@ public interface GatherIO {
         public double intakeVelocity;
         public double intakeAppliedVolts;
         public double intakeCurrentAmps;    
+        public double intakeTemp;
 
         public double gatePosition;
         public double gateVelocity;
         public double gateAppliedVolts;
         public double gateCurrentAmps;
+        public double gateTemp;
     }
 
     public default void updateInputs(GatherIOInputs inputs) {}

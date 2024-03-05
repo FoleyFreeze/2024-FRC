@@ -9,16 +9,19 @@ public interface ShooterIO {
         public double shootTopVelocity;
         public double shootTopAppliedVolts;
         public double shootTopCurrentAmps;
+        public double shootTopTemp;
 
         public double shootBottomPosition;
         public double shootBottomVelocity;
         public double shootBottomAppliedVolts;
         public double shootBottomCurrentAmps;
+        public double shootBottomTemp;
 
         public double anglePosition;
         public double angleVelocity;
         public double angleAppliedVolts;
         public double angleCurrentAmps;
+        public double angleTemp;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}

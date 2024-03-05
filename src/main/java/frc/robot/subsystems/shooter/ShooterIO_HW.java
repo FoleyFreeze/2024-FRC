@@ -21,20 +21,50 @@ public class ShooterIO_HW implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs){
-        inputs.shootBottomPosition = shootMotorBottom.getPosition();
-        inputs.shootBottomVelocity = shootMotorBottom.getVelocity();
-        inputs.shootBottomCurrentAmps = shootMotorBottom.getCurrent();
-        inputs.shootBottomAppliedVolts = shootMotorBottom.getVoltage();
+        int errorCount = shootMotorBottom.getErrorCount();
+        double position = shootMotorBottom.getPosition();
+        double velocity = shootMotorBottom.getVelocity();
+        double current = shootMotorBottom.getCurrent();
+        double voltage = shootMotorBottom.getVoltage();
+        double temp = shootMotorBottom.getTemp();
 
-        inputs.shootTopPosition = shootMotorTop.getPosition();
-        inputs.shootTopVelocity = shootMotorTop.getVelocity();
-        inputs.shootTopCurrentAmps = shootMotorTop.getCurrent();
-        inputs.shootTopAppliedVolts = shootMotorTop.getVoltage();
+        if(shootMotorBottom.getErrorCount() == errorCount){
+            inputs.shootBottomPosition = position;
+            inputs.shootBottomVelocity = velocity;
+            inputs.shootBottomCurrentAmps = current;
+            inputs.shootBottomAppliedVolts = voltage;
+            inputs.shootBottomTemp = temp;
+        }
 
-        inputs.anglePosition = angleMotor.getPosition();
-        inputs.angleVelocity = angleMotor.getVelocity();
-        inputs.angleCurrentAmps = angleMotor.getCurrent();
-        inputs.angleAppliedVolts = angleMotor.getVoltage();
+        errorCount = shootMotorTop.getErrorCount();
+        position = shootMotorTop.getPosition();
+        velocity = shootMotorTop.getVelocity();
+        current = shootMotorTop.getCurrent();
+        voltage = shootMotorTop.getVoltage();
+        temp = shootMotorTop.getTemp();
+
+        if(shootMotorTop.getErrorCount() == errorCount){
+            inputs.shootTopPosition = position;
+            inputs.shootTopVelocity = velocity;
+            inputs.shootTopCurrentAmps = current;
+            inputs.shootTopAppliedVolts = voltage;
+            inputs.shootTopTemp = temp;
+        }
+
+        errorCount = angleMotor.getErrorCount();
+        position = angleMotor.getPosition();
+        velocity = angleMotor.getVelocity();
+        current = angleMotor.getCurrent();
+        voltage = angleMotor.getVoltage();
+        temp = angleMotor.getTemp();
+
+        if(angleMotor.getErrorCount() == errorCount){
+            inputs.anglePosition = position;
+            inputs.angleVelocity = velocity;
+            inputs.angleCurrentAmps = current;
+            inputs.angleAppliedVolts = voltage;
+            inputs.angleTemp = temp;
+        }
     }
 
     @Override

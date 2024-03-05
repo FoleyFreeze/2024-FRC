@@ -1,5 +1,7 @@
 package frc.robot.subsystems.motor;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -18,6 +20,8 @@ public class SparkMotor implements Motor{
 
     RelativeEncoder encoder;
     SparkPIDController PIDController;
+
+    int errorCount;
 
     public SparkMotor(MotorCal k){
         this.k = k;
@@ -58,6 +62,8 @@ public class SparkMotor implements Motor{
             motor.setIdleMode(IdleMode.kCoast);
             brakeMode = false;
         }
+
+        errorCount = 0;
     }
 
     @Override
@@ -67,7 +73,14 @@ public class SparkMotor implements Motor{
 
     @Override
     public double getPosition() {
-        return encoder.getPosition() * k.gearRatio;//in rotations
+        double value = encoder.getPosition() * k.gearRatio;//in rotations
+        REVLibError error = motor.getLastError();
+        if(error != REVLibError.kOk){
+            Logger.recordOutput("Motor"+k.channel, error.toString());
+            errorCount++;
+        }
+
+        return value;
     }
 
     @Override
@@ -106,12 +119,26 @@ public class SparkMotor implements Motor{
 
     @Override
     public double getCurrent(){
-        return motor.getOutputCurrent();
+        double value = motor.getOutputCurrent();
+        REVLibError error = motor.getLastError();
+        if(error != REVLibError.kOk){
+            Logger.recordOutput("Motor"+k.channel, error.toString());
+            errorCount++;
+        }
+
+        return value;
     }
 
     @Override
     public double getTemp(){
-        return motor.getMotorTemperature();
+        double value = motor.getMotorTemperature();
+        REVLibError error = motor.getLastError();
+        if(error != REVLibError.kOk){
+            Logger.recordOutput("Motor"+k.channel, error.toString());
+            errorCount++;
+        }
+
+        return value;
     }
 
     boolean brakeMode;
@@ -149,7 +176,14 @@ public class SparkMotor implements Motor{
     //TODO: are these rpm/rps conversions are backwards for sparks?
     @Override
     public double getVelocity(){
-        return encoder.getVelocity()*k.gearRatio / 60.0;
+        double value = encoder.getVelocity()*k.gearRatio / 60.0;
+    REVLibError error = motor.getLastError();
+        if(error != REVLibError.kOk){
+            Logger.recordOutput("Motor"+k.channel, error.toString());
+            errorCount++;
+        }
+
+        return value;
     }
 
      @Override
@@ -159,11 +193,23 @@ public class SparkMotor implements Motor{
 
     @Override
     public double getVoltage(){
-        return motor.getAppliedOutput() * motor.getBusVoltage();
+        double value = motor.getAppliedOutput() * motor.getBusVoltage();
+    REVLibError error = motor.getLastError();
+        if(error != REVLibError.kOk){
+            Logger.recordOutput("Motor"+k.channel, error.toString());
+            errorCount++;
+        }
+
+        return value;
     }
 
     @Override
     public void setVoltage(double voltage){
         motor.setVoltage(voltage);
+    }
+
+    @Override
+    public int getErrorCount(){
+        return errorCount;
     }
 }

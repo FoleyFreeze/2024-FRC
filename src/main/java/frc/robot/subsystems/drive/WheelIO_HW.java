@@ -28,21 +28,38 @@ public class WheelIO_HW implements WheelIO {
 
     @Override
     public void updateInputs (WheelIOInputs inputs){
-        double swervePosition = swerveMotor.getPosition();
+        int startErrorCount = swerveMotor.getErrorCount();
+        double position = swerveMotor.getPosition();
+        double velocity = swerveMotor.getVelocity();
+        double current = swerveMotor.getCurrent();
+        double voltage = swerveMotor.getVoltage();
+        double temp = swerveMotor.getTemp();
 
-        inputs.swervePositionRaw = new Rotation2d(Units.rotationsToRadians(swervePosition));
-        inputs.swervePosition = inputs.swervePositionRaw.minus(swerveOffset);
-        inputs.swerveVelocity = swerveMotor.getVelocity();
-        inputs.swerveCurrent = driveMotor.getCurrent();
-        inputs.swerveVoltage = driveMotor.getVoltage();
+        //only update inputs if there were no errors
+        if(swerveMotor.getErrorCount() == startErrorCount){
+            inputs.swervePositionRaw = new Rotation2d(Units.rotationsToRadians(position));
+            inputs.swervePosition = inputs.swervePositionRaw.minus(swerveOffset);
+            inputs.swerveVelocity = velocity;
+            inputs.swerveCurrent = current;
+            inputs.swerveVoltage = voltage;
+            inputs.swerveTemp = temp;
+        }
 
-        inputs.drivePosition = driveMotor.getPosition() + swervePosition*k.rotationToDriveRatio; //account for offcenter swerve bevel
-        inputs.driveVelocity = driveMotor.getVelocity();
-        inputs.driveCurrentAmps = driveMotor.getCurrent();
-        inputs.driveAppliedVolts = driveMotor.getVoltage();
+        startErrorCount = driveMotor.getErrorCount();
+        position = driveMotor.getPosition() + position*k.rotationToDriveRatio;//account for offcenter swerve bevel
+        velocity = driveMotor.getVelocity();
+        current = driveMotor.getCurrent();
+        voltage = driveMotor.getVoltage();
+        temp = driveMotor.getTemp();
 
-        inputs.swerveTemp = swerveMotor.getTemp();
-        inputs.driveTemp = driveMotor.getTemp();
+        //only update inputs if there were no errors
+        if(driveMotor.getErrorCount() == startErrorCount){
+            inputs.drivePosition = position;
+            inputs.driveVelocity = velocity;
+            inputs.driveCurrentAmps = current;
+            inputs.driveAppliedVolts = voltage;
+            inputs.driveTemp = temp;
+        }
 
         inputs.analogEncoderAngleRaw = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);
         inputs.analogEncoderAngle = inputs.analogEncoderAngleRaw.minus(swerveOffset); 

@@ -39,4 +39,5 @@ public interface Motor {
     public default double getVelocity(){return 0;};
     public default double getVoltage(){return 0;};
     public default void setVoltage(double voltage){};
+    public default int getErrorCount(){return 0;};
 }

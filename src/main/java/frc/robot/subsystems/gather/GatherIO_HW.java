@@ -15,15 +15,35 @@ public class GatherIO_HW implements GatherIO {
 
     @Override
     public void updateInputs (GatherIOInputs inputs){
-        inputs.intakePosition = topGather.getPosition();
-        inputs.intakeVelocity = topGather.getVelocity();
-        inputs.intakeCurrentAmps = topGather.getCurrent();
-        inputs.intakeAppliedVolts = topGather.getVoltage();
+        int errorCount = topGather.getErrorCount();
+        double position = topGather.getPosition();
+        double velocity = topGather.getVelocity();
+        double current = topGather.getCurrent();
+        double voltage = topGather.getVoltage();
+        double temp = topGather.getTemp();
 
-        inputs.gatePosition = gateMotor.getPosition();
-        inputs.gateVelocity = gateMotor.getVelocity();
-        inputs.gateCurrentAmps = gateMotor.getCurrent();
-        inputs.gateAppliedVolts = gateMotor.getVoltage();
+        if(topGather.getErrorCount() == errorCount){
+            inputs.intakePosition = position;
+            inputs.intakeVelocity = velocity;
+            inputs.intakeCurrentAmps = current;
+            inputs.intakeAppliedVolts = voltage;
+            inputs.intakeAppliedVolts = temp;
+        }
+
+        errorCount = gateMotor.getErrorCount();
+        position = gateMotor.getPosition();
+        velocity = gateMotor.getVelocity();
+        current = gateMotor.getCurrent();
+        voltage = gateMotor.getVoltage();
+        temp = gateMotor.getTemp();
+
+        if(gateMotor.getErrorCount() == errorCount){
+            inputs.gatePosition = position;
+            inputs.gateVelocity = velocity;
+            inputs.gateCurrentAmps = current;
+            inputs.gateAppliedVolts = voltage;
+            inputs.gateTemp = temp;
+        }
     }
 
     @Override
