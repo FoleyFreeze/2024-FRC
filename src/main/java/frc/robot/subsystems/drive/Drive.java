@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -86,15 +87,25 @@ public class Drive extends SubsystemBase{
         swerveDrivePwr(power, false);
     }
 
+    public void swerveDriveVel(ChassisSpeeds speeds){
+        //use as velocity this time
+        swerveDrivePwr(speeds, false, true);
+    }
+
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
+        swerveDrivePwr(speeds, fieldOriented, false);
+    }
+
+    public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented, boolean isVelocity){
         boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.002
                         && Math.abs(speeds.vyMetersPerSecond) < 0.002
                         && Math.abs(speeds.omegaRadiansPerSecond) < 0.002;
 
-        limitSpeeds(speeds, k.fieldModePwr);
-        
-        //scale to m/s
-        speeds = speeds.times(k.maxWheelSpeed);
+        if(!isVelocity) {
+            limitSpeeds(speeds, k.fieldModePwr);
+            //scale to m/s
+            speeds = speeds.times(k.maxWheelSpeed);
+        }
         
         if(fieldOriented){
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getAngle());
@@ -107,7 +118,7 @@ public class Drive extends SubsystemBase{
         SwerveModuleState[]  optimizedWheelStates = new SwerveModuleState[4]; 
 
         for(int i = 0; i < 4; i++){
-            optimizedWheelStates[i] = wheels[i].moveWheel(wheelStates[i], stopped);
+            optimizedWheelStates[i] = wheels[i].moveWheel(wheelStates[i], stopped, isVelocity);
         }
 
         Logger.recordOutput("Drive/SwerveSetpoints", wheelStates);
@@ -146,7 +157,7 @@ public class Drive extends SubsystemBase{
         robotAngle = inputs.yaw.minus(fieldOffsetAngle);
 
         //update odometry
-        odometry.update(getAngle(), getWheelPositions());
+        odometry.update(inputs.yaw, getWheelPositions());
 
         //update apriltags
         //coming soon to a robot near you
@@ -171,12 +182,23 @@ public class Drive extends SubsystemBase{
     }
 
     public void resetFieldOrientedAngle(){
-        fieldOffsetAngle = inputs.yaw;
-        robotAngle = new Rotation2d();//reset to 0
+        //reset to 0
+        resetFieldOrientedAngle(new Rotation2d());
+    }
+
+    public void resetFieldOrientedAngle(Rotation2d newAngle){
+        fieldOffsetAngle = inputs.yaw.minus(newAngle);
+        robotAngle = inputs.yaw.minus(fieldOffsetAngle);
     }
 
     public void resetFieldOdometry(){
-        odometry.resetPosition(getAngle(), getWheelPositions(), new Pose2d(5, 5, getAngle()));
+        //default to somewhere that is visible on the 2d field
+        resetFieldOdometry(new Pose2d(5, 5, getAngle()));
+    }
+
+    public void resetFieldOdometry(Pose2d newPose){
+        odometry.resetPosition(inputs.yaw, getWheelPositions(), newPose);
+        resetFieldOrientedAngle(newPose.getRotation());
     }
 
     private SwerveModulePosition[] getWheelPositions() {
