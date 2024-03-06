@@ -27,7 +27,7 @@ public class DriveCals {
         public double maxSpeed = maxWheelSpeed;
         public double wheelRadius = driveDiameter / 2.0;
 
-        public boolean driveWithVel = true;
+        public boolean driveWithVel = false;
 
         //due to offset bevel gear in the swerve module the drive wheel moves when the module rotates
         //account for this when returning the drive wheel position

@@ -104,7 +104,14 @@ public class Drive extends SubsystemBase{
         if(!isVelocity) {
             limitSpeeds(speeds, k.fieldModePwr);
             //scale to m/s
-            speeds = speeds.times(k.maxWheelSpeed);
+            //TODO: make cleaner
+            //speeds = speeds.times(k.maxWheelSpeed);
+            speeds.vxMetersPerSecond *= k.maxWheelSpeed;
+            speeds.vyMetersPerSecond *= k.maxWheelSpeed;
+            double radius = k.wheelBL.wheelLocation.getNorm();
+            speeds.omegaRadiansPerSecond *= k.maxWheelSpeed / radius / 1.2;
+        } else {
+
         }
         
         if(fieldOriented){
@@ -241,6 +248,12 @@ public class Drive extends SubsystemBase{
         }
         if(Math.abs(speeds.omegaRadiansPerSecond) > limit) {
             speeds.omegaRadiansPerSecond = limit * Math.signum(speeds.omegaRadiansPerSecond);
+        }
+    }
+
+    public void setBrake(boolean on){
+        for(Wheel w : wheels){
+            w.setBrake(on);
         }
     }
 }

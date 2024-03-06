@@ -176,7 +176,7 @@ public class SparkMotor implements Motor{
     
     @Override
     public double getVelocity(){//in meters / sec
-        double value = encoder.getVelocity() * k.gearRatio * 60.0;
+        double value = encoder.getVelocity() * k.gearRatio / 60.0;
         REVLibError error = motor.getLastError();
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
@@ -188,7 +188,7 @@ public class SparkMotor implements Motor{
 
      @Override
     public void setVelocity(double velocity){
-        PIDController.setReference(velocity / k.gearRatio / 60, ControlType.kVelocity);
+        PIDController.setReference(velocity / k.gearRatio * 60, ControlType.kVelocity);
     }
 
     @Override

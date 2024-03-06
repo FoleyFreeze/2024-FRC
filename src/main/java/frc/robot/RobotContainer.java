@@ -101,6 +101,7 @@ public class RobotContainer {
     //TODO: fill in auto choosers
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
     autoChooser.addOption("PREGEN", AutonType.PREGEN);
+    autoChooser.addOption("TEST", AutonType.TEST);
 
     Shuffleboard.getTab("Auton").add(autoChooser.getSendableChooser()).withPosition(0, 0);
 
@@ -111,8 +112,8 @@ public class RobotContainer {
             drive::getRelVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             drive::swerveDriveVel, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    new PIDConstants(0.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(0.0, 0.0, 0.0), // Rotation PID constants
                     drive.k.maxWheelSpeed, // Max module speed, in m/s
                     drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -196,6 +197,7 @@ public class RobotContainer {
     selectedAuton += totalNotes.get();
 
     if (!selectedAuton.equals(lastSelectedAuton)){
+      lastSelectedAuton = selectedAuton;
       switch(autoChooser.get()){
         case DENIAL:
           autonCommand = new InstantCommand();
@@ -207,7 +209,7 @@ public class RobotContainer {
           autonCommand = new InstantCommand();
           break;
         case TEST:
-          autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
+          autonCommand = ChoreoAuto.getPathPlannerAuto("TestArc", this);
           break;
 
         case DO_NOTHING:

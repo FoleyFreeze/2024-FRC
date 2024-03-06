@@ -19,7 +19,7 @@ public class Wheel {
     private final WheelIOInputsAutoLogged inputs = new WheelIOInputsAutoLogged();
 
     SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.03, 0.13);
-    PIDController driveFB = new PIDController(0.05, 0, 0);
+    PIDController driveFB = new PIDController(0.00, 0, 0);
     
 
     public Wheel(WheelCal k){
@@ -56,7 +56,7 @@ public class Wheel {
         var optimizedState = SwerveModuleState.optimize(state, inputs.swervePosition);
         if(stopped){
             io.setDriveVoltage(0);
-        } else if(isVelocity || k.driveWithVel){
+        } else if(isVelocity && k.driveWithVel){
             double velRadPerSec = optimizedState.speedMetersPerSecond / k.wheelRadius;
             io.setDriveVoltage(driveFF.calculate(velRadPerSec) + driveFB.calculate(Units.rotationsPerMinuteToRadiansPerSecond(inputs.driveVelocity), velRadPerSec));
             io.setSwerveAngle(optimizedState.angle);
@@ -73,5 +73,9 @@ public class Wheel {
 
     public Rotation2d getAnalogEncoderValue () {
         return inputs.analogEncoderAngleRaw;
+    }
+
+    public void setBrake(boolean on){
+        io.setDriveBrakemode(on);
     }
 }

@@ -33,13 +33,13 @@ public class ChoreoAuto {
         autonShootCount = 0;
         return new PathPlannerAuto(name)
             .alongWith(new SequentialCommandGroup(
-                shoot(r, -1, 60, 5000),
+                shoot(r, -1, 55, 3600),
                 CmdGather.gather(r),
-                shoot(r, 0, 55, 5000),
+                shoot(r, 0, 55, 2726),
                 CmdGather.gather(r),
-                shoot(r, 1, 55, 5000),
+                shoot(r, 1, 55, 2726),
                 CmdGather.gather(r),
-                shoot(r, 2, 50, 5000)
+                shoot(r, 2, 35, 4500)
             ))
         .finallyDo(() -> CmdAuton.stopAll(r));
                     
@@ -85,7 +85,10 @@ public class ChoreoAuto {
 
     public static Command getPathPlannerAuto(String filename, RobotContainer r){
         PathPlannerPath path = PathPlannerPath.fromPathFile(filename);
-        return AutoBuilder.followPath(path);
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> r.drive.resetFieldOdometry(path.getPreviewStartingHolonomicPose())),
+            AutoBuilder.followPath(path)
+        );
     }
 
     

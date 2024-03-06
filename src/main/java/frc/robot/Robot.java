@@ -49,7 +49,8 @@ public class Robot extends LoggedRobot {
         if (isReal()) {
             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+            PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+            pdh.setSwitchableChannel(false);
         } else {
             String logPath;
             try{
@@ -97,6 +98,9 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
+        //always init with brakes off
+        m_robotContainer.drive.setBrake(false);
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
@@ -108,13 +112,20 @@ public class Robot extends LoggedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        //go to brake after auto in case we are 
+        //coasting into a wall or something
+        m_robotContainer.drive.setBrake(true);
+    }
 
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+
+        //always init with brakes off
+        m_robotContainer.drive.setBrake(false);
     }
 
     @Override
