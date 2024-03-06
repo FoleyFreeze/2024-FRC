@@ -122,7 +122,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void goHome(){
-        setRPM(0);
+        setShootPower(0);
         setAngle(k.homePosition);
     }
 

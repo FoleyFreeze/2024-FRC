@@ -14,6 +14,7 @@ public class GatherCals {
         .setRampRate(0.1);
     
     public MotorCal gateMotor = new MotorCal(TypeMotor.SPARK, 12)
+        .setRatio(1)
         .setCurrLim(40)
         .setPIDF(0.3, 0.001, 0, 0)
         .setIZone(0.25)

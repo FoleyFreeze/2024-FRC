@@ -13,13 +13,13 @@ public class CmdGather {
     static double extraIntakeTime = 0.3;
 
     static double intakePower = 0.4;
-    static double gatePower = 0.3;
+    static double gatePower = 0.15;
     static double reverseIntakePower = -0.5;
     static double reverseGatePower = -0.3;
 
-    static double extraGateRevs = 3.85;
+    static double extraGateRevs = 2.6;
 
-    public static double detectGateCurrent = 12;
+    public static double detectGateCurrent = 15;
 
     public static Command gather (RobotContainer r){
         //start spinning things and wait for start up current to decay
@@ -44,7 +44,7 @@ public class CmdGather {
     public static Command unGather(RobotContainer r){
         Command c = (new RunCommand(() -> {r.gather.setGatherPower(reverseGatePower, reverseIntakePower);
                                             r.shooter.setShootPower(-0.15);
-                                            r.shooter.goHome();}))
+                                            r.shooter.setAngle(r.shooter.k.homePosition);}))
                          .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
                                             r.shooter.setShootPower(0);
                                             r.state.hasNote = false;});
