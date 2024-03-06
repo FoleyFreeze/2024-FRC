@@ -2,9 +2,12 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
 import frc.robot.cals.DriveCals.WheelCal;
 
@@ -14,6 +17,9 @@ public class Wheel {
 
     private final WheelIO io;
     private final WheelIOInputsAutoLogged inputs = new WheelIOInputsAutoLogged();
+
+    SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.03, 0.13);
+    PIDController driveFB = new PIDController(0.05, 0, 0);
     
 
     public Wheel(WheelCal k){
@@ -46,10 +52,14 @@ public class Wheel {
         return new SwerveModuleState(inputs.driveVelocity, inputs.swervePosition);
     }
 
-    public SwerveModuleState moveWheel(SwerveModuleState state, boolean stopped){
+    public SwerveModuleState moveWheel(SwerveModuleState state, boolean stopped, boolean isVelocity){
         var optimizedState = SwerveModuleState.optimize(state, inputs.swervePosition);
         if(stopped){
             io.setDriveVoltage(0);
+        } else if(isVelocity || k.driveWithVel){
+            double velRadPerSec = optimizedState.speedMetersPerSecond / k.wheelRadius;
+            io.setDriveVoltage(driveFF.calculate(velRadPerSec) + driveFB.calculate(Units.rotationsPerMinuteToRadiansPerSecond(inputs.driveVelocity), velRadPerSec));
+            io.setSwerveAngle(optimizedState.angle);
         } else {
             io.setDriveVoltage(12 * optimizedState.speedMetersPerSecond / k.maxSpeed);
             io.setSwerveAngle(optimizedState.angle);

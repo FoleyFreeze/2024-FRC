@@ -173,11 +173,11 @@ public class SparkMotor implements Motor{
         }
     }
 
-    //TODO: are these rpm/rps conversions are backwards for sparks?
+    
     @Override
-    public double getVelocity(){
-        double value = encoder.getVelocity()*k.gearRatio / 60.0;
-    REVLibError error = motor.getLastError();
+    public double getVelocity(){//in meters / sec
+        double value = encoder.getVelocity() * k.gearRatio * 60.0;
+        REVLibError error = motor.getLastError();
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
@@ -188,7 +188,7 @@ public class SparkMotor implements Motor{
 
      @Override
     public void setVelocity(double velocity){
-        PIDController.setReference(velocity / k.gearRatio * 60, ControlType.kVelocity);
+        PIDController.setReference(velocity / k.gearRatio / 60, ControlType.kVelocity);
     }
 
     @Override

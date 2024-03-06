@@ -8,9 +8,14 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.auton.ChoreoAuto;
 import frc.robot.cals.ClimberCals;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.GatherCals;
@@ -97,6 +103,33 @@ public class RobotContainer {
     autoChooser.addOption("PREGEN", AutonType.PREGEN);
 
     Shuffleboard.getTab("Auton").add(autoChooser.getSendableChooser()).withPosition(0, 0);
+
+    //configure auto builder
+    AutoBuilder.configureHolonomic(
+            drive::getPose, // Robot pose supplier
+            drive::resetFieldOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            drive::getRelVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            drive::swerveDriveVel, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    drive.k.maxWheelSpeed, // Max module speed, in m/s
+                    drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
+                    new ReplanningConfig() // Default path replanning config. See the API for the options here
+            ),
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            drive // Reference to this subsystem to set requirements
+    );
   }
 
   private void configureBindings() {
@@ -143,10 +176,10 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autonCommand;
   }
   
-  private Command autonCommand;
+  private Command autonCommand = new InstantCommand();
   private String lastSelectedAuton = "";
   
   public void determineAuton(){
@@ -168,13 +201,13 @@ public class RobotContainer {
           autonCommand = new InstantCommand();
           break;
         case PREGEN:
-          autonCommand = new InstantCommand();
+          autonCommand = ChoreoAuto.getChoreoPathFromPathPlanner("3NoteMid", this);
           break;
         case SELECTABLE:
           autonCommand = new InstantCommand();
           break;
         case TEST:
-          autonCommand = new InstantCommand();
+          autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
           break;
 
         case DO_NOTHING:

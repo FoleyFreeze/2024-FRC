@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -20,9 +21,9 @@ public class DriveIO_HW implements DriveIO{
     @Override
     public void updateInputs (DriveIOInputs inputs){
         inputs.navXconnected = navX.isConnected();
-        inputs.yaw = Rotation2d.fromDegrees(-navX.getYaw());
-        inputs.angle = Rotation2d.fromDegrees(-navX.getAngle());
-        inputs.fusedHeading = Rotation2d.fromDegrees(-navX.getFusedHeading());
+        inputs.yaw = new Rotation2d(MathUtil.angleModulus(Math.toRadians(-navX.getYaw())));
+        inputs.angle = new Rotation2d(MathUtil.angleModulus(Math.toRadians(-navX.getAngle())));
+        inputs.fusedHeading = new Rotation2d(MathUtil.angleModulus(Math.toRadians(-navX.getFusedHeading())));
         inputs.pitch = Rotation2d.fromDegrees(-navX.getPitch());
         inputs.roll = Rotation2d.fromDegrees(-navX.getRoll());
         inputs.yawVelocity = Units.degreesToRadians(-navX.getRate());        

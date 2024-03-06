@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
@@ -63,5 +64,21 @@ public class CMDShoot {
                 c.setName("VisionPrime");
 
         return c;    
+    }
+
+    public static Command autonShoot(RobotContainer r){
+        Command c = new SequentialCommandGroup(
+            new RunCommand(() -> {r.shooter.setAngle(60);
+                                  r.shooter.setRPM(4000);})
+                    .raceWith(new WaitCommand(0.3)),
+            new InstantCommand(() -> r.gather.setGatePower(1)),
+            new WaitCommand(0.3),
+            new InstantCommand(() -> {r.gather.setGatePower(0);
+                                      r.shooter.goHome();})
+        );
+
+        c.addRequirements(r.shooter, r.gather);
+        c.setName("CmdAutonShoot");
+        return c;
     }
 }
