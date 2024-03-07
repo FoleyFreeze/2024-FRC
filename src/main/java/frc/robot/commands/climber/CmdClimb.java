@@ -16,7 +16,7 @@ public class CmdClimb {
     static double climbPower = 0.75;
     static double unClimbPower = -.2;
 
-    static double pushAgainstWallPower = 0.15;
+    static double pushAgainstWallPower = 0.07;
 
     public static Command simpleWinch(RobotContainer r){
         Command c = new RunCommand( () -> r.climber.evenClimb(climbPower));
@@ -49,9 +49,9 @@ public class CmdClimb {
                 //drive under chain manually(in the auto version this would be a command)
                 waitForShootToggle(r),
                 CmdTransfer.transfer(r),//transfer note
-                waitForShootToggle(r)
+                waitForShootToggle(r),
+                CmdTransfer.goToPreTrap(r)//raise the arm and drive back (really coast and let the arm push us)
             ).deadlineWith(new CmdDrive(r)),//allow joystick driving
-            CmdTransfer.goToTrap(r),//raise the arm and drive back (really coast and let the arm push us)
             new WaitUntilCommand(r.slappah::checkAngleError)
                             .deadlineWith(new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.01,0,0), false))),
             new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower)), //force the arm against the wall to maintain robot pitch while climbing

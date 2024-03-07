@@ -22,7 +22,7 @@ public class CmdTransfer {
     static double slapPreClimbPos = 20;//unused, just use preTrans
     static double slapPreAmpPos = 64;
     static double slapAmpScorePos = 72;
-    static double slapPreTrapPos = 75;//unused, go straight to trap score
+    static double slapPreTrapPos = 55;//unused, go straight to trap score
     static double slapTrapScorePos = 72; //TODO: find actual number
 
     //shooter positions in degrees
@@ -143,6 +143,12 @@ public class CmdTransfer {
 
     public static Command goToTrap(RobotContainer r){
         Command move = new InstantCommand(() -> r.slappah.setAngle(slapTrapScorePos));
+
+        return move;
+    }
+
+      public static Command goToPreTrap(RobotContainer r){
+        Command move = new InstantCommand(() -> r.slappah.setAngle(slapPreTrapPos));
 
         return move;
     }
