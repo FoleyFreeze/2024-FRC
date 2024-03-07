@@ -171,6 +171,9 @@ public class Drive extends SubsystemBase{
 
         robotPose = odometry.getEstimatedPosition();
         robotRelVelocity = kinematics.toChassisSpeeds(getWheelStates());
+
+        double accelMag = inputs.accelVec.getNorm();
+        Logger.recordOutput("Drive/Accel", accelMag);
     }
 
     @AutoLogOutput(key = "Drive/RobotPose")

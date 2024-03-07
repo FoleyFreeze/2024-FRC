@@ -1,5 +1,6 @@
 package frc.robot.auton;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import com.choreo.lib.Choreo;
@@ -28,19 +29,23 @@ public class ChoreoAuto {
     
     public static int autonShootCount = 0;
 
-    public static Command getChoreoPathFromPathPlanner(String name, RobotContainer r){
+    public static Command getPregen3NoteMid(String name, RobotContainer r){
         NamedCommands.registerCommand("AutonShoot", readyToShoot());
-        autonShootCount = 0;
-        return new PathPlannerAuto(name)
-            .alongWith(new SequentialCommandGroup(
-                shoot(r, -1, 55, 3600),
-                CmdGather.gather(r),
-                shoot(r, 0, 55, 2726),
-                CmdGather.gather(r),
-                shoot(r, 1, 55, 2726),
-                CmdGather.gather(r),
-                shoot(r, 2, 35, 4500)
-            ))
+        return new SequentialCommandGroup(
+            new WaitCommand(0.4),
+            readyToShoot(),
+            new PathPlannerAuto(name)
+        )
+        .alongWith(new SequentialCommandGroup(
+            new InstantCommand(() -> autonShootCount = 0),
+            shoot(r, 0, 55, 4500),
+            CmdGather.autonGather(r),
+            shoot(r, 1, 38, 4500),
+            CmdGather.autonGather(r),
+            shoot(r, 2, 40, 4500),
+            CmdGather.autonGather(r),
+            shoot(r, 3, 38, 4500)
+        ))
         .finallyDo(() -> CmdAuton.stopAll(r));
                     
     }
@@ -53,10 +58,7 @@ public class ChoreoAuto {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {r.shooter.setAngle(angle);
                                       r.shooter.setRPM(rpm);}),
-            new ParallelCommandGroup(
-                new WaitCommand(0.2),
-                new WaitUntilCommand(() -> autonShootCount > idx)
-            ),
+            new WaitUntilCommand(() -> autonShootCount > idx),
             new InstantCommand(() -> r.gather.setGatePower(1)),
             new WaitCommand(0.2)
         );
@@ -64,22 +66,11 @@ public class ChoreoAuto {
 
     
     public static Command getChoreoPath(String fileName, RobotContainer r){
-        ChoreoTrajectory traj = Choreo.getTrajectory(fileName);
+        PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(fileName);
 
-
-        return Choreo.choreoSwerveCommand(
-            traj, 
-            r.drive::getPose,
-            new PIDController(5.0, 0.0, 0.0),   //X Controller (units are meters)
-            new PIDController(5.0, 0.0, 0.0),   //Y Controller
-            new PIDController(0.0, 0.0, 0.0),   //Rotate Controller (units are radians)
-            (ChassisSpeeds speeds) ->
-                r.drive.swerveDrivePwr(speeds, false), //robot relative speeds
-            () -> {   
-                Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
-                return alliance.isPresent() && alliance.get() == Alliance.Red;
-            },
-            r.drive
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> r.drive.resetFieldOdometry(path.getPreviewStartingHolonomicPose())),
+            AutoBuilder.followPath(path)
         );
     }
 

@@ -5,7 +5,7 @@ import frc.robot.RobotContainer;
 
 public class CmdAuton {
     
-    public static void selectedAuto(int a, int b, int c, int d, int e, int f, int g, int h){
+    public static Command selectedAuto(int a, int b, int c, int d, int e, int f, int g, int h, int total){
         int noteOrder[] = new int[8];
         sort(noteOrder, a, 1);
         sort(noteOrder, b, 2);
@@ -23,7 +23,7 @@ public class CmdAuton {
         }
 
         
-        
+        return null;
     }
 
 

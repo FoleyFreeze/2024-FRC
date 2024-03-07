@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.util.FileManager;
@@ -26,7 +27,13 @@ public class DriveIO_HW implements DriveIO{
         inputs.fusedHeading = new Rotation2d(MathUtil.angleModulus(Math.toRadians(-navX.getFusedHeading())));
         inputs.pitch = Rotation2d.fromDegrees(-navX.getPitch());
         inputs.roll = Rotation2d.fromDegrees(-navX.getRoll());
-        inputs.yawVelocity = Units.degreesToRadians(-navX.getRate());        
+        inputs.yawVelocity = Units.degreesToRadians(-navX.getRate());
+        
+        inputs.accelVec = new Translation3d(
+            navX.getRawAccelY(), //navX Y points forward
+            -navX.getRawAccelX(),//navX X points right
+            navX.getRawAccelZ()  //navX Z points up
+        );
     }
 
     @Override
