@@ -25,6 +25,8 @@ public class Robot extends LoggedRobot {
 
     private RobotContainer m_robotContainer;
 
+    private static final boolean simOnly = false;
+
     @Override
     public void robotInit() {
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -49,21 +51,15 @@ public class Robot extends LoggedRobot {
         if (isReal()) {
             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+            new PowerDistribution(21, ModuleType.kRev); // Enables power distribution logging
         } else {
-            String logPath;
-            try{
-                logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-            } catch(StringIndexOutOfBoundsException e){
-                logPath = "";
-            }
-            
-            if(logPath.isBlank()){
-                //do nothing, in normal sim mode
-                
+            //if simulating, determine if we want a replay or sim mode
+            if(simOnly){
+                Logger.addDataReceiver(new NT4Publisher());
             } else {
-                //replay the log file
                 setUseTiming(false); // Run as fast as possible
+                //replay the log file
+                String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
                 Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
                 Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
             }
@@ -88,7 +84,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
-
         m_robotContainer.determineAuton();
     }
 
@@ -97,6 +92,9 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
+        //always init with brakes off
+        m_robotContainer.drive.setBrake(false);
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
@@ -108,13 +106,20 @@ public class Robot extends LoggedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        //go to brake after auto in case we are 
+        //coasting into a wall or something
+        m_robotContainer.drive.setBrake(true);
+    }
 
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+
+        //always init with brakes off
+        m_robotContainer.drive.setBrake(false);
     }
 
     @Override

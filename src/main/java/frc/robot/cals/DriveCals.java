@@ -25,6 +25,9 @@ public class DriveCals {
         public String name;
 
         public double maxSpeed = maxWheelSpeed;
+        public double wheelRadius = driveDiameter / 2.0;
+
+        public boolean driveWithVel = false;
 
         //due to offset bevel gear in the swerve module the drive wheel moves when the module rotates
         //account for this when returning the drive wheel position
@@ -45,7 +48,7 @@ public class DriveCals {
     private double wheelLocationX = wheelLength / 2.0;
     private double wheelLocationY = wheelWidth / 2.0;
 
-    public double maxWheelSpeed = Units.feetToMeters(16);
+    public double maxWheelSpeed = Units.feetToMeters(14);
     
     //TODO: current limits
 

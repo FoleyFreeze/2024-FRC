@@ -2,14 +2,25 @@ package frc.robot.subsystems.lights;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class Lights extends SubsystemBase {
+    
+    RobotContainer r;
+
+    PowerDistribution pdh;
     
     AddressableLED leds;
     AddressableLEDBuffer ledBuffer;
  
-    public Lights(){
+    public Lights(RobotContainer r){
+        this.r = r;
+        pdh = new PowerDistribution(21, ModuleType.kRev);
+
         leds = new AddressableLED(0);
         ledBuffer = new AddressableLEDBuffer(300);
         leds.setLength(ledBuffer.getLength());
@@ -20,7 +31,15 @@ public class Lights extends SubsystemBase {
 
     @Override
     public void periodic(){
+        
+        if(DriverStation.isFMSAttached()){
+            pdh.setSwitchableChannel(true);
+        } else {
+            pdh.setSwitchableChannel(false);
+        }
+
         rainbow();
+        
     }
 
     private int firstPixel = 0;

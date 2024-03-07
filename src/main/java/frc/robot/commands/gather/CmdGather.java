@@ -41,6 +41,26 @@ public class CmdGather {
         return c;
     }
 
+    public static Command autonGather (RobotContainer r){
+        //start spinning things and wait for start up current to decay
+        Command c = new WaitCommand(startupTime)
+            .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                 r.shooter.setAngle(r.shooter.k.homePosition);}));
+        //detect when the piece has made it to the gate wheel
+        c = c.andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > detectGateCurrent))
+            .finallyDo(() -> r.gather.setGatePower(0));
+        //move the piece to it's final holding position
+        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevs);
+                                                r.state.hasNote = true;}));
+        //intake pushes note all the way to the gate then stops; gate holds it at constant position
+        c = c.andThen(new WaitCommand(extraIntakeTime))
+            .finallyDo(() -> r.gather.setIntakePower(0));
+
+        c.addRequirements(r.gather, r.shooter);
+        c.setName("CmdGather");
+        return c;
+    }
+
     public static Command unGather(RobotContainer r){
         Command c = (new RunCommand(() -> {r.gather.setGatherPower(reverseGatePower, reverseIntakePower);
                                             r.shooter.setShootPower(-0.15);

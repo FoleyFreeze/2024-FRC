@@ -1,10 +1,11 @@
 package frc.robot.auton;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 
 public class CmdAuton {
     
-    public static void selectedAuto(int a, int b, int c, int d, int e, int f, int g, int h){
+    public static Command selectedAuto(int a, int b, int c, int d, int e, int f, int g, int h, int total){
         int noteOrder[] = new int[8];
         sort(noteOrder, a, 1);
         sort(noteOrder, b, 2);
@@ -22,7 +23,7 @@ public class CmdAuton {
         }
 
         
-        
+        return null;
     }
 
 
@@ -30,5 +31,11 @@ public class CmdAuton {
         if(index>0){
             noteOrder[index - 1] = note;
         }
+    }
+
+
+    public static void stopAll(RobotContainer r){
+        r.shooter.goHome();
+        r.gather.setGatherPower(0, 0);
     }
 }

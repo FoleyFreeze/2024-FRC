@@ -16,7 +16,7 @@ public class Locations {
     public static final Translation2d noteA = new Translation2d (Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57 * 2 - 57));
     public static final Translation2d noteB = new Translation2d (Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57 * 2 - 57));
     public static final Translation2d noteC = new Translation2d (Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57 * 2 - 57));
-    public static final Translation2d noteD = new Translation2d (Units.inchesToMeters(fieldLength/2), fieldWidth/2 + Units.inchesToMeters(fieldWidth - 29.64));
+    public static final Translation2d noteD = new Translation2d (Units.inchesToMeters(fieldLength/2), fieldWidth/2 + Units.inchesToMeters(fieldWidth - 29.64)); //FIXME: fieldwidth is already in meters
     public static final Translation2d noteE = new Translation2d (Units.inchesToMeters(fieldLength/2), fieldWidth/2 + Units.inchesToMeters(fieldWidth - 95.64));
     public static final Translation2d noteF = new Translation2d (Units.inchesToMeters(fieldLength/2), fieldWidth/2 + Units.inchesToMeters(fieldWidth/2));
     public static final Translation2d noteG = new Translation2d (Units.inchesToMeters(fieldLength/2), fieldWidth/2 + Units.inchesToMeters(fieldWidth - 161.64));
