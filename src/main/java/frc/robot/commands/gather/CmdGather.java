@@ -18,7 +18,7 @@ public class CmdGather {
     static double reverseGatePower = -0.5;//0.3
 
     static double extraGateRevsCurrent = 2.6;
-    static double extraGateRevsSensor = 1.15;
+    static double extraGateRevsSensor = 1.2;
 
     public static double detectGateCurrent = 15;
 

@@ -32,7 +32,7 @@ public class Lights extends SubsystemBase {
     @Override
     public void periodic(){
         
-        if(DriverStation.isFMSAttached()){
+        if(r.state.hasNote){
             pdh.setSwitchableChannel(true);
         } else {
             pdh.setSwitchableChannel(false);

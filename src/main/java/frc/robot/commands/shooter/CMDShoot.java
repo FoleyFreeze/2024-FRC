@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
 
@@ -30,6 +31,27 @@ public class CMDShoot {
         return c;
     }
 
+    public static Command simpleAmpShoot(RobotContainer r){
+        Command c = new SequentialCommandGroup(
+            new RunCommand( () -> r.shooter.fixedPrime(), r.shooter, r.gather)
+                    .until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> {r.gather.setGatePower(1);
+                                      r.shooter.setAngle(101);}),
+            new WaitCommand(0.5),
+            new InstantCommand(() -> {r.shooter.goHome();
+                                     r.shooter.setShootPower(0);
+                                     r.gather.setGatePower(0);}),
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> {r.state.hasNote = false; 
+                                      r.state.isPrime = false;})
+        );
+        
+        c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        c.setName("CmdSimpleAmpShoot");
+        return c;
+    }
+
+
     //TODO: do we need this? ungather does this already
     /*
     public static Command unShoot(RobotContainer r){
@@ -45,10 +67,11 @@ public class CMDShoot {
         Command c = new FunctionalCommand( () -> r.state.isPrime = true,
                                            () -> r.shooter.fixedPrime(),
                                            (interrupted) -> {},
-                                           () -> !r.state.isPrime);
+                                           () -> !r.state.isPrime,
+                                           r.shooter, r.gather);
 
-                c.addRequirements(r.shooter, r.gather);
-                c.setName("fixedPrime");
+        c = c.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+        c.setName("FixedPrime");
 
         return c;
     }
