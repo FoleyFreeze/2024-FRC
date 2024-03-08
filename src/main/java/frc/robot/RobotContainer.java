@@ -147,6 +147,7 @@ public class RobotContainer {
   
   private Command autonCommand = new InstantCommand();
   private String lastSelectedAuton = "";
+  private boolean selectedAutonGenerated = false;
   
   public void determineAuton(){
     String selectedAuton = "";
@@ -175,15 +176,24 @@ public class RobotContainer {
           break;
 
         case SELECTABLE:
-          autonCommand = CmdAuton.selectedAuto(notePriorityA.get(),
-                                               notePriorityB.get(),
-                                               notePriorityC.get(),
-                                               notePriorityD.get(),
-                                               notePriorityE.get(),
-                                               notePriorityF.get(),
-                                               notePriorityG.get(),
-                                               notePriorityH.get(),
-                                               totalNotes.get());
+          selectedAutonGenerated = false;
+          autonCommand = new InstantCommand();
+          SmartDashboard.putBoolean("GenerationComplete",false);
+          //TODO: Finish this before uncommenting
+          /*CmdAuton.selectedAuto(this,
+                                notePriorityA.get(),
+                                notePriorityB.get(),
+                                notePriorityC.get(),
+                                notePriorityD.get(),
+                                notePriorityE.get(),
+                                notePriorityF.get(),
+                                notePriorityG.get(),
+                                notePriorityH.get(),
+                                totalNotes.get(),
+                                (command) -> {autonCommand = command;
+                                              SmartDashboard.putBoolean("GenerationComplete",true); 
+                                              selectedAutonGenerated = true;});
+          */
           break;
 
         case TEST:
