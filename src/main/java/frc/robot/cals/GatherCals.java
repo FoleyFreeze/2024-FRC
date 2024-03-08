@@ -19,5 +19,6 @@ public class GatherCals {
         .setPIDF(0.3, 0.001, 0, 0)
         .setIZone(0.25)
         .setPIDPwrLim(0.2)
-        .setRampRate(0.1);
+        .setRampRate(0.1)
+        .setBrakeMode(true);
 }

@@ -43,7 +43,7 @@ public class DriveCals {
     //this assumes that the side delta to the bumper is the 
     //  same as the back distance to the bumper and
     //  all of the remaining length difference is in front
-    private double centerOffsetX = (bumperLength - wheelLength - (bumperWidth - wheelWidth)/2.0) /2.0;
+    private double centerOffsetX = (bumperLength - wheelLength - (bumperWidth - wheelWidth)) /2.0;
     private double centerOffsetY = 0;
     private double wheelLocationX = wheelLength / 2.0;
     private double wheelLocationY = wheelWidth / 2.0;
