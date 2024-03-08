@@ -13,7 +13,7 @@ public class Gather extends SubsystemBase{
     RobotContainer r;
 
     GatherIO io;
-    GatherIOInputsAutoLogged inputs = new GatherIOInputsAutoLogged();
+    public GatherIOInputsAutoLogged inputs = new GatherIOInputsAutoLogged();
     
 
     public Gather (RobotContainer r, GatherCals k){

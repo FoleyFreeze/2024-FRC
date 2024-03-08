@@ -20,8 +20,8 @@ public class ShooterCals {
     public double minFixedAngle = 22;
     public double maxFixedSpeed = 10000;
     public double minFixedSpeed = 500;
-    public double fixedAngle[] = {30, 50, 60};
-    public double fixedRPM[] = {7000, 6000, 5000};
+    public double fixedAngle[] = {34, 50, 60};
+    public double fixedRPM[] = {4500, 4500, 4500};
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 
@@ -31,7 +31,7 @@ public class ShooterCals {
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 16)
                                         .setBrakeMode(true)
                                         .setCurrLim(30)
-                                        .setPIDF(2, 0, 0, 0)
+                                        .setPIDF(1.5, 0, 0, 0)//TODO: go back to 2
                                         .setPIDPwrLim(0.3, -0.3)//TODO: go back to 0.4
                                         .setRatio(85 / 32.0 * 30/24.0); //32 rotations of the screw, but gear ratio of 30/24
                                                                         //so a real ratio of 95deg / 25.6 (yes its geared up)

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.gather;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.cals.GatherCals;
 import frc.robot.subsystems.motor.Motor;
 
@@ -8,9 +9,13 @@ public class GatherIO_HW implements GatherIO {
     Motor topGather;
     Motor gateMotor;
     
+    DigitalInput proxSw;
+
     public GatherIO_HW (GatherCals k){
         topGather = Motor.create(k.topGather);
         gateMotor = Motor.create(k.gateMotor);
+
+        proxSw = new DigitalInput(0);
     }
 
     @Override
@@ -44,6 +49,8 @@ public class GatherIO_HW implements GatherIO {
             inputs.gateAppliedVolts = voltage;
             inputs.gateTemp = temp;
         }
+
+        inputs.proxSensor = !proxSw.get();
     }
 
     @Override

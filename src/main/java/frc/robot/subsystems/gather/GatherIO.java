@@ -16,6 +16,8 @@ public interface GatherIO {
         public double gateAppliedVolts;
         public double gateCurrentAmps;
         public double gateTemp;
+
+        public boolean proxSensor;
     }
 
     public default void updateInputs(GatherIOInputs inputs) {}

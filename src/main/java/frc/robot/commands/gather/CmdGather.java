@@ -12,16 +12,17 @@ public class CmdGather {
     static double startupTime = 0.2;
     static double extraIntakeTime = 0.3;
 
-    static double intakePower = 0.4;
-    static double gatePower = 0.15;
-    static double reverseIntakePower = -0.5;
-    static double reverseGatePower = -0.3;
+    static double intakePower = 0.5;//0.4
+    static double gatePower = 0.25;//0.15
+    static double reverseIntakePower = -0.6;//0.5
+    static double reverseGatePower = -0.5;//0.3
 
-    static double extraGateRevs = 2.6;
+    static double extraGateRevsCurrent = 2.6;
+    static double extraGateRevsSensor = 1.15;
 
     public static double detectGateCurrent = 15;
 
-    public static Command gather (RobotContainer r){
+    public static Command gatherCurrent (RobotContainer r){
         //start spinning things and wait for start up current to decay
         Command c = new WaitCommand(startupTime)
             .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
@@ -30,7 +31,27 @@ public class CmdGather {
         c = c.andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > detectGateCurrent))
             .finallyDo(() -> r.gather.setGatePower(0));
         //move the piece to it's final holding position
-        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevs);
+        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsCurrent);
+                                                r.state.hasNote = true;}));
+        //intake pushes note all the way to the gate then stops; gate holds it at constant position
+        c = c.andThen(new WaitCommand(extraIntakeTime))
+            .finallyDo(() -> r.gather.setIntakePower(0));
+
+        c.addRequirements(r.gather, r.shooter);
+        c.setName("CmdGather");
+        return c;
+    }
+
+    public static Command gather (RobotContainer r){
+        //start spinning things and wait for start up current to decay
+        Command c = new WaitCommand(startupTime)
+            .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                 r.shooter.goHome();}));
+        //detect when the piece has made it to the gate wheel
+        c = c.andThen(new WaitUntilCommand(() -> r.gather.inputs.proxSensor))
+            .finallyDo(() -> r.gather.setGatePower(0));
+        //move the piece to it's final holding position
+        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
                                                 r.state.hasNote = true;}));
         //intake pushes note all the way to the gate then stops; gate holds it at constant position
         c = c.andThen(new WaitCommand(extraIntakeTime))
@@ -47,10 +68,10 @@ public class CmdGather {
             .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
                                                  r.shooter.setAngle(r.shooter.k.homePosition);}));
         //detect when the piece has made it to the gate wheel
-        c = c.andThen(new WaitUntilCommand(() -> r.gather.getGateCurrent() > detectGateCurrent))
+        c = c.andThen(new WaitUntilCommand(() -> r.gather.inputs.proxSensor))
             .finallyDo(() -> r.gather.setGatePower(0));
         //move the piece to it's final holding position
-        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevs);
+        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
                                                 r.state.hasNote = true;}));
         //intake pushes note all the way to the gate then stops; gate holds it at constant position
         c = c.andThen(new WaitCommand(extraIntakeTime))
