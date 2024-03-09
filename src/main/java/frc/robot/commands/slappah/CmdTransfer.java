@@ -1,6 +1,7 @@
 package frc.robot.commands.slappah;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -42,11 +43,14 @@ public class CmdTransfer {
     static double unTransferPower = -0.3;
     static double extraGate = -1;
 
+    //score
+    static double scoreTransferPower = -1;
+    static double scoreWaitTime = 0.8;
+
     public static Command unTransferFull(RobotContainer r){
         Command c = new SequentialCommandGroup(setup(r), unTransfer(r), end(r));
                 c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 
-        c.addRequirements(r.shooter, r.slappah, r.gather);
         c.setName("CmdUnTransfer");
 
         return c;
@@ -57,7 +61,7 @@ public class CmdTransfer {
                         new InstantCommand(() -> {r.shooter.setShootPower(unShootPower);
                                                   r.gather.setGatePower(unGatePower); 
                                                   r.slappah.setTransferPower(unTransferPower);
-                                                 }),
+                                                 }, r.shooter, r.gather, r.slappah),
                         new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
                         new WaitUntilCommand(() -> r.gather.getGateCurrent() > CmdGather.detectGateCurrent)
@@ -66,7 +70,8 @@ public class CmdTransfer {
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
                                                   r.slappah.setTransferPower(0);
-                                                  r.state.hasTransfer = false;}),
+                                                  r.state.hasTransfer = false;},
+                                                        r.shooter, r.gather, r.slappah),
                         new PrintCommand("stage 6")
                         );
 
@@ -78,7 +83,7 @@ public class CmdTransfer {
                         new InstantCommand(() -> {r.shooter.setShootPower(shootPower);
                                                   r.gather.setGatePower(gatePower); 
                                                   r.slappah.setTransferPower(transferPower);
-                                                 }),
+                                                 }, r.shooter, r.gather, r.slappah),
                         new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
                         new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
@@ -89,7 +94,8 @@ public class CmdTransfer {
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
                                                   r.slappah.setTransferPower(0);
-                                                  r.state.hasTransfer = true;}),
+                                                  r.state.hasTransfer = true;
+                                                }, r.shooter, r.gather, r.slappah),
                         new PrintCommand("stage 6")
                         );
 
@@ -100,7 +106,6 @@ public class CmdTransfer {
     public static Command transferForAmp(RobotContainer r){
         Command c = new SequentialCommandGroup(setup(r), transfer(r), end(r));
         c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-        c.addRequirements(r.shooter, r.slappah, r.gather);
         c.setName("CmdTransfer");
 
         return c;
@@ -112,13 +117,13 @@ public class CmdTransfer {
         Command setUp = new SequentialCommandGroup(
                     new InstantCommand(() -> {r.shooter.setAngle(shootPreTransPos);
                                               r.slappah.setAngle(slapPreTransPos);
-                                            }),
+                                            }, r.shooter, r.slappah),
                     new PrintCommand("stage 1"),
                     new WaitUntilCommand(r.slappah::checkAngleError),
-                    new InstantCommand(() -> r.shooter.setAngle(shootTransPos)),
+                    new InstantCommand(() -> r.shooter.setAngle(shootTransPos), r.shooter),
                     new PrintCommand("stage 2"),
                     new WaitUntilCommand(r.shooter::checkAngleError),
-                    new InstantCommand(() -> r.slappah.setAngle(slapTransferPos)),
+                    new InstantCommand(() -> r.slappah.setAngle(slapTransferPos), r.slappah),
                     new PrintCommand("stage 3"),
                     new WaitUntilCommand(r.slappah::checkAngleError)
                     );
@@ -128,13 +133,13 @@ public class CmdTransfer {
 
     private static Command end(RobotContainer r){
         Command end = new SequentialCommandGroup(
-                      new InstantCommand(() -> r.slappah.setAngle(slapPreTransPos)),
+                      new InstantCommand(() -> r.slappah.setAngle(slapPreTransPos), r.slappah),
                       new PrintCommand("stage 7"),
                       new WaitUntilCommand(r.slappah::checkAngleError),
-                      new InstantCommand(r.shooter::goHome),
+                      new InstantCommand(r.shooter::goHome, r.shooter),
                       new PrintCommand("stage 8"),
                       new WaitUntilCommand(r.shooter::checkAngleError),
-                      new InstantCommand(() -> r.slappah.setAngle(slapHomePos)),
+                      new InstantCommand(() -> r.slappah.setAngle(slapHomePos), r.slappah),
                       new PrintCommand("stage done")
         );
 
@@ -142,14 +147,38 @@ public class CmdTransfer {
     }
 
     public static Command goToTrap(RobotContainer r){
-        Command move = new InstantCommand(() -> r.slappah.setAngle(slapTrapScorePos));
+        Command move = new InstantCommand(() -> r.slappah.setAngle(slapTrapScorePos), r.slappah);
 
         return move;
     }
 
-      public static Command goToPreTrap(RobotContainer r){
-        Command move = new InstantCommand(() -> r.slappah.setAngle(slapPreTrapPos));
+    public static Command goToPreTrap(RobotContainer r){
+        Command move = new InstantCommand(() -> r.slappah.setAngle(slapPreTrapPos), r.slappah);
 
         return move;
     }
+
+    public static Command goToPreAmp(RobotContainer r){
+        //if we are down, go up, otherwise go down
+        Command c = new ConditionalCommand(
+            new InstantCommand(() -> r.slappah.setAngle(slapPreAmpPos), r.slappah),
+            new InstantCommand(() -> r.slappah.setAngle(slapHomePos), r.slappah),
+            () -> r.slappah.inputs.anglePosition < (slapPreAmpPos + slapHomePos) / 2.0
+        );
+
+        return c;
+    }
+
+    public static Command scoreInAmp(RobotContainer r){
+        Command c = new SequentialCommandGroup(
+            new InstantCommand(() -> r.slappah.setAngle(slapAmpScorePos), r.slappah),
+            new WaitUntilCommand(() -> r.slappah.checkAngleError()),
+            new InstantCommand(() -> r.slappah.setTransferPower(scoreTransferPower), r.slappah),
+            new WaitCommand(scoreWaitTime),
+            new InstantCommand(() -> r.slappah.setAngle(slapHomePos), r.slappah)
+        );
+
+        return c;
+    }
+
 }

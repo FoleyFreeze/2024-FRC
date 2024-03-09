@@ -19,34 +19,56 @@ public class CMDShoot {
 
 
     public static Command simpleShoot(RobotContainer r){
-        Command c = new RunCommand( () -> r.shooter.fixedPrime());
+        Command c = new SequentialCommandGroup(
+            new RunCommand(() -> r.shooter.fixedPrime(), r.shooter)
+                .until(() -> r.shooter.checkAngleError() 
+                          && r.shooter.checkRPMError() 
+                          && r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> r.gather.setGatePower(1), r.gather),
+            new WaitCommand(shootWaitTime),
+            new InstantCommand(() -> {r.shooter.goHome();
+                                      r.gather.setGatePower(0); 
+                                      r.state.hasNote = false;}, 
+                                            r.shooter, r.gather),
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean())
+            //make sure trigger is released so it doesnt immediately run again
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+
+        c.setName("CmdSimpleShoot");
+        return c;
+        
+        /*
+        new RunCommand( () -> r.shooter.fixedPrime());
                 c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean());
-                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false; r.state.isPrime = false;}));
+                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false;}));
                 c = c.andThen(new WaitCommand(shootWaitTime)); 
-                c = c.andThen(() -> {r.shooter.goHome();});
-                c = c.finallyDo(() -> {r.shooter.setShootPower(0); r.gather.setGatePower(0);});
+                c = c.andThen(() -> {r.shooter.goHome(); r.gather.setGatePower(0);});
+                c = c.finallyDo(() -> {r.shooter.setShootPower(0); });
 
                 c.addRequirements(r.shooter, r.gather);
                 c.setName("CmdSimpleShoot");
         return c;
+        */
     }
 
     public static Command simpleAmpShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
-            new RunCommand( () -> r.shooter.fixedPrime(), r.shooter, r.gather)
-                    .until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean()),
-            new InstantCommand(() -> {r.gather.setGatePower(1);
-                                      r.shooter.setAngle(101);}),
-            new WaitCommand(0.5),
+            new RunCommand(() -> {r.shooter.setAngle(102);
+                                  r.shooter.setRPM(1200);
+                                  r.gather.setGatePosition(0.2);},//increment the gate position to not pinch the note
+                                         r.shooter, r.gather)
+                .until(() -> r.shooter.checkAngleError() 
+                          && r.shooter.checkRPMError() 
+                          && r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> r.gather.setGatePower(1), r.gather),
+            new WaitCommand(shootWaitTime),
             new InstantCommand(() -> {r.shooter.goHome();
-                                     r.shooter.setShootPower(0);
-                                     r.gather.setGatePower(0);}),
-            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
-            new InstantCommand(() -> {r.state.hasNote = false; 
-                                      r.state.isPrime = false;})
-        );
+                                      r.gather.setGatePower(0); 
+                                      r.state.hasNote = false;}, 
+                                            r.shooter, r.gather),
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean())
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         
-        c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         c.setName("CmdSimpleAmpShoot");
         return c;
     }
@@ -63,8 +85,9 @@ public class CMDShoot {
         return c;
     }*/
 
+    /*
     public static Command fixedPrime(RobotContainer r){
-        Command c = new FunctionalCommand( () -> r.state.isPrime = true,
+        Command c = new FunctionalCommand( () -> {}},
                                            () -> r.shooter.fixedPrime(),
                                            (interrupted) -> {},
                                            () -> !r.state.isPrime,
@@ -75,13 +98,14 @@ public class CMDShoot {
 
         return c;
     }
+    */
 
     public static Command visionShoot(RobotContainer r){
         Command c = new RunCommand( () -> r.shooter.fixedPrime());
                 c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean());
-                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); r.state.hasNote = false;}));
+                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); }));
                 c = c.andThen(new WaitCommand(shootWaitTime)); 
-                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0); r.state.isPrime = false;});
+                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0); r.state.hasNote = false;});
 
                 c.addRequirements(r.shooter, r.gather);
                 c.setName("VisionPrime");
@@ -89,6 +113,7 @@ public class CMDShoot {
         return c;    
     }
 
+    /*
     public static Command autonShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
             new RunCommand(() -> {r.shooter.setAngle(60);
@@ -104,4 +129,5 @@ public class CMDShoot {
         c.setName("CmdAutonShoot");
         return c;
     }
+    */
 }
