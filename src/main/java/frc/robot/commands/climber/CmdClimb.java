@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.slappah.CmdTransfer;
@@ -17,6 +18,28 @@ public class CmdClimb {
     static double unClimbPower = -.2;
 
     static double pushAgainstWallPower = 0.07;
+
+    public static Command deployClimb(RobotContainer r){
+        return new SequentialCommandGroup(
+            CmdTransfer.setup(r), //go to transfer pos but dont transfer yet
+            new InstantCommand(() -> r.state.climbDeploy = true)
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public static Command undeployClimb(RobotContainer r){
+        return new SequentialCommandGroup(
+            CmdTransfer.end(r),
+            new InstantCommand(() -> r.state.climbDeploy = false)
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public static Command visionClimb(RobotContainer r){
+        return new InstantCommand();
+    }
+
+    public static Command manualClimb(RobotContainer r){
+        return new InstantCommand();
+    }
 
     public static Command simpleWinch(RobotContainer r){
         Command c = new RunCommand( () -> r.climber.evenClimb(climbPower));
@@ -57,9 +80,7 @@ public class CmdClimb {
             new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower)), //force the arm against the wall to maintain robot pitch while climbing
             waitForShootToggle(r),//wait for trigger before actually winching
             new RunCommand(() -> r.climber.triggerEvenClimb(climbPower))
-            
-
-            
+            //TODO: finish
         );
 
         return climb;
@@ -73,4 +94,6 @@ public class CmdClimb {
 
         return wait;
     }
+
+
 }

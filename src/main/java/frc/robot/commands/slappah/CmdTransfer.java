@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.commands.gather.CmdGather;
 
@@ -47,8 +48,11 @@ public class CmdTransfer {
     static double scoreTransferPower = -1;
     static double scoreWaitTime = 0.8;
 
-    public static Command unTransferFull(RobotContainer r){
-        Command c = new SequentialCommandGroup(setup(r), unTransfer(r), end(r));
+    public static Command unTransferFull(RobotContainer r, Trigger t){
+        Command c = new SequentialCommandGroup(setup(r), 
+                                               unTransfer(r), 
+                                               end(r),
+                                               new WaitUntilCommand(() -> !t.getAsBoolean()));
                 c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
                 
         c.setName("CmdUnTransfer");
@@ -103,8 +107,11 @@ public class CmdTransfer {
 
     }
 
-    public static Command transferForAmp(RobotContainer r){
-        Command c = new SequentialCommandGroup(setup(r), transfer(r), end(r));
+    public static Command transferForAmp(RobotContainer r, Trigger t){
+        Command c = new SequentialCommandGroup(setup(r),
+                                               transfer(r), 
+                                               end(r),
+                                               new WaitUntilCommand(() -> !t.getAsBoolean()));
         c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         c.setName("CmdTransfer");
 
@@ -131,7 +138,7 @@ public class CmdTransfer {
         return setUp;
     }
 
-    private static Command end(RobotContainer r){
+    public static Command end(RobotContainer r){
         Command end = new SequentialCommandGroup(
                       new InstantCommand(() -> r.slappah.setAngle(slapPreTransPos), r.slappah),
                       new PrintCommand("stage 7"),

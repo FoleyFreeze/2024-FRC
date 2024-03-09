@@ -138,31 +138,85 @@ public class RobotContainer {
         .and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
-        .and(inputs.SWBHi.negate())
-        .and(inputs.SWBLo.negate())
+        //.and(inputs.SWBHi.negate())
+        //.and(inputs.SWBLo.negate())
         .onTrue(CMDShoot.simpleShoot(this));
-        //.onTrue(CMDShoot.simpleAmpShoot(this));
+        //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
 
     inputs.shootTriggerSWH
         .and(state.hasTransferT)
         .and(state.climbDeployT.negate())
         .onTrue(CmdTransfer.scoreInAmp(this));
 
-    //climber commands
-    inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
+    //control board commands
+    //TODO: enable control board
+    boolean enablecontrolboard = false;
+    if(enablecontrolboard){
+    //transfer to arm
+    inputs.transferB3
+        .and(inputs.shiftB6.negate())
+        //.and(state.hasNoteT)
+        .and(state.hasTransferT.negate())
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.transferForAmp(this, inputs.transferB3));
+
+    //untransfer from arm
+    inputs.transferB3
+        .and(inputs.shiftB6)
+        //.and(state.hasNoteT)
+        .and(state.hasTransferT)
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.unTransferFull(this, inputs.transferB3));
+
+    //deploy climb
+    inputs.climbDeployB4
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand());
+
+    //undeploy climb
+    inputs.climbDeployB4
+        .and(inputs.shiftB6)
+        .and(state.climbDeployT)
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand());
+
+    //gather
+    inputs.gatherBtnB5
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.gather(this));
+
+    //ungather
+    inputs.gatherBtnB5
+        .and(inputs.shiftB6)
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.unGather(this));
+
+    inputs.shootBtnB1
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT)
+        .onTrue(CmdTransfer.scoreInAmp(this));
+
+    inputs.shiftB6.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
+    inputs.shiftB6.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+    inputs.shiftB6.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
+    inputs.shiftB6.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+    }
+
+    
 
     //TODO: map here for now
     inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
     //if in climb mode, ungather will transfer
-    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this));
+    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
 
-    //SmartDashboard.putData("TestCmd", new RunCommand(() -> {shooter.setShootPower(0.12); slappah.setTransferPower(-0.6); gather.setGatePower(0.8);}).raceWith(new WaitCommand(10)).finallyDo(() -> {shooter.setShootPower(0); slappah.setTransferPower(0); gather.setGatePower(0);}));
-
-    //TODO: uncomment once there is a control board
-    //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
-    //inputs.shift.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
-    //inputs.shift.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
-    //inputs.shift.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+    //inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
+    
   }
 
   public Command getAutonomousCommand() {
