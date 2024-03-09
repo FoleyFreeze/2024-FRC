@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
@@ -157,5 +158,20 @@ public class DriveCals {
         wheelFL.wheelLocation.getNorm(),
         new ReplanningConfig()
     );
-   
+
+    public HolonomicPathFollowerConfig AutonPathFollowerConfig = new HolonomicPathFollowerConfig(
+        new PIDConstants(5, 0, 0),
+        new PIDConstants(5, 0, 0),
+        maxWheelSpeed,
+        wheelFL.wheelLocation.getNorm(),
+        new ReplanningConfig()
+    );
+
+    public boolean flipPath(){ 
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()){
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false; 
+    }
 }

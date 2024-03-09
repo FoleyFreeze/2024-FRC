@@ -176,11 +176,7 @@ public class RobotContainer {
           break;
 
         case SELECTABLE:
-          selectedAutonGenerated = false;
-          autonCommand = new InstantCommand();
-          SmartDashboard.putBoolean("GenerationComplete",false);
-          //TODO: Finish this before uncommenting
-          /*CmdAuton.selectedAuto(this,
+          autonCommand = CmdAuton.selectedAuto(this,
                                 notePriorityA.get(),
                                 notePriorityB.get(),
                                 notePriorityC.get(),
@@ -189,11 +185,8 @@ public class RobotContainer {
                                 notePriorityF.get(),
                                 notePriorityG.get(),
                                 notePriorityH.get(),
-                                totalNotes.get(),
-                                (command) -> {autonCommand = command;
-                                              SmartDashboard.putBoolean("GenerationComplete",true); 
-                                              selectedAutonGenerated = true;});
-          */
+                                totalNotes.get()
+          );
           break;
 
         case TEST:

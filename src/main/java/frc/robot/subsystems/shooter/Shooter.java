@@ -90,8 +90,12 @@ public class Shooter extends SubsystemBase {
 
     public void visionPrime(){
         double distToTarget = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getNorm();
-        double angle = interp(distToTarget, k.camDistance, k.camAngle);
-        double rpm = interp(distToTarget, k.camDistance, k.camRPM);
+        distancePrime(distToTarget);
+    }
+
+    public void distancePrime(double distance){
+        double angle = interp(distance, k.camDistance, k.camAngle);
+        double rpm = interp(distance, k.camDistance, k.camRPM);
         setAngle(angle + angleJog);
         setRPM(rpm + speedJog);
     }
