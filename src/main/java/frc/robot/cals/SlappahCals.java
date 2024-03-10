@@ -14,7 +14,6 @@ public class SlappahCals {
                                     .setCurrLim(15)
                                     .setRatio(1/45.0 * 34/44.0 * 360); //something like 100deg / 20rotations = 5
                                     //fixed now: this is actually 1 / 45.0 * 34 / 44.0 * 360deg = 6.181818
-                                    //figure out how this changes all the positions
 
     public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 3)
                                     .setBrakeMode(true)
