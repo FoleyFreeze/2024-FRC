@@ -39,18 +39,28 @@ public class Inputs extends SubsystemBase {
     public Trigger SWGHi = new Trigger(() -> flysky.getRawButton(9));
     public Trigger SWGLo = new Trigger(() -> flysky.getRawButton(8));
 
-    public Joystick controlBoard;
+    public Joystick controlBoard1;
+    public Joystick controlBoard2;
 
-    public Trigger shootAngleJogUp = new Trigger(() -> controlBoard.getRawButton(0));
-    public Trigger shootAngleJogDn = new Trigger(() -> controlBoard.getRawButton(0));
-    public Trigger shift = new Trigger(() -> controlBoard.getRawButton(0));
+    public Trigger shiftB6 = new Trigger(() -> controlBoard1.getRawButton(6));
+    public Trigger shootAngleJogUp = new Trigger(() -> controlBoard1.getPOV() == 0);
+    public Trigger shootAngleJogDn = new Trigger(() -> controlBoard1.getPOV() == 180);
+    public Trigger armAngleJogUp = new Trigger(() -> controlBoard1.getPOV() == 90);
+    public Trigger armAngleJogDn = new Trigger(() -> controlBoard1.getPOV() == 270);
+
+    public Trigger climbDeployB4 = new Trigger(() -> controlBoard1.getRawButton(4));
+    public Trigger climbWinchB2 = new Trigger(() -> controlBoard1.getRawButton(2));
+    public Trigger gatherBtnB5 = new Trigger(() -> controlBoard1.getRawButton(5));
+    public Trigger transferB3 = new Trigger(() -> controlBoard1.getRawButton(3));
+    public Trigger shootBtnB1 = new Trigger(() -> controlBoard1.getRawButton(1));
 
     public Inputs (RobotContainer r, InputsCals k){
         this.r = r;
         this.k = k;
         
         flysky = new Joystick(0);
-        //controlBoard = new Joystick(1);
+        //controlBoard1 = new Joystick(1);
+        //controlBoard2 = new Joystick(2);
     }
 
     public ChassisSpeeds getChassisSpeeds(){
@@ -152,6 +162,20 @@ public class Inputs extends SubsystemBase {
         }else {
             return 1;
         }
+    }
+
+    public int getClimbDir(){
+        if(controlBoard2.getRawButton(3)){
+            return 1;
+        } else if(controlBoard2.getRawButton(2)) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    public boolean getPitMode(){
+        return controlBoard2.getRawButton(1);
     }
 
     public double getLeftDial(){

@@ -14,7 +14,9 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -106,39 +108,115 @@ public class RobotContainer {
     inputs.resetFieldOdometryRTRIM.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
 
     //gather commands
-    inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD).whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
-    inputs.gatherTriggerSWE.and(inputs.cameraEnableSWD.negate()).whileTrue(CmdGather.gather(this));
+    inputs.gatherTriggerSWE
+        .and(inputs.cameraEnableSWD)
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
+    
+    inputs.gatherTriggerSWE
+        .and(inputs.cameraEnableSWD.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.gather(this));
+
+    inputs.gatherTriggerSWE
+        .and(state.hasTransferT)
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.goToPreAmp(this));
 
     //shoot commands
-    inputs.shootTriggerSWH
+    /*inputs.shootTriggerSWH
         .and(inputs.cameraEnableSWD.negate())
         .and(state.isPrimeT.negate())
         .and(inputs.SWBHi.negate())
         .and(inputs.SWBLo.negate())
-        .onTrue(CMDShoot.fixedPrime(this));
+        .onTrue(CMDShoot.fixedPrime(this));*/
 
     inputs.shootTriggerSWH
         .and(inputs.cameraEnableSWD.negate())
-        .and(state.isPrimeT)
-        .and(inputs.SWBHi.negate())
-        .and(inputs.SWBLo.negate())
+        .and(state.hasNoteT)
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        //.and(inputs.SWBHi.negate())
+        //.and(inputs.SWBLo.negate())
         .onTrue(CMDShoot.simpleShoot(this));
+        //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
 
-    //climber commands
-    inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
+    inputs.shootTriggerSWH
+        .and(state.hasTransferT)
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.scoreInAmp(this));
+
+    //control board commands
+    //TODO: enable control board
+    boolean enablecontrolboard = false;
+    if(enablecontrolboard){
+    //transfer to arm
+    inputs.transferB3
+        .and(inputs.shiftB6.negate())
+        //.and(state.hasNoteT)
+        .and(state.hasTransferT.negate())
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.transferForAmp(this, inputs.transferB3));
+
+    //untransfer from arm
+    inputs.transferB3
+        .and(inputs.shiftB6)
+        //.and(state.hasNoteT)
+        .and(state.hasTransferT)
+        .and(state.climbDeployT.negate())
+        .onTrue(CmdTransfer.unTransferFull(this, inputs.transferB3));
+
+    //deploy climb
+    inputs.climbDeployB4
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand());
+
+    //undeploy climb
+    inputs.climbDeployB4
+        .and(inputs.shiftB6)
+        .and(state.climbDeployT)
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand());
+
+    //gather
+    inputs.gatherBtnB5
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.gather(this));
+
+    //ungather
+    inputs.gatherBtnB5
+        .and(inputs.shiftB6)
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .whileTrue(CmdGather.unGather(this));
+
+    inputs.shootBtnB1
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT)
+        .onTrue(CmdTransfer.scoreInAmp(this));
+
+    inputs.shiftB6.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
+    inputs.shiftB6.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+    inputs.shiftB6.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
+    inputs.shiftB6.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+    }
+
+    
 
     //TODO: map here for now
     inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
     //if in climb mode, ungather will transfer
-    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this));
+    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
 
-    //SmartDashboard.putData("TestCmd", new RunCommand(() -> {shooter.setShootPower(0.12); slappah.setTransferPower(-0.6); gather.setGatePower(0.8);}).raceWith(new WaitCommand(10)).finallyDo(() -> {shooter.setShootPower(0); slappah.setTransferPower(0); gather.setGatePower(0);}));
-
-    //TODO: uncomment once there is a control board
-    //inputs.shift.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
-    //inputs.shift.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
-    //inputs.shift.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
-    //inputs.shift.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+    //inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
+    
   }
 
   public Command getAutonomousCommand() {
@@ -147,6 +225,7 @@ public class RobotContainer {
   
   private Command autonCommand = new InstantCommand();
   private String lastSelectedAuton = "";
+  private Pose2d autonStartPose = new Pose2d();
   
   public void determineAuton(){
     String selectedAuton = "";
@@ -160,9 +239,12 @@ public class RobotContainer {
     selectedAuton += notePriorityG.get();
     selectedAuton += notePriorityH.get();
     selectedAuton += totalNotes.get();
+    selectedAuton += drive.k.flipPath();
 
-    if (!selectedAuton.equals(lastSelectedAuton)){
+    if (checkPoseError(autonStartPose, drive.getPose()) || !selectedAuton.equals(lastSelectedAuton)){
       lastSelectedAuton = selectedAuton;
+      autonStartPose = drive.getPose();
+
       switch(autoChooser.get()){
         //TODO: include totalNotes in the pregen path autos to stop early
         //Probably do this as part of a AutonMonitor running in parallel
@@ -175,15 +257,17 @@ public class RobotContainer {
           break;
 
         case SELECTABLE:
-          autonCommand = CmdAuton.selectedAuto(notePriorityA.get(),
-                                               notePriorityB.get(),
-                                               notePriorityC.get(),
-                                               notePriorityD.get(),
-                                               notePriorityE.get(),
-                                               notePriorityF.get(),
-                                               notePriorityG.get(),
-                                               notePriorityH.get(),
-                                               totalNotes.get());
+          autonCommand = CmdAuton.selectedAuto(this,
+                                notePriorityA.get(),
+                                notePriorityB.get(),
+                                notePriorityC.get(),
+                                notePriorityD.get(),
+                                notePriorityE.get(),
+                                notePriorityF.get(),
+                                notePriorityG.get(),
+                                notePriorityH.get(),
+                                totalNotes.get()
+          );
           break;
 
         case TEST:
@@ -223,17 +307,7 @@ public class RobotContainer {
                     drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
+            drive.k::flipPath,
             drive // Reference to this subsystem to set requirements
     );
   }
@@ -268,27 +342,32 @@ public class RobotContainer {
     totalNotes.addDefaultOption("0", 0);
 
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
-    autoTab.add(autoChooser.getSendableChooser()).withPosition(0, 0);
-    autoTab.add(totalNotes.getSendableChooser()).withPosition(1, 0);
-    autoTab.add(notePriorityA.getSendableChooser()).withPosition(1, 1);
-    autoTab.add(notePriorityB.getSendableChooser()).withPosition(2, 1);
-    autoTab.add(notePriorityC.getSendableChooser()).withPosition(3, 1);
-    autoTab.add(notePriorityD.getSendableChooser()).withPosition(4, 1);
-    autoTab.add(notePriorityE.getSendableChooser()).withPosition(5, 1);
-    autoTab.add(notePriorityF.getSendableChooser()).withPosition(1, 2);
-    autoTab.add(notePriorityG.getSendableChooser()).withPosition(2, 2);
-    autoTab.add(notePriorityH.getSendableChooser()).withPosition(3, 2);
+    autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0, 0).withSize(2,1);
+    autoTab.add("Total Notes", totalNotes.getSendableChooser()).withPosition(2, 0).withSize(2,1);
+    autoTab.add("Note A", notePriorityA.getSendableChooser()).withPosition(1, 1);
+    autoTab.add("Note B", notePriorityB.getSendableChooser()).withPosition(2, 1);
+    autoTab.add("Note C", notePriorityC.getSendableChooser()).withPosition(3, 1);
+    autoTab.add("Note D", notePriorityD.getSendableChooser()).withPosition(4, 1);
+    autoTab.add("Note E", notePriorityE.getSendableChooser()).withPosition(5, 1);
+    autoTab.add("Note F", notePriorityF.getSendableChooser()).withPosition(1, 2);
+    autoTab.add("Note G", notePriorityG.getSendableChooser()).withPosition(2, 2);
+    autoTab.add("Note H", notePriorityH.getSendableChooser()).withPosition(3, 2);
   }
 
   private void addNoteOrderHelper(LoggedDashboardChooser<Integer> c){
     c.addDefaultOption("N/A", 0);
-    c.addOption("1", 1);
-    c.addOption("2", 2);
-    c.addOption("3", 3);
-    c.addOption("4", 4);
-    c.addOption("5", 5);
-    c.addOption("6", 6);
-    c.addOption("7", 7);
-    c.addOption("8", 8);
+    c.addOption("1st", 1);
+    c.addOption("2nd", 2);
+    c.addOption("3rd", 3);
+    c.addOption("4th", 4);
+    c.addOption("5th", 5);
+    c.addOption("6th", 6);
+    c.addOption("7th", 7);
+    c.addOption("8th", 8);
+  }
+
+  private boolean checkPoseError(Pose2d one, Pose2d two){
+    return one.getTranslation().minus(two.getTranslation()).getNorm() > Units.inchesToMeters(12)
+            || Math.abs(MathUtil.angleModulus(one.getRotation().minus(two.getRotation()).getRadians())) > Units.degreesToRadians(20);
   }
 }

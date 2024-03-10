@@ -14,7 +14,7 @@ public class Slappah extends SubsystemBase {
     RobotContainer r;
 
     SlappahIO io;
-    SlappahIOInputsAutoLogged inputs = new SlappahIOInputsAutoLogged();
+    public SlappahIOInputsAutoLogged inputs = new SlappahIOInputsAutoLogged();
 
     double angleSetpoint;
     double transferSetPoint;
