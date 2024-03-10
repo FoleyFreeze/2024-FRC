@@ -22,6 +22,7 @@ public class SparkMotor implements Motor{
     SparkPIDController PIDController;
 
     int errorCount;
+    REVLibError lastLoopError = REVLibError.kOk;
 
     public SparkMotor(MotorCal k){
         this.k = k;
@@ -78,7 +79,10 @@ public class SparkMotor implements Motor{
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
+        } else if(lastLoopError != REVLibError.kOk) {
+            Logger.recordOutput("Motor"+k.channel, error.toString());
         }
+        lastLoopError = error;
 
         return value;
     }
@@ -124,7 +128,10 @@ public class SparkMotor implements Motor{
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
+        } else if(lastLoopError != REVLibError.kOk) {
+            Logger.recordOutput("Motor"+k.channel, error.toString());
         }
+        lastLoopError = error;
 
         return value;
     }
@@ -136,7 +143,10 @@ public class SparkMotor implements Motor{
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
+        } else if(lastLoopError != REVLibError.kOk) {
+            Logger.recordOutput("Motor"+k.channel, error.toString());
         }
+        lastLoopError = error;
 
         return value;
     }
@@ -181,7 +191,10 @@ public class SparkMotor implements Motor{
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
+        } else if(lastLoopError != REVLibError.kOk) {
+            Logger.recordOutput("Motor"+k.channel, error.toString());
         }
+        lastLoopError = error;
 
         return value;
     }
@@ -194,11 +207,14 @@ public class SparkMotor implements Motor{
     @Override
     public double getVoltage(){
         double value = motor.getAppliedOutput() * motor.getBusVoltage();
-    REVLibError error = motor.getLastError();
+        REVLibError error = motor.getLastError();
         if(error != REVLibError.kOk){
             Logger.recordOutput("Motor"+k.channel, error.toString());
             errorCount++;
+        } else if(lastLoopError != REVLibError.kOk) {
+            Logger.recordOutput("Motor"+k.channel, error.toString());
         }
+        lastLoopError = error;
 
         return value;
     }
