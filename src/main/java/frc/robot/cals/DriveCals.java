@@ -68,7 +68,7 @@ public class DriveCals {
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
-    public double fieldModePwr = 0.75;
+    public double fieldModePwr = 0.95;
     public double pitModePwr = 0.3;
     public double autoDrivePower = 0.3;
 

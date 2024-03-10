@@ -81,11 +81,11 @@ public class Shooter extends SubsystemBase {
     public void fixedPrime(){
         //TODO: go back to this when done testing
         int index = r.inputs.getFixedTarget();
-        //setAngle(k.fixedAngle[index] + angleJog);
-        //setRPM(k.fixedRPM[index] + speedJog);
+        setAngle(k.fixedAngle[index] + angleJog);
+        setRPM(k.fixedRPM[index] + speedJog);
 
-        setAngle(getTestAngle());
-        setRPM(getTestSpeed());
+        //setAngle(getTestAngle());
+        //setRPM(getTestSpeed());
     }
 
     public void visionPrime(){

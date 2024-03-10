@@ -20,8 +20,8 @@ public class ShooterCals {
     public double minFixedAngle = 22;
     public double maxFixedSpeed = 10000;
     public double minFixedSpeed = 500;
-    public double fixedAngle[] = {34, 50, 60};
-    public double fixedRPM[] = {4500, 4500, 4500};
+    public double fixedAngle[] = {34, 48, 56};
+    public double fixedRPM[] = {5000, 5000, 4500};
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 
