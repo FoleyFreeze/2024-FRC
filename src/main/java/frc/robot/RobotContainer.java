@@ -196,6 +196,7 @@ public class RobotContainer {
         .and(state.hasTransferT.negate())
         .whileTrue(CmdGather.unGather(this));
 
+    //shoot
     inputs.shootBtnB1
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())

@@ -19,13 +19,13 @@ public class CmdTransfer {
 
     //slappah positions in degrees
     static double slapHomePos = 0;
-    static double slapTransferPos = 8;
-    static double slapPreTransPos = 27;
-    static double slapPreClimbPos = 20;//unused, just use preTrans
-    static double slapPreAmpPos = 64;
-    static double slapAmpScorePos = 72;
-    static double slapPreTrapPos = 55;//unused, go straight to trap score
-    static double slapTrapScorePos = 72; //TODO: find actual number
+    static double slapTransferPos = 10;
+    static double slapPreTransPos = 34;
+    static double slapPreClimbPos = 25;//unused, just use preTrans
+    static double slapPreAmpPos = 80;
+    static double slapAmpScorePos = 89;
+    static double slapPreTrapPos = 68;//unused, go straight to trap score
+    static double slapTrapScorePos = 89; //TODO: find actual number
 
     //shooter positions in degrees
     static double shootPreTransPos = 60;
