@@ -1,5 +1,7 @@
 package frc.robot.commands.slappah;
 
+import java.time.Instant;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -15,38 +17,42 @@ import frc.robot.commands.gather.CmdGather;
 
 public class CmdTransfer {
 
-    static double startupDelay = 0.2;
+    static double startupDelay = 0.15;
 
     //slappah positions in degrees
     static double slapHomePos = 0;
-    static double slapTransferPos = 10;
+    static double slapTransferPos = 5;
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
-    static double slapPreAmpPos = 80;
-    static double slapAmpScorePos = 89;
+    static double slapPreAmpPos = 118;
+    static double slapAmpScorePos = 123;
     static double slapPreTrapPos = 68;//unused, go straight to trap score
-    static double slapTrapScorePos = 89; //TODO: find actual number
+    static double slapTrapScorePos = 123; //TODO: find actual number
 
     //shooter positions in degrees
     static double shootPreTransPos = 60;
     static double shootTransPos = 98;
 
     //transfer
-    static double shootPower = 0.12;
+    static double shootPower = 0.30;
     static double gatePower = 0.8;
-    static double transferPower = 0.3;
+    static double transferPower = 0.35;
     static double shooterCurrentLim = 30;
-    static double extraTransfer = 10;
+    static double extraTransferGate = 0.3;
+    static double transferBackup = -1.5;
+    static double transferRotations = 9.75;
+    static double transferCurrentLimit = 4;
 
     //unTransfer
     static double unShootPower = -0.12;
     static double unGatePower = -0.3;
     static double unTransferPower = -0.3;
-    static double extraGate = -1;
+    static double extraReverseGate = -1;
 
     //score
     static double scoreTransferPower = -1;
-    static double scoreWaitTime = 0.8;
+    static double scoreWaitTime = 0.4;
+    static double scoreAnglePower = 0.1;
 
     public static Command unTransferFull(RobotContainer r, Trigger t){
         Command c = new SequentialCommandGroup(setup(r), 
@@ -66,17 +72,17 @@ public class CmdTransfer {
                                                   r.gather.setGatePower(unGatePower); 
                                                   r.slappah.setTransferPower(unTransferPower);
                                                  }, r.shooter, r.gather, r.slappah),
-                        new PrintCommand("stage 4"),
+                        //new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
                         new WaitUntilCommand(() -> r.gather.getGateCurrent() > CmdGather.detectGateCurrent)
                                             .raceWith(new WaitCommand(5)),//make sure we cant get stuck here
-                        new PrintCommand("stage 5"),
+                        //new PrintCommand("stage 5"),
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
-                                                  r.gather.setGatePower(0);
+                                                  r.gather.setGatePosition(extraReverseGate);
                                                   r.slappah.setTransferPower(0);
                                                   r.state.hasTransfer = false;},
-                                                        r.shooter, r.gather, r.slappah),
-                        new PrintCommand("stage 6")
+                                                        r.shooter, r.gather, r.slappah)
+                        //new PrintCommand("stage 6")
                         );
 
         return transfer;
@@ -88,19 +94,22 @@ public class CmdTransfer {
                                                   r.gather.setGatePower(gatePower); 
                                                   r.slappah.setTransferPower(transferPower);
                                                  }, r.shooter, r.gather, r.slappah),
-                        new PrintCommand("stage 4"),
+                        //new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
-                        new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
+                        //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
+                        new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLimit)
                                             .raceWith(new WaitCommand(1)),//dont get stuck
-                        new WaitUntilCommand(() -> r.shooter.getShooterCurrent() < shooterCurrentLim)
+                        //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() < shooterCurrentLim)
+                        new InstantCommand(() -> r.slappah.setTransferPosition(transferRotations)),
+                        new WaitUntilCommand(r.slappah::checkTransferError)
                                             .raceWith(new WaitCommand(3)),//make sure we cant get stuck here
-                        new PrintCommand("stage 5"),
+                        //new PrintCommand("stage 5"),
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
-                                                  r.slappah.setTransferPower(0);
+                                                  //r.slappah.setTransferPosition(transferBackup);
                                                   r.state.hasTransfer = true;
-                                                }, r.shooter, r.gather, r.slappah),
-                        new PrintCommand("stage 6")
+                                                }, r.shooter, r.gather, r.slappah)
+                        //new PrintCommand("stage 6")
                         );
 
         return transfer;
@@ -124,14 +133,17 @@ public class CmdTransfer {
         Command setUp = new SequentialCommandGroup(
                     new InstantCommand(() -> {r.shooter.setAngle(shootPreTransPos);
                                               r.slappah.setAngle(slapPreTransPos);
-                                            }, r.shooter, r.slappah),
-                    new PrintCommand("stage 1"),
+                                              r.gather.setGatePosition(extraTransferGate);
+                                            }, r.shooter, r.slappah, r.gather),
+                    //new PrintCommand("stage 1"),
                     new WaitUntilCommand(r.slappah::checkAngleError),
                     new InstantCommand(() -> r.shooter.setAngle(shootTransPos), r.shooter),
-                    new PrintCommand("stage 2"),
+                    //new PrintCommand("stage 2"),
                     new WaitUntilCommand(r.shooter::checkAngleError),
-                    new InstantCommand(() -> r.slappah.setAngle(slapTransferPos), r.slappah),
-                    new PrintCommand("stage 3"),
+                    new InstantCommand(() -> {r.slappah.setAngle(slapTransferPos);
+                                              r.gather.setGatePosition(extraReverseGate);
+                                             }, r.slappah, r.gather),
+                    //new PrintCommand("stage 3"),
                     new WaitUntilCommand(r.slappah::checkAngleError)
                     );
 
@@ -140,14 +152,14 @@ public class CmdTransfer {
 
     public static Command end(RobotContainer r){
         Command end = new SequentialCommandGroup(
-                      new InstantCommand(() -> r.slappah.setAngle(slapPreTransPos), r.slappah),
-                      new PrintCommand("stage 7"),
-                      new WaitUntilCommand(r.slappah::checkAngleError),
+                      new InstantCommand(() -> r.slappah.setAngle(slapPreAmpPos), r.slappah), //slapPreTransPos
+                      //new PrintCommand("stage 7"),
+                      new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > slapPreTransPos-4),
                       new InstantCommand(r.shooter::goHome, r.shooter),
-                      new PrintCommand("stage 8"),
-                      new WaitUntilCommand(r.shooter::checkAngleError),
-                      new InstantCommand(() -> r.slappah.setAngle(slapHomePos), r.slappah),
-                      new PrintCommand("stage done")
+                      //new PrintCommand("stage 8"),
+                      //new WaitUntilCommand(r.shooter::checkAngleError),
+                      new InstantCommand(() -> r.slappah.setAngle(slapPreAmpPos), r.slappah)
+                      //new PrintCommand("stage done")
         );
 
         return end;
@@ -180,9 +192,15 @@ public class CmdTransfer {
         Command c = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setAngle(slapAmpScorePos), r.slappah),
             new WaitUntilCommand(() -> r.slappah.checkAngleError()),
-            new InstantCommand(() -> r.slappah.setTransferPower(scoreTransferPower), r.slappah),
+            new InstantCommand(() -> {r.slappah.setTransferPower(scoreTransferPower);
+                                      r.slappah.setAnglePwr(scoreAnglePower);
+                                     }, r.slappah),
             new WaitCommand(scoreWaitTime),
-            new InstantCommand(() -> r.slappah.setAngle(slapHomePos), r.slappah)
+            new InstantCommand(() -> {r.slappah.setAngle(slapHomePos);
+                                      r.slappah.setTransferPower(0);
+                                      r.state.hasNote = false;
+                                      r.state.hasTransfer = false;
+                                     }, r.slappah)
         );
 
         return c;

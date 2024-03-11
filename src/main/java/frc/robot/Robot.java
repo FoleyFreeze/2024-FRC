@@ -80,7 +80,9 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        m_robotContainer.slappah.setBrake(false);
+    }
 
     @Override
     public void disabledPeriodic() {
@@ -88,7 +90,9 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        m_robotContainer.slappah.setBrake(true);
+    }
 
     @Override
     public void autonomousInit() {
@@ -126,7 +130,8 @@ public class Robot extends LoggedRobot {
     public void teleopPeriodic() {}
 
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+    }
 
     @Override
     public void testInit() {

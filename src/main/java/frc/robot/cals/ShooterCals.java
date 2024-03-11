@@ -40,7 +40,7 @@ public class ShooterCals {
                                         .setPIDF(0.5, 0, 0, 0.1177)
                                         .setBrakeMode(false)
                                         .invert()
-                                        .setCurrLim(40)
+                                        .setCurrLim(60)
                                         .setPIDPwrLim(1, 0)
                                         .setRampRate(0.05)
                                         .setRatio(42 / 24.0); //geared up 42:24
@@ -49,7 +49,7 @@ public class ShooterCals {
                                         .setPIDF(0.5, 0, 0, 0.1177)
                                         .setBrakeMode(false)
                                         .invert()
-                                        .setCurrLim(40)
+                                        .setCurrLim(60)
                                         .setPIDPwrLim(1, 0)
                                         .setRampRate(0.05)
                                         .setRatio(42 / 24.0); //geared up 42:24;

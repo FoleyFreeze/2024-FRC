@@ -53,6 +53,10 @@ public class Shooter extends SubsystemBase {
         rpmSetpoint = 0;
     }
 
+    public void resetAngle(){
+        io.setAngleEncoder(k.startAngle);
+    }
+
 
     public void jogSpeed(double delta){
         speedJog += delta;

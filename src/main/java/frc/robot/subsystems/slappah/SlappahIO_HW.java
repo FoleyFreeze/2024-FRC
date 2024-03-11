@@ -61,6 +61,11 @@ public class SlappahIO_HW implements SlappahIO {
         angle.setEncoderPosition(position);
     }
 
+    @Override
+    public void setAngleBrake(boolean on){
+        angle.setBrakeMode(on);
+    }
+
     @Override 
     public void setTransferVoltage(double voltage){
         transfer.setVoltage(voltage);

@@ -22,10 +22,10 @@ public class CmdDriveNoteTraj extends Command{
 
     RobotContainer r;
 
-    double maxVelocity = 1;//m/s
-    double maxAccel = 1;//m/s/s
-    double maxAngularAccel = 1;//rad/s
-    double maxAngularVelocity = 0.25;//rad/s/s
+    double maxVelocity = 4;//m/s
+    double maxAccel = 4;//m/s/s
+    double maxAngularAccel = 2;//rad/s
+    double maxAngularVelocity = 2;//rad/s/s
 
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
@@ -119,7 +119,7 @@ public class CmdDriveNoteTraj extends Command{
             path, 
             r.drive::getPose, 
             r.drive::getRelVelocity, 
-            r.drive::swerveDrivePwr, 
+            r.drive::swerveDriveVel, 
             r.drive.k.notePathFollowerConfig, 
             () -> false, 
             r.drive

@@ -144,5 +144,10 @@ public class TalonFXMotor implements Motor {
     public double getVelocity(){
         return motor.getVelocity().getValueAsDouble() * k.gearRatio * 60.0;//convert to rpm
     }
+
+    @Override
+    public double getVoltage(){
+        return motor.getMotorVoltage().getValueAsDouble();
+    }
     
 }

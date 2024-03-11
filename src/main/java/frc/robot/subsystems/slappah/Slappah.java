@@ -41,6 +41,14 @@ public class Slappah extends SubsystemBase {
         }
     }
 
+    public void resetArmAngle(){
+        io.setArmEncoderPosition(k.startAngle);
+    }
+
+    public void setBrake(boolean on){
+        io.setAngleBrake(on);
+    }
+
     public boolean checkAngleError(){
         return Math.abs(inputs.anglePosition - angleSetpoint) < k.allowedAngleError;
     }
@@ -58,7 +66,8 @@ public class Slappah extends SubsystemBase {
     }
 
     public void setTransferPosition(double delta){
-        io.setPosition(inputs.transferPosition + delta);
+        transferSetPoint = inputs.transferPosition + delta;
+        io.setTransferPosition(transferSetPoint);
     }
 
     public void setAngle(double position){

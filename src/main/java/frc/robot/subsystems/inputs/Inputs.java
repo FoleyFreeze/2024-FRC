@@ -30,6 +30,8 @@ public class Inputs extends SubsystemBase {
     public Trigger fieldOrientedSWA = new Trigger(() -> flysky.getRawButton(1));
     public Trigger resetFieldOrientedLTRIM = new Trigger(() -> flysky.getRawButton(10));
     public Trigger resetFieldOdometryRTRIM = new Trigger(() -> flysky.getRawButton(14));
+    public Trigger resetArmLRTRIMR = new Trigger(() -> flysky.getRawButton(12) && flysky.getRawButton(16));
+    public Trigger resetShooterLRTRIML = new Trigger(() -> flysky.getRawButton(13) && flysky.getRawButton(17));
 
     public Trigger SWBHi = new Trigger(() -> flysky.getRawButton(2));
     public Trigger SWBLo = new Trigger(() -> flysky.getRawButton(3));

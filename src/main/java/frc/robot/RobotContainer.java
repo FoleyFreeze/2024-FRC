@@ -106,6 +106,8 @@ public class RobotContainer {
     inputs.resetSwerveZerosTRIM2DN.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
     inputs.resetFieldOrientedLTRIM.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
     inputs.resetFieldOdometryRTRIM.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
+    inputs.resetArmLRTRIMR.onTrue(new InstantCommand(slappah::resetArmAngle).ignoringDisable(true));
+    inputs.resetShooterLRTRIML.onTrue(new InstantCommand(shooter::resetAngle).ignoringDisable(true));
 
     //gather commands
     inputs.gatherTriggerSWE

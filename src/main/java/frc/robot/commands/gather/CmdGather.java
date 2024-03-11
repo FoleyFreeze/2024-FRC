@@ -84,13 +84,15 @@ public class CmdGather {
 
     public static Command unGather(RobotContainer r){
         Command c = (new RunCommand(() -> {r.gather.setGatherPower(reverseGatePower, reverseIntakePower);
+                                            r.slappah.setTransferPower(1);
                                             r.shooter.setShootPower(-0.15);
                                             r.shooter.setAngle(r.shooter.k.homePosition);}))
                          .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
                                             r.shooter.setShootPower(0);
+                                            r.slappah.setTransferPower(0);
                                             r.state.hasNote = false;});
 
-        c.addRequirements(r.gather, r.shooter);
+        c.addRequirements(r.gather, r.shooter, r.slappah);
         c.setName("CmdUngather");
         return c;
     }

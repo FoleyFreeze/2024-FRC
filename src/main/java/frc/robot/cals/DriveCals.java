@@ -71,7 +71,7 @@ public class DriveCals {
 
     public double fieldModePwr = 0.95;
     public double pitModePwr = 0.3;
-    public double autoDrivePower = 0.3;
+    public double autoDrivePower = 0.9;
 
     public double autoGatherPower = 0.1;
 
