@@ -22,8 +22,8 @@ public class CmdDriveNoteTraj extends Command{
 
     RobotContainer r;
 
-    double maxVelocity = 4;//m/s
-    double maxAccel = 4;//m/s/s
+    double maxVelocity = 3;//m/s
+    double maxAccel = 3;//m/s/s
     double maxAngularAccel = 2;//rad/s
     double maxAngularVelocity = 2;//rad/s/s
 

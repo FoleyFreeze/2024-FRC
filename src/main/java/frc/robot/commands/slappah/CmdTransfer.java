@@ -21,13 +21,13 @@ public class CmdTransfer {
 
     //slappah positions in degrees
     static double slapHomePos = 0;
-    static double slapTransferPos = 5;
+    static double slapTransferPos = 10;
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
-    static double slapPreAmpPos = 118;
-    static double slapAmpScorePos = 123;
-    static double slapPreTrapPos = 68;//unused, go straight to trap score
-    static double slapTrapScorePos = 123; //TODO: find actual number
+    static double slapPreAmpPos = 90;
+    static double slapAmpScorePos = 108;
+    static double slapPreTrapPos = 55;
+    static double slapTrapScorePos = 108; //TODO: find actual number
 
     //shooter positions in degrees
     static double shootPreTransPos = 60;
@@ -40,11 +40,11 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 9.75;
+    static double transferRotations = 7.75;
     static double transferCurrentLimit = 4;
 
     //unTransfer
-    static double unShootPower = -0.12;
+    static double unShootPower = -0.40;
     static double unGatePower = -0.3;
     static double unTransferPower = -0.3;
     static double extraReverseGate = -1;
@@ -97,12 +97,13 @@ public class CmdTransfer {
                         //new PrintCommand("stage 4"),
                         new WaitCommand(startupDelay),
                         //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
-                        new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLimit)
-                                            .raceWith(new WaitCommand(1)),//dont get stuck
+                        //new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLimit)
+                        new WaitUntilCommand(() -> !r.gather.inputs.proxSensor)
+                                            .raceWith(new WaitCommand(1.5)),//dont get stuck
                         //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() < shooterCurrentLim)
                         new InstantCommand(() -> r.slappah.setTransferPosition(transferRotations)),
                         new WaitUntilCommand(r.slappah::checkTransferError)
-                                            .raceWith(new WaitCommand(3)),//make sure we cant get stuck here
+                                            .raceWith(new WaitCommand(2)),//make sure we cant get stuck here
                         //new PrintCommand("stage 5"),
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
@@ -145,6 +146,11 @@ public class CmdTransfer {
                                              }, r.slappah, r.gather),
                     //new PrintCommand("stage 3"),
                     new WaitUntilCommand(r.slappah::checkAngleError)
+                        .raceWith(new SequentialCommandGroup(
+                            new WaitCommand(0.5),
+                            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition < slapPreTransPos),
+                            new PrintCommand("%%%%%%%%%% The Arm Failed to make it to the transfer position %%%%%%%%%%")
+                        ))
                     );
 
         return setUp;

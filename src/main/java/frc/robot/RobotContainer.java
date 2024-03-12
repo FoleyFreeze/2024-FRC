@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auton.ChoreoAuto;
 import frc.robot.auton.CmdAuton;
 import frc.robot.auton.Locations;
@@ -211,6 +212,13 @@ public class RobotContainer {
         .and(state.hasTransferT)
         .onTrue(CmdTransfer.scoreInAmp(this));
 
+    //coast winch motors
+    inputs.shiftB6
+        .and(inputs.climbDeployB4)
+        .and(inputs.climbWinchB2)
+        .and(new Trigger(() -> DriverStation.isDisabled() && !DriverStation.isFMSAttached()))
+        .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true));
+
     inputs.shiftB6.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
     inputs.shiftB6.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
     inputs.shiftB6.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
@@ -386,6 +394,7 @@ public class RobotContainer {
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
     autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0, 0).withSize(2,1);
     autoTab.add("Total Notes", totalNotes.getSendableChooser()).withPosition(2, 0).withSize(2,1);
+    autoTab.add("Start Location", startChooser.getSendableChooser()).withPosition(4, 0).withSize(2,1);
     autoTab.add("Note A", notePriorityA.getSendableChooser()).withPosition(1, 1);
     autoTab.add("Note B", notePriorityB.getSendableChooser()).withPosition(2, 1);
     autoTab.add("Note C", notePriorityC.getSendableChooser()).withPosition(3, 1);

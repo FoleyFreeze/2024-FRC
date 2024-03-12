@@ -29,10 +29,10 @@ public class Climber extends SubsystemBase{
     public void evenClimb(double power){
         double error = 0;
         if(r.drive.inputs.navXconnected){
-            error = r.drive.inputs.pitch.getDegrees();
+            error = r.drive.inputs.roll.getDegrees();
         } else {
             //use the dial if the navX is not working
-            error = r.inputs.getLeftDial() * 10 - 5;
+            //error = r.inputs.getLeftDial() * 10 - 5;
         }
         //navx is cc pos
         //navX y-axis points backwards
@@ -67,6 +67,25 @@ public class Climber extends SubsystemBase{
         evenClimb(power);
         //setWinchPower(power, power);
 
+    }
+
+    public void setBrakes(boolean on){
+        io.setBrakes(on);
+    }
+
+
+    double setpointL;
+    double setpointR;
+    public void setWinchPosition(double delta){
+        setpointL = inputs.winchLPosition + delta;
+        setpointR = inputs.winchRPosition + delta;
+        io.setWinchPosition(setpointL, setpointR);
+    }
+
+    public boolean checkWinchPosition(){
+        return Math.abs(inputs.winchLPosition - setpointL)
+             + Math.abs(inputs.winchRPosition - setpointR)
+             < 0.125;
     }
 
     public void setWinchPower(double leftPower, double rightPower){

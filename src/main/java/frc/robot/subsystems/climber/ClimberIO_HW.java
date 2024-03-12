@@ -57,4 +57,10 @@ public class ClimberIO_HW  implements ClimberIO{
         winchL.setPosition(positionL);
         winchR.setPosition(positionR);
     }
+
+    @Override
+    public void setBrakes(boolean on){
+        winchL.setBrakeMode(on);
+        winchR.setBrakeMode(on);
+    }
 }

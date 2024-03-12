@@ -1,5 +1,7 @@
 package frc.robot.commands.climber;
 
+import java.time.Instant;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -15,10 +17,12 @@ import frc.robot.commands.slappah.CmdTransfer;
 
 public class CmdClimb {
 
-    static double climbPower = 0.75;
+    static double climbPower = 0.3;
     static double unClimbPower = -.2;
 
     static double climbFinishedCurr;
+    static double winchTurnsForHooksUp = 0.4375;
+    static double winchTurnsToChain = 0.4375;
 
     static double pushAgainstWallPower = 0.07;
 
@@ -70,25 +74,38 @@ public class CmdClimb {
     
     public static Command simpleClimb(RobotContainer r){
         Command climb = new SequentialCommandGroup(
+            new InstantCommand(() -> r.state.climbDeploy = true),
             new SequentialCommandGroup(
                 CmdTransfer.setup(r),//go to transfer pos
                 //drive under chain manually(in the auto version this would be a command)
                 waitForShootToggle(r),
                 CmdTransfer.transfer(r),//transfer note
+                new InstantCommand(() -> {r.state.climbDeploy = true;
+                                          r.state.hasTransfer = false;}),
                 waitForShootToggle(r),
                 CmdTransfer.goToPreTrap(r)//raise the arm and drive back (really coast and let the arm push us)
             ).deadlineWith(new CmdDrive(r)),//allow joystick driving
             new WaitUntilCommand(r.slappah::checkAngleError)
-                            .deadlineWith(new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.01,0,0), false), r.drive)),
+                            .deadlineWith(new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(0.13,0,0), false), r.drive)),
+            new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
+            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToChain), r.climber),
+            new WaitUntilCommand(() -> r.climber.checkWinchPosition()),
+            new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.15,0,0), false), r.drive)
+                .raceWith(new WaitCommand(0.4)),
+            new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
+            new WaitCommand(0.2),
+            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToChain), r.climber),
+            new WaitUntilCommand(() -> r.climber.checkWinchPosition()),
             new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower), r.slappah), //force the arm against the wall to maintain robot pitch while climbing
-            waitForShootToggle(r),//wait for trigger before actually winching
+            //waitForShootToggle(r),//wait for trigger before actually winching
             new RunCommand(() -> r.climber.triggerEvenClimb(), r.climber)
                 .raceWith(waitForShootToggle(r)),
             new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah), //score into the trap
             new WaitCommand(.5),
             new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah)
             
-        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .ignoringDisable(true);
 
         climb.setName("SimpleClimb");
         return climb;
