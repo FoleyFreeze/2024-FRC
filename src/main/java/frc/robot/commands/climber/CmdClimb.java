@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
@@ -16,6 +17,8 @@ public class CmdClimb {
 
     static double climbPower = 0.75;
     static double unClimbPower = -.2;
+
+    static double climbFinishedCurr;
 
     static double pushAgainstWallPower = 0.07;
 
@@ -76,15 +79,21 @@ public class CmdClimb {
                 CmdTransfer.goToPreTrap(r)//raise the arm and drive back (really coast and let the arm push us)
             ).deadlineWith(new CmdDrive(r)),//allow joystick driving
             new WaitUntilCommand(r.slappah::checkAngleError)
-                            .deadlineWith(new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.01,0,0), false))),
-            new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower)), //force the arm against the wall to maintain robot pitch while climbing
+                            .deadlineWith(new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.01,0,0), false), r.drive)),
+            new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower), r.slappah), //force the arm against the wall to maintain robot pitch while climbing
             waitForShootToggle(r),//wait for trigger before actually winching
-            new RunCommand(() -> r.climber.triggerEvenClimb(climbPower))
-            //TODO: finish
-        );
+            new RunCommand(() -> r.climber.triggerEvenClimb(), r.climber)
+                .raceWith(waitForShootToggle(r)),
+            new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah), //score into the trap
+            new WaitCommand(.5),
+            new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah)
+            
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
+        climb.setName("SimpleClimb");
         return climb;
     }
+ 
 
     private static Command waitForShootToggle(RobotContainer r){
         Command wait = new SequentialCommandGroup(

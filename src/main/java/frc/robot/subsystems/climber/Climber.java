@@ -45,9 +45,11 @@ public class Climber extends SubsystemBase{
         Logger.recordOutput("Climb/Winch", offset);
     }
 
-    public void triggerEvenClimb(double power){
-        if(r.inputs.gatherTriggerSWE.getAsBoolean()){
-            evenClimb(power);
+    public void triggerEvenClimb(){
+        if(r.inputs.gatherTriggerSWE.getAsBoolean() || !r.inputs.shiftB6.getAsBoolean() && r.inputs.climbWinchB2.getAsBoolean()){
+            evenClimb(k.climbUpPwr);
+        }else if(r.inputs.shiftB6.getAsBoolean() && r.inputs.climbWinchB2.getAsBoolean()){
+            evenClimb(k.climbDownPwr);
         }else{
             setWinchPower(0, 0);
         }

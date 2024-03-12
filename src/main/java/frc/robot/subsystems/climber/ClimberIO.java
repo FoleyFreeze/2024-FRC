@@ -23,4 +23,6 @@ public interface ClimberIO {
 
     public default void setWinchVoltage(double voltageL, double voltageR){}
 
+    public default void setWinchPosition(double positionL, double positionR){}
+
 }

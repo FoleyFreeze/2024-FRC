@@ -64,8 +64,8 @@ public class GatherIO_HW implements GatherIO {
     }
 
     @Override 
-    public void setGatePosition(double positon){
-        gateMotor.setPosition(positon);
+    public void setGatePosition(double position){
+        gateMotor.setPosition(position);
     }
 
 }
