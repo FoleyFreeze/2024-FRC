@@ -7,6 +7,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.auton.Locations;
 import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
@@ -36,8 +37,8 @@ public class DriveCals {
     }
 
     //wheel locations
-    private double bumperWidth = Units.inchesToMeters(32.75);
-    private double bumperLength = Units.inchesToMeters(38.25);
+    private double bumperWidth = Locations.robotWidth;
+    private double bumperLength = Locations.robotLength;
     private double wheelWidth = Units.inchesToMeters(20.75);
     private double wheelLength = Units.inchesToMeters(23.25);
     //calculate correct center offset

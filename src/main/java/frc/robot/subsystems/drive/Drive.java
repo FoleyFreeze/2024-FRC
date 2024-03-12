@@ -34,10 +34,7 @@ public class Drive extends SubsystemBase{
     SwerveDrivePoseEstimator odometry;
 
     public Pose2d robotPose = new Pose2d();
-    public Rotation2d robotAngle = new Rotation2d();
     public ChassisSpeeds robotRelVelocity = new ChassisSpeeds();
-
-    Rotation2d fieldOffsetAngle = new Rotation2d();
     
 
     public Drive (RobotContainer r, DriveCals k){
@@ -160,9 +157,6 @@ public class Drive extends SubsystemBase{
 
         Logger.recordOutput("Drive/RobotRoll", inputs.pitch.getDegrees());
 
-        //update angle
-        robotAngle = inputs.yaw.minus(fieldOffsetAngle);
-
         //update odometry
         odometry.update(inputs.yaw, getWheelPositions());
 
@@ -183,7 +177,7 @@ public class Drive extends SubsystemBase{
 
     @AutoLogOutput(key = "Drive/RobotAngle")
     public Rotation2d getAngle(){
-        return robotAngle;
+        return robotPose.getRotation();
     }
 
     @AutoLogOutput(key = "Drive/RobotRelVelocity")
@@ -197,8 +191,7 @@ public class Drive extends SubsystemBase{
     }
 
     public void resetFieldOrientedAngle(Rotation2d newAngle){
-        fieldOffsetAngle = inputs.yaw.minus(newAngle);
-        robotAngle = inputs.yaw.minus(fieldOffsetAngle);
+        resetFieldOdometry(new Pose2d(robotPose.getTranslation(), newAngle));
     }
 
     public void resetFieldOdometry(){
@@ -208,7 +201,6 @@ public class Drive extends SubsystemBase{
 
     public void resetFieldOdometry(Pose2d newPose){
         odometry.resetPosition(inputs.yaw, getWheelPositions(), newPose);
-        resetFieldOrientedAngle(newPose.getRotation());
     }
 
     private SwerveModulePosition[] getWheelPositions() {

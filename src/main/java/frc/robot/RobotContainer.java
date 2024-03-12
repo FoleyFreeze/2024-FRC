@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auton.ChoreoAuto;
 import frc.robot.auton.CmdAuton;
+import frc.robot.auton.Locations;
 import frc.robot.cals.ClimberCals;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.GatherCals;
@@ -70,6 +71,10 @@ public class RobotContainer {
     DO_NOTHING, PREGEN, DENIAL, SELECTABLE, TEST
   }
 
+  public enum StartLocationType{
+    SPEAKER_SIDE, SPEAKER_CENTER, SOURCE_SIDE, APRILTAG_0Deg, APRILTAG
+  }
+
   private LoggedDashboardChooser<AutonType> autoChooser;
   private LoggedDashboardChooser<Integer> notePriorityA;
   private LoggedDashboardChooser<Integer> notePriorityB;
@@ -80,6 +85,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> notePriorityG;
   private LoggedDashboardChooser<Integer> notePriorityH;
   private LoggedDashboardChooser<Integer> totalNotes;
+  private LoggedDashboardChooser<StartLocationType> startChooser;
 
   public RobotContainer() {
     inputs = new Inputs(this, new InputsCals());
@@ -243,10 +249,31 @@ public class RobotContainer {
     selectedAuton += notePriorityH.get();
     selectedAuton += totalNotes.get();
     selectedAuton += drive.k.flipPath();
+    selectedAuton += startChooser.get().ordinal();
 
     if (checkPoseError(autonStartPose, drive.getPose()) || !selectedAuton.equals(lastSelectedAuton)){
       lastSelectedAuton = selectedAuton;
       autonStartPose = drive.getPose();
+
+      switch(startChooser.get()){
+        case SOURCE_SIDE:
+          drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SOURCE_SIDE.ordinal()]);
+          break;
+        case SPEAKER_CENTER:
+          drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SPEAKER_CENTER.ordinal()]);
+          break;
+        case SPEAKER_SIDE:
+          drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SPEAKER_SIDE.ordinal()]);
+          break;
+        case APRILTAG:
+
+          break;
+        case APRILTAG_0Deg:
+          drive.resetFieldOrientedAngle(Locations.startLocations[1].getRotation());
+          break;
+        default:
+          break;
+      }
 
       switch(autoChooser.get()){
         //TODO: include totalNotes in the pregen path autos to stop early
@@ -326,12 +353,19 @@ public class RobotContainer {
     notePriorityG = new LoggedDashboardChooser<>("G Note Priority");
     notePriorityH = new LoggedDashboardChooser<>("H Note Priority");
     totalNotes = new LoggedDashboardChooser<>("Total Notes"); //stop after this many notes
+    startChooser = new LoggedDashboardChooser<>("Start Location");
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
       autoChooser.addOption("Denial", AutonType.DENIAL);
       autoChooser.addOption("Selectable", AutonType.SELECTABLE);
       autoChooser.addOption("Test", AutonType.TEST);
+
+    startChooser.addDefaultOption("Center", StartLocationType.SPEAKER_CENTER);
+      startChooser.addOption("SpeakerSide", StartLocationType.SPEAKER_SIDE);
+      startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE);
+      startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
+      startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
     
     addNoteOrderHelper(notePriorityA);
     addNoteOrderHelper(notePriorityB);
