@@ -158,7 +158,7 @@ public class RobotContainer {
 
     //control board commands
     //TODO: enable control board
-    boolean enablecontrolboard = false;
+    boolean enablecontrolboard = true;
     if(enablecontrolboard){
     //transfer to arm
     inputs.transferB3
@@ -222,7 +222,8 @@ public class RobotContainer {
     //TODO: map here for now
     inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
     //if in climb mode, ungather will transfer
-    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
+    //inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
+    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdClimb.simpleClimb(this));
 
     //inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
     
