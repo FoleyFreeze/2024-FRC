@@ -168,7 +168,10 @@ public class DriveCals {
         new ReplanningConfig()
     );
 
+    public boolean dontFlip = false;
     public boolean flipPath(){ 
+        if(dontFlip) return false;
+
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()){
             return alliance.get() == DriverStation.Alliance.Red;

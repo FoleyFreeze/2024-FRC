@@ -279,14 +279,17 @@ public class RobotContainer {
         //TODO: include totalNotes in the pregen path autos to stop early
         //Probably do this as part of a AutonMonitor running in parallel
         case DENIAL:
+          drive.k.dontFlip = false;
           autonCommand = new InstantCommand();
           break;
 
         case PREGEN:
+          drive.k.dontFlip = false;
           autonCommand = ChoreoAuto.getPregen3NoteMid("3NoteMid", this);
           break;
 
         case SELECTABLE:
+          drive.k.dontFlip = true;
           autonCommand = CmdAuton.selectedAuto(this,
                                 notePriorityA.get(),
                                 notePriorityB.get(),
@@ -301,6 +304,7 @@ public class RobotContainer {
           break;
 
         case TEST:
+          drive.k.dontFlip = false;
           //autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
           //autonCommand = ChoreoAuto.getPathPlannerAuto("TestArc", this);
           autonCommand = ChoreoAuto.getChoreoPath("TestArcSpin", this);
