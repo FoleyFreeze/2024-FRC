@@ -146,7 +146,7 @@ public class RobotContainer {
 
     inputs.shootTriggerSWH
         .and(inputs.cameraEnableSWD.negate())
-        .and(state.hasNoteT)
+        //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
         //.and(inputs.SWBHi.negate())
@@ -154,6 +154,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.simpleShoot(this));
         //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
 
+    //climb commands
     inputs.shootTriggerSWH
         .and(state.hasTransferT)
         .and(state.climbDeployT.negate())
@@ -169,7 +170,12 @@ public class RobotContainer {
 
     inputs.shootTriggerSWH
         .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
-        .onTrue(CmdClimb.shoot(this));
+        .whileTrue(CmdClimb.shootTrap(this));
+
+    //unshooot trap
+    inputs.gatherTriggerSWE
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.CLIMBED))
+        .whileTrue(CmdClimb.unshootTrap(this));
 
     
 

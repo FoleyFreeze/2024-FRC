@@ -1,7 +1,5 @@
 package frc.robot.commands.climber;
 
-import java.time.Instant;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -12,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
-import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.slappah.CmdTransfer;
 import frc.robot.subsystems.RoboState.ClimbState;
 
@@ -108,18 +105,29 @@ public class CmdClimb {
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.CLIMBED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+
+        climb.setName("Climb Cmd");
         return climb;
     }
 
-    public static Command shoot(RobotContainer r){
-        Command shoot = new SequentialCommandGroup(
+    public static Command shootTrap(RobotContainer r){
+        /*Command shoot = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah), //score into the trap
             new WaitCommand(.5),
             new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah),
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate())
-        );
+        );*/
+        Command shoot = new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah);
 
+        shoot.setName("Trap Score");
         return shoot;
+    }
+
+    public static Command unshootTrap(RobotContainer r){
+        Command unshoot = new InstantCommand(() -> r.slappah.setTransferPower(1), r.slappah);
+
+        unshoot.setName("Unshoot Trap");
+        return unshoot;
     }
 
     /*
