@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -206,12 +207,14 @@ public class RobotContainer {
     inputs.climbWinchB2
         .and(state.climbDeployT)
         .and(inputs.shiftB6.negate())
-        .whileTrue(new RunCommand(climber::winchUp,climber));
+        .whileTrue(new RunCommand(climber::winchUp,climber)
+            .finallyDo(climber::winchHold));
 
     inputs.climbWinchB2
         .and(state.climbDeployT)
         .and(inputs.shiftB6)
-        .whileTrue(new RunCommand(climber::winchDown,climber));
+        .whileTrue(new RunCommand(climber::winchDown,climber)
+            .finallyDo(climber::winchHold));
 
     //gather
     inputs.gatherBtnB5
@@ -239,7 +242,8 @@ public class RobotContainer {
         .and(inputs.climbDeployB4)
         .and(inputs.climbWinchB2)
         .and(new Trigger(() -> DriverStation.isDisabled() && !DriverStation.isFMSAttached()))
-        .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true));
+        .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true)
+            .andThen(new PrintCommand("Winches in Coast Mode")));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
@@ -262,7 +266,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(climber::winchJogLeft));
     
     inputs.shiftB6
-        .and(inputs.armAngleJogUp)
+        .and(inputs.armAngleJogDn)
         .onTrue(new InstantCommand(climber::winchJogRight));
 
     //TODO: map here for now

@@ -22,9 +22,9 @@ public class CmdClimb {
     static double unClimbPower = -.2;
 
     static double climbFinishedCurr;
-    static double winchTurnsForHooksUp = 0.4375;
-    static double winchTurnsToChain = 0.4375 + winchTurnsForHooksUp;
-    static double winchTurnsToFinish = 1 + winchTurnsToChain;
+    static double winchTurnsForHooksUp = 0.4375 + 0.2;
+    static double winchTurnsToChain = 0.4375 - 0.2 + winchTurnsForHooksUp;
+    static double winchTurnsToFinish = 0.8 + winchTurnsToChain;
 
     static double pushAgainstWallPower = 0.07;
 
@@ -83,12 +83,16 @@ public class CmdClimb {
             new WaitUntilCommand(r.slappah::checkAngleError)
                             .deadlineWith(new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(0.13,0,0), false), r.drive)),
             new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
-            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToChain), r.climber),
+            new SequentialCommandGroup(
+                new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.12,0,0), false), r.drive),
+                new WaitCommand(0.2),
+                new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
+                new WaitCommand(0.2)
+            ).deadlineWith(new SequentialCommandGroup(
+                    new WaitCommand(0.1),
+                    new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsForHooksUp), r.climber)
+                )),
             new WaitUntilCommand(() -> r.climber.checkWinchPosition()),
-            new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.15,0,0), false), r.drive)
-                .raceWith(new WaitCommand(0.4)),         
-            new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
-            new WaitCommand(0.2),
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
             new InstantCommand(() -> r.state.climbDeploy=ClimbState.HOOKED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
@@ -100,6 +104,7 @@ public class CmdClimb {
     public static Command climb(RobotContainer r){
         Command climb = new SequentialCommandGroup(
             new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToFinish)),
+            new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower), r.slappah), //force the arm against the wall to maintain robot pitch while climbing
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.CLIMBED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);

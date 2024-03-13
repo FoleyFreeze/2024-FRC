@@ -6,9 +6,9 @@ import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 public class ClimberCals {
     public boolean disable = false;
 
-    public double climbUpPwr = .25;
-    public double climbDownPwr = -.05;
-    public double jogWinchAmount = 1/16.0;
+    public double climbUpPwr = .35;
+    public double climbDownPwr = -.10;
+    public double jogWinchAmount = 2/16.0;
 
     //15 percent power at 10 degrees
     public double balanceKP = .15/10;
@@ -16,7 +16,7 @@ public class ClimberCals {
     public MotorCal winchR = new MotorCal(TypeMotor.SPARK, 6)   .setCurrLim(40)
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
-                                                                .setPIDF(0.04, 0, 0, 0)
+                                                                .setPIDF(0.15, 0, 0, 0)
                                                                 .setPIDPwrLim(0.4)
                                                                 .setRatio(1/40.0);
 
@@ -24,7 +24,7 @@ public class ClimberCals {
                                                                 .setCurrLim(40)
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
-                                                                .setPIDF(0.04, 0, 0, 0)
+                                                                .setPIDF(0.15, 0, 0, 0)
                                                                 .setPIDPwrLim(0.4)
                                                                 .setRatio(1/40.0);
 

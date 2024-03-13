@@ -43,6 +43,7 @@ public class Slappah extends SubsystemBase {
 
     public void resetArmAngle(){
         io.setArmEncoderPosition(k.startAngle);
+        System.out.println("Zero'd Arm");
     }
 
     public void setBrake(boolean on){

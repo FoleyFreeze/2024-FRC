@@ -55,6 +55,7 @@ public class Shooter extends SubsystemBase {
 
     public void resetAngle(){
         io.setAngleEncoder(k.startAngle);
+        System.out.println("Zero'd Shooter");
     }
 
 

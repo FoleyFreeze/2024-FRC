@@ -126,6 +126,7 @@ public class Robot extends LoggedRobot {
         //always init with brakes off
         m_robotContainer.drive.setBrake(false);
         m_robotContainer.climber.setBrakes(true);
+        m_robotContainer.climber.captureSetpoints();
     }
 
     @Override

@@ -38,6 +38,7 @@ public class CmdDrive extends Command {
             
             //init setpoint 
             if(!inAngleControl){
+                inAngleControl = true;
                 switch(r.inputs.getClimbDir()){
                     case 1://left
                         angleSetpoint = Rotation2d.fromDegrees(120);
@@ -52,16 +53,22 @@ public class CmdDrive extends Command {
                 if(DriverStation.getAlliance().get() == Alliance.Red){
                     angleSetpoint.plus(Rotation2d.fromDegrees(180));
                 }
+
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
             }
 
             if(Math.abs(speed.omegaRadiansPerSecond) > 0.02){
                 //modify setpoint
                 angleSetpoint = r.drive.getAngle();
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
             } else { 
                 //control to setpoint
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
                 double goal = MathUtil.angleModulus(angleSetpoint.getRadians());
                 speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
+                speed.omegaRadiansPerSecond = MathUtil.clamp(speed.omegaRadiansPerSecond, -0.3, 0.3);
             }
 
         } else {

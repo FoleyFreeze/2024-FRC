@@ -26,12 +26,12 @@ public class CmdTransfer {
     static double slapPreClimbPos = 25;//unused, just use preTrans
     static double slapPreAmpPos = 90;
     static double slapAmpScorePos = 108;
-    static double slapPreTrapPos = 55;
+    static double slapPreTrapPos = 75;
     static double slapTrapScorePos = 108; //TODO: find actual number
 
     //shooter positions in degrees
     static double shootPreTransPos = 60;
-    static double shootTransPos = 98;
+    static double shootTransPos = 100;
 
     //transfer
     static double shootPower = 0.30;
@@ -40,7 +40,7 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 7.75;
+    static double transferRotations = 7.25;
     static double transferCurrentLimit = 4;
 
     //unTransfer
