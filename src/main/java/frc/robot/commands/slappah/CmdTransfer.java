@@ -108,7 +108,6 @@ public class CmdTransfer {
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);
                                                   //r.slappah.setTransferPosition(transferBackup);
-                                                  r.state.hasTransfer = true;
                                                 }, r.shooter, r.gather, r.slappah)
                         //new PrintCommand("stage 6")
                         );
@@ -120,6 +119,7 @@ public class CmdTransfer {
     public static Command transferForAmp(RobotContainer r, Trigger t){
         Command c = new SequentialCommandGroup(setup(r),
                                                transfer(r), 
+                                               new InstantCommand(() -> r.state.hasTransfer = true),
                                                end(r),
                                                new WaitUntilCommand(() -> !t.getAsBoolean()));
         c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);

@@ -46,6 +46,7 @@ import frc.robot.commands.gather.CmdGather;
 import frc.robot.commands.shooter.CMDShoot;
 import frc.robot.commands.slappah.CmdTransfer;
 import frc.robot.subsystems.RoboState;
+import frc.robot.subsystems.RoboState.ClimbState;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.gather.Gather;
@@ -157,10 +158,21 @@ public class RobotContainer {
         .and(state.climbDeployT.negate())
         .onTrue(CmdTransfer.scoreInAmp(this));
 
+    inputs.shootTriggerSWH
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
+        .onTrue(CmdClimb.hook(this));
+
+    inputs.shootTriggerSWH
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.HOOKED))
+        .onTrue(CmdClimb.climb(this));
+
+    inputs.shootTriggerSWH
+        .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
+        .onTrue(CmdClimb.shoot(this));
+
+    
+
     //control board commands
-    //TODO: enable control board
-    boolean enablecontrolboard = true;
-    if(enablecontrolboard){
     //transfer to arm
     inputs.transferB3
         .and(inputs.shiftB6.negate())
@@ -182,14 +194,24 @@ public class RobotContainer {
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
-        .onTrue(new InstantCommand());
+        .onTrue(CmdClimb.deployClimb(this));
 
     //undeploy climb
     inputs.climbDeployB4
         .and(inputs.shiftB6)
-        .and(state.climbDeployT)
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
         .and(state.hasTransferT.negate())
-        .onTrue(new InstantCommand());
+        .onTrue(CmdClimb.undeployClimb(this));
+
+    inputs.climbWinchB2
+        .and(state.climbDeployT)
+        .and(inputs.shiftB6.negate())
+        .whileTrue(new RunCommand(climber::winchUp,climber));
+
+    inputs.climbWinchB2
+        .and(state.climbDeployT)
+        .and(inputs.shiftB6)
+        .whileTrue(new RunCommand(climber::winchDown,climber));
 
     //gather
     inputs.gatherBtnB5
@@ -219,19 +241,35 @@ public class RobotContainer {
         .and(new Trigger(() -> DriverStation.isDisabled() && !DriverStation.isFMSAttached()))
         .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true));
 
-    inputs.shiftB6.negate().and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
-    inputs.shiftB6.negate().and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
-    inputs.shiftB6.and(inputs.shootAngleJogUp).onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
-    inputs.shiftB6.and(inputs.shootAngleJogDn).onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
-    }
+    inputs.shiftB6.negate()
+        .and(inputs.shootAngleJogUp)
+        .onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
 
+    inputs.shiftB6.negate()
+        .and(inputs.shootAngleJogDn)
+        .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+
+    inputs.shiftB6
+        .and(inputs.shootAngleJogUp)
+        .onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
+
+    inputs.shiftB6
+        .and(inputs.shootAngleJogDn)
+        .onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
     
+    inputs.shiftB6
+        .and(inputs.armAngleJogUp)
+        .onTrue(new InstantCommand(climber::winchJogLeft));
+    
+    inputs.shiftB6
+        .and(inputs.armAngleJogUp)
+        .onTrue(new InstantCommand(climber::winchJogRight));
 
     //TODO: map here for now
     inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
     //if in climb mode, ungather will transfer
     //inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
-    inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdClimb.simpleClimb(this));
+    //inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdClimb.simpleClimb(this));
 
     //inputs.shootTriggerSWH.and(inputs.SWBHi.or(inputs.SWBLo)).whileTrue(CmdClimb.testClimb(this));
     

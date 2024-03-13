@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.slappah.CmdTransfer;
+import frc.robot.subsystems.RoboState.ClimbState;
 
 public class CmdClimb {
 
@@ -22,23 +23,26 @@ public class CmdClimb {
 
     static double climbFinishedCurr;
     static double winchTurnsForHooksUp = 0.4375;
-    static double winchTurnsToChain = 0.4375;
+    static double winchTurnsToChain = 0.4375 + winchTurnsForHooksUp;
+    static double winchTurnsToFinish = 1 + winchTurnsToChain;
 
     static double pushAgainstWallPower = 0.07;
 
     public static Command deployClimb(RobotContainer r){
         return new SequentialCommandGroup(
             CmdTransfer.setup(r), //go to transfer pos but dont transfer yet
-            new InstantCommand(() -> r.state.climbDeploy = true)
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
     public static Command undeployClimb(RobotContainer r){
         return new SequentialCommandGroup(
             CmdTransfer.end(r),
-            new InstantCommand(() -> r.state.climbDeploy = false)
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.NONE)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
+
+
 
     public static Command visionClimb(RobotContainer r){
         return new InstantCommand();
@@ -71,7 +75,49 @@ public class CmdClimb {
 
         return c;
     }
-    
+
+    public static Command hook(RobotContainer r){
+        Command hook = new SequentialCommandGroup(
+            CmdTransfer.transfer(r),
+            CmdTransfer.goToPreTrap(r),
+            new WaitUntilCommand(r.slappah::checkAngleError)
+                            .deadlineWith(new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(0.13,0,0), false), r.drive)),
+            new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
+            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToChain), r.climber),
+            new WaitUntilCommand(() -> r.climber.checkWinchPosition()),
+            new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(-0.15,0,0), false), r.drive)
+                .raceWith(new WaitCommand(0.4)),         
+            new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
+            new WaitCommand(0.2),
+            new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
+            new InstantCommand(() -> r.state.climbDeploy=ClimbState.HOOKED)
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        
+        hook.setName("Captain Hook");
+        return hook;    
+    }
+
+    public static Command climb(RobotContainer r){
+        Command climb = new SequentialCommandGroup(
+            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToFinish)),
+            new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.CLIMBED)
+        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        return climb;
+    }
+
+    public static Command shoot(RobotContainer r){
+        Command shoot = new SequentialCommandGroup(
+            new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah), //score into the trap
+            new WaitCommand(.5),
+            new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah),
+            new WaitUntilCommand(r.inputs.shootTriggerSWH.negate())
+        );
+
+        return shoot;
+    }
+
+    /*
     public static Command simpleClimb(RobotContainer r){
         Command climb = new SequentialCommandGroup(
             new InstantCommand(() -> r.state.climbDeploy = true),
@@ -110,6 +156,7 @@ public class CmdClimb {
         climb.setName("SimpleClimb");
         return climb;
     }
+    */
  
 
     private static Command waitForShootToggle(RobotContainer r){

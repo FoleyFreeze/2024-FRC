@@ -69,6 +69,28 @@ public class Climber extends SubsystemBase{
 
     }
 
+    public void winchUp(){
+        setWinchPower(k.climbUpPwr, k.climbUpPwr);
+    }
+
+    public void winchDown(){
+        setWinchPower(k.climbDownPwr, k.climbDownPwr);
+    }
+
+    public void winchHold(){
+        io.setWinchPosition(inputs.winchLPosition, inputs.winchRPosition);
+    }
+
+    public void winchJogLeft(){
+        setpointL += k.jogWinchAmount;
+        setpointR -= k.jogWinchAmount;
+    }
+
+    public void winchJogRight(){
+        setpointL -= k.jogWinchAmount;
+        setpointR += k.jogWinchAmount;
+    }
+
     public void setBrakes(boolean on){
         io.setBrakes(on);
     }
@@ -76,9 +98,17 @@ public class Climber extends SubsystemBase{
 
     double setpointL;
     double setpointR;
+    double winchStartL;
+    double winchStartR;
+
+    public void captureSetpoints(){
+        winchStartL = inputs.winchLPosition;
+        winchStartR = inputs.winchRPosition;
+    }
+
     public void setWinchPosition(double delta){
-        setpointL = inputs.winchLPosition + delta;
-        setpointR = inputs.winchRPosition + delta;
+        setpointL = winchStartL + delta;
+        setpointR = winchStartR + delta;
         io.setWinchPosition(setpointL, setpointR);
     }
 

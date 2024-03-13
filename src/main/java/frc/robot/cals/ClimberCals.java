@@ -8,6 +8,7 @@ public class ClimberCals {
 
     public double climbUpPwr = .25;
     public double climbDownPwr = -.05;
+    public double jogWinchAmount = 1/16.0;
 
     //15 percent power at 10 degrees
     public double balanceKP = .15/10;
