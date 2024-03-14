@@ -1,5 +1,7 @@
 package frc.robot.commands.drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -69,6 +71,10 @@ public class CmdDrive extends Command {
                 double goal = MathUtil.angleModulus(angleSetpoint.getRadians());
                 speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
                 speed.omegaRadiansPerSecond = MathUtil.clamp(speed.omegaRadiansPerSecond, -0.3, 0.3);
+
+                Logger.recordOutput("Drive/AnglePID/Goal", goal);
+                Logger.recordOutput("Drive/AnglePID/Setpoint", pidController.getSetpoint().position);
+                Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
             }
 
         } else {

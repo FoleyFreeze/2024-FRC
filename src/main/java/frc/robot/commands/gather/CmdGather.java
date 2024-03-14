@@ -10,12 +10,14 @@ import frc.robot.RobotContainer;
 public class CmdGather {
     
     static double startupTime = 0.2;
-    static double extraIntakeTime = 0.3;
+    static double extraIntakeTime = 0.0;
 
+    static double backwardsGatherPower = -.1;
     static double intakePower = 0.5;//0.4
     static double gatePower = 0.25;//0.15
     static double reverseIntakePower = -0.6;//0.5
     static double reverseGatePower = -0.5;//0.3
+
 
     static double extraGateRevsCurrent = 2.6;
     static double extraGateRevsSensor = 1.2;
@@ -95,5 +97,9 @@ public class CmdGather {
         c.addRequirements(r.gather, r.shooter, r.slappah);
         c.setName("CmdUngather");
         return c;
+    }
+
+    public static Command backwardsGather(RobotContainer r){
+        return new RunCommand(() -> r.gather.setGatherPower(backwardsGatherPower, 0));
     }
 }

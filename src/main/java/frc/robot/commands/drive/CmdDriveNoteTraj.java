@@ -90,6 +90,7 @@ public class CmdDriveNoteTraj extends Command{
     @Override
     public boolean isFinished(){
         if(driveCommand != null){
+
             return driveCommand.isFinished();
         } else {
             return false;
@@ -100,6 +101,11 @@ public class CmdDriveNoteTraj extends Command{
         pathEndLocation = r.vision.getCachedNoteLocation();
         Translation2d pathStart = r.drive.getPose().getTranslation();
         Translation2d pathVector = pathEndLocation.minus(pathStart);
+
+        //modify endLocation to be 6in further
+        Translation2d additionalDist = new Translation2d(Units.inchesToMeters(6), 0);
+        additionalDist.rotateBy(r.drive.getAngle());
+        pathEndLocation.plus(additionalDist);
         
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
             new Pose2d(pathStart, getVelocityAngle(r.drive.getRelVelocity(), pathVector)),
