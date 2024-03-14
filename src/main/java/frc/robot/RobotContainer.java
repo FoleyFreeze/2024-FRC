@@ -111,6 +111,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
+    gather.setDefaultCommand(CmdGather.backwardsGather(this));
 
     inputs.resetSwerveZerosTRIM2DN.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
     inputs.resetFieldOrientedLTRIM.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
