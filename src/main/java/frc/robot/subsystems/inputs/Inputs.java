@@ -164,7 +164,7 @@ public class Inputs extends SubsystemBase {
         if(SWGLo.getAsBoolean()){
             return 2;
         } else if(SWGHi.getAsBoolean()){
-            return 0;
+            return 1;//TODO: back to 0 if we want a real third shooting location
         }else {
             return 1;
         }

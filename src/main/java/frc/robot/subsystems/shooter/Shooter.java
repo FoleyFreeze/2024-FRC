@@ -86,11 +86,11 @@ public class Shooter extends SubsystemBase {
     public void fixedPrime(){
         //TODO: go back to this when done testing
         int index = r.inputs.getFixedTarget();
-        //setAngle(k.fixedAngle[index] + angleJog); //COMMENT this out to tune shooter with dials on Flysky
-        //setRPM(k.fixedRPM[index] + speedJog);     //COMMENT this out to tune shooter with dials on Flysky
+        setAngle(k.fixedAngle[index] + angleJog); //COMMENT this out to tune shooter with dials on Flysky
+        setRPM(k.fixedRPM[index] + speedJog);     //COMMENT this out to tune shooter with dials on Flysky
 
-        setAngle(getTestAngle()); //UNCOMMENT this for tuning shooter with dials on FlySky
-        setRPM(getTestSpeed());   //UNCOMMENT this for tuning shooter with dials on FlySky
+        //setAngle(getTestAngle()); //UNCOMMENT this for tuning shooter with dials on FlySky
+        //setRPM(getTestSpeed());   //UNCOMMENT this for tuning shooter with dials on FlySky
     }
 
     public void commandPrime(double angle, double rpm){

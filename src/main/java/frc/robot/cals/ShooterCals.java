@@ -15,7 +15,7 @@ public class ShooterCals {
     //note these are in inches (get converted later)
     double di = 36;             //in front, podium, 19ft
     public double camDistance[] = {di+17,  102,  113,   di+19*12};
-    public double camAngle[] =    {55,     38,   36.5,  25};
+    public double camAngle[] =    {55,     39.5,  38,  25};
     public double camRPM[] =      {5000,   6000, 6000,  6630};
     public double camVelocity[] = {0, 0};
     
@@ -24,8 +24,8 @@ public class ShooterCals {
     public double minFixedAngle = 22;
     public double maxFixedSpeed = 10000;
     public double minFixedSpeed = 500;
-    public double fixedAngle[] = {34, 48, 56};
-    public double fixedRPM[] = {5000, 5000, 4500};
+    public double fixedAngle[] = {57, 36.7, 36.7};//note far shot is cal'd out in inputs
+    public double fixedRPM[] = {5500, 6000, 6000};
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 

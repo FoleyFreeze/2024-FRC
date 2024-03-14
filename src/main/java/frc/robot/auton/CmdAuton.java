@@ -1,19 +1,13 @@
 package frc.robot.auton;
 
-import java.util.function.Consumer;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -33,7 +27,7 @@ public class CmdAuton {
         3  //accel rad/s/s
     );
 
-    static double driveToNoteThresh = Units.inchesToMeters(24);
+    static double driveToNoteThresh = Units.inchesToMeters(-1);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
     public static Command selectedAuto(RobotContainer r, 
@@ -95,13 +89,15 @@ public class CmdAuton {
             // ----------- Pathfind to Note -------------
             Translation2d noteLocation = Locations.notes[noteOrder[i] - 1];
             Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
-            Pose2d targetPose = new Pose2d(noteLocation, vecToNote.getAngle());
+            //offset the note 1/3 robot len in the direction we will approach from
+            Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/3, 0).rotateBy(vecToNote.getAngle()));
+            Pose2d targetPose = new Pose2d(targetLocation, vecToNote.getAngle());
 
             Command pathFindingCommand = AutoBuilder.pathfindToPose(
                 targetPose,
                 constraints,
                 0.0, 0.0
-            );
+            ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
             //construct the complex pathfind to note and gather it with vision command
             Command noteCommand = pathFindingCommand
@@ -137,7 +133,7 @@ public class CmdAuton {
                 targetPose,
                 constraints,
                 0.0, 0.0
-            );
+            ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
             Command shootCommand = new SequentialCommandGroup(
                 prime(r, vecToSpeaker.getNorm()),
@@ -160,16 +156,19 @@ public class CmdAuton {
         if(DriverStation.getAlliance().isPresent()){
             if(DriverStation.getAlliance().get() == Alliance.Blue){
                 if(start == StartLocationType.AMP_SIDE){
-                    return new InstantCommand(() -> r.shooter.commandPrime(58, 4500));
+                    return new InstantCommand(() -> r.shooter.commandPrime(59, 5500));
                 }
             } else {
                 if(start == StartLocationType.SOURCE_SIDE){
-                    return new InstantCommand(() -> r.shooter.commandPrime(58, 4500));
+                    return new InstantCommand(() -> r.shooter.commandPrime(59, 5500));
                 }
             }
         }
-
-        return new InstantCommand(() -> r.shooter.commandPrime(55, 4500));
+        if(start == StartLocationType.SPEAKER_CENTER){
+            return new InstantCommand(() -> r.shooter.commandPrime(57, 5500));
+        } else {
+            return new InstantCommand(() -> r.shooter.commandPrime(55, 5500));
+        }
     }
 
     public static Command shoot(RobotContainer r){
@@ -199,7 +198,7 @@ public class CmdAuton {
         }
     }
 
-    public static Pose2d getStartPose(RobotContainer r, StartLocationType start){
+    public static Pose2d  getStartPose(RobotContainer r, StartLocationType start){
         switch(start){
             case AMP_SIDE:
             case SOURCE_SIDE:
@@ -225,7 +224,7 @@ public class CmdAuton {
         for (Translation2d loc : shootLocations){
             double dist = loc.minus(noteLoc).getNorm();
             if(nextLoc != null){
-                dist += nextLoc.minus(noteLoc).getNorm();
+                dist += nextLoc.minus(nextLoc).getNorm();
             }
 
             if(dist < bestDist){

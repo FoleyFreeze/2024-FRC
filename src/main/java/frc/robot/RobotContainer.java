@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -149,7 +150,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.fixedPrime(this));*/
 
     inputs.shootTriggerSWH
-        .and(inputs.cameraEnableSWD.negate())
+        //.and(inputs.cameraEnableSWD.negate()) //TODO: add when camera shoot exists
         //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
@@ -403,7 +404,7 @@ public class RobotContainer {
             drive::swerveDriveVel, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(11.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(9.0, 0.0, 0.0), // Rotation PID constants
+                    new PIDConstants(9.0, 0.0, 0.75), // Rotation PID constants
                     drive.k.maxWheelSpeed, // Max module speed, in m/s
                     drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
