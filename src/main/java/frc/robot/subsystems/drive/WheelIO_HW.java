@@ -80,6 +80,10 @@ public class WheelIO_HW implements WheelIO {
         driveMotor.setBrakeMode(enable);
     }
 
+    public void setSwerveBrakeMode(boolean on){
+        swerveMotor.setBrakeMode(on);
+    }
+
     @Override
     public void setSwerveOffset(Rotation2d analogOffset){
         Rotation2d rawAnalogEncoder = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);

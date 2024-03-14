@@ -257,4 +257,10 @@ public class Drive extends SubsystemBase{
             w.setBrake(on);
         }
     }
+
+    public void setSwerveBrake(boolean on){
+        for(Wheel w: wheels){
+            w.setSwerveBrake(on);
+        }
+    }
 }

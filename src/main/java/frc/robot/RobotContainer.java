@@ -312,11 +312,12 @@ public class RobotContainer {
     selectedAuton += getAlliance();
     selectedAuton += startChooser.get().ordinal();
 
-    if (checkPoseError(autonStartPose, drive.getPose()) || !selectedAuton.equals(lastSelectedAuton)){
+    if (/*checkPoseError(autonStartPose, drive.getPose()) || */!selectedAuton.equals(lastSelectedAuton)){
       Locations.recalcForAlliance();
       
       lastSelectedAuton = selectedAuton;
 
+      /*
       switch(startChooser.get()){
         case SOURCE_SIDE:
           drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SOURCE_SIDE.ordinal()]);
@@ -336,15 +337,16 @@ public class RobotContainer {
         default:
           break;
       }
+      */
 
-      autonStartPose = drive.getPose();
+      //autonStartPose = drive.getPose();
 
       switch(autoChooser.get()){
         //TODO: include totalNotes in the pregen path autos to stop early
         //Probably do this as part of a AutonMonitor running in parallel
         case DENIAL:
           drive.k.dontFlip = false;
-          autonCommand = new InstantCommand();
+          autonCommand = new InstantCommand().beforeStarting(CmdAuton.resetPosition(this, startChooser.get()));
           break;
 
         case PREGEN:
@@ -401,7 +403,7 @@ public class RobotContainer {
             drive::swerveDriveVel, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(11.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(11.0, 0.0, 0.0), // Rotation PID constants
+                    new PIDConstants(9.0, 0.0, 0.0), // Rotation PID constants
                     drive.k.maxWheelSpeed, // Max module speed, in m/s
                     drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here

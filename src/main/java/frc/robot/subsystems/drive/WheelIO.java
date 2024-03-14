@@ -33,5 +33,7 @@ public interface WheelIO {
 
     public default void setDriveBrakemode(boolean enable) {}
 
+    public default void setSwerveBrakeMode(boolean enable) {}
+
     public default void setSwerveOffset(Rotation2d analogOffset) {}
 }

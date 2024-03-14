@@ -88,7 +88,7 @@ public class VisionIO_HW implements VisionIO{
     @Override
     public void updateInputs (VisionIOInputs inputs){
         inputs.noteData = noteData;
-        inputs.tagData = tagData;
+        //inputs.tagData = tagData;
 
         inputs.now = Logger.getRealTimestamp()/1000000.0;
 

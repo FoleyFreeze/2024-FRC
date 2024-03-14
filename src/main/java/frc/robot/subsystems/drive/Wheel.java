@@ -78,4 +78,8 @@ public class Wheel {
     public void setBrake(boolean on){
         io.setDriveBrakemode(on);
     }
+
+    public void setSwerveBrake(boolean on){
+        io.setSwerveBrakeMode(on);
+    }
 }

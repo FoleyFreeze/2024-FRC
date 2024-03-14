@@ -8,21 +8,17 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
@@ -43,6 +39,7 @@ public class CmdAuton {
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
                                        StartLocationType startLocation){
+
         int noteOrder[] = new int[8];
         sort(noteOrder, a, 1);
         sort(noteOrder, b, 2);
@@ -74,9 +71,12 @@ public class CmdAuton {
         //Step3: fin
         
         SequentialCommandGroup fullSequence = new SequentialCommandGroup();
+        
+        //Step 0: set the start position
+        fullSequence.addCommands(resetPosition(r, startLocation));
 
         //shoot first note
-        Pose2d startPose = r.drive.getPose();
+        Pose2d startPose = getStartPose(r, startLocation);
         double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
 
         fullSequence.addCommands(new SequentialCommandGroup(
@@ -112,6 +112,7 @@ public class CmdAuton {
                             && botLoc.minus(r.vision.getCachedNoteLocation()).getNorm() < driveToNoteThresh;}) 
                 .andThen(new CmdDriveNoteTraj(r)
                     .raceWith(new WaitCommand(2))) //give it 4 seconds before moving on to the next note
+                .andThen(new WaitCommand(1))
             .raceWith(CmdGather.gather(r));
 
             fullSequence.addCommands(noteCommand);
@@ -126,9 +127,11 @@ public class CmdAuton {
                     nextNoteLoc = Locations.notes[noteOrder[i+1] - 1];
                 }
             }
+            //dont forget that the BACK of the robot needs to face the speaker
             Translation2d shootLoc = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
             Translation2d vecToSpeaker = Locations.tagSpeaker.minus(shootLoc);
-            targetPose = new Pose2d(shootLoc, vecToSpeaker.getAngle().plus(shooterOffset));
+            Rotation2d targetAngle = vecToSpeaker.getAngle().plus(Rotation2d.fromDegrees(180));
+            targetPose = new Pose2d(shootLoc, targetAngle.plus(shooterOffset));
 
             pathFindingCommand = AutoBuilder.pathfindToPose(
                 targetPose,
@@ -157,16 +160,16 @@ public class CmdAuton {
         if(DriverStation.getAlliance().isPresent()){
             if(DriverStation.getAlliance().get() == Alliance.Blue){
                 if(start == StartLocationType.AMP_SIDE){
-                    return new InstantCommand(() -> r.shooter.commandPrime(58, 5000));
+                    return new InstantCommand(() -> r.shooter.commandPrime(58, 4500));
                 }
             } else {
                 if(start == StartLocationType.SOURCE_SIDE){
-                    return new InstantCommand(() -> r.shooter.commandPrime(58, 5000));
+                    return new InstantCommand(() -> r.shooter.commandPrime(58, 4500));
                 }
             }
         }
 
-        return new InstantCommand(() -> r.shooter.commandPrime(55, 5000));
+        return new InstantCommand(() -> r.shooter.commandPrime(55, 4500));
     }
 
     public static Command shoot(RobotContainer r){
@@ -179,6 +182,33 @@ public class CmdAuton {
     private static void sort(int noteOrder[], int index, int note){
         if(index>0){
             noteOrder[index - 1] = note;
+        }
+    }
+
+    public static Command resetPosition(RobotContainer r, StartLocationType start){
+        switch(start){
+            case AMP_SIDE:
+            case SOURCE_SIDE:
+            case SPEAKER_CENTER:
+                return new InstantCommand(() -> r.drive.resetFieldOdometry(Locations.startLocations[start.ordinal()]));
+            case APRILTAG_0Deg:
+                return new InstantCommand(() -> r.drive.resetFieldOrientedAngle(new Rotation2d()));
+            case APRILTAG:
+            default:
+                return new InstantCommand();
+        }
+    }
+
+    public static Pose2d getStartPose(RobotContainer r, StartLocationType start){
+        switch(start){
+            case AMP_SIDE:
+            case SOURCE_SIDE:
+            case SPEAKER_CENTER:
+                return Locations.startLocations[start.ordinal()];
+            case APRILTAG_0Deg:
+            case APRILTAG:
+            default:
+                return r.drive.getPose();
         }
     }
 
@@ -207,6 +237,7 @@ public class CmdAuton {
         return bestPosition;
     }
     
+    /*
     static Thread calcThread;
     
     public static void selectedAutoThreaded(RobotContainer r, int a, int b, int c, int d, int e, int f, int g, int h, int total,
@@ -344,5 +375,5 @@ public class CmdAuton {
         //give the command back to the caller
         callback.accept(cmd);
     }
-
+    */
 }

@@ -32,7 +32,7 @@ public class GatherIO_HW implements GatherIO {
             inputs.intakeVelocity = velocity;
             inputs.intakeCurrentAmps = current;
             inputs.intakeAppliedVolts = voltage;
-            inputs.intakeAppliedVolts = temp;
+            inputs.intakeTemp = temp;
         }
 
         errorCount = gateMotor.getErrorCount();

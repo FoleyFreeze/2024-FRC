@@ -25,7 +25,7 @@ public class Robot extends LoggedRobot {
 
     private RobotContainer m_robotContainer;
 
-    private static final boolean simOnly = true;
+    private static final boolean simOnly = false;
 
     @Override
     public void robotInit() {
@@ -82,6 +82,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         m_robotContainer.slappah.setBrake(false);
+        m_robotContainer.drive.setSwerveBrake(false);
     }
 
     @Override
@@ -98,6 +99,7 @@ public class Robot extends LoggedRobot {
     public void autonomousInit() {
         //always init with brakes off
         m_robotContainer.drive.setBrake(false);
+        m_robotContainer.drive.setSwerveBrake(true);
         m_robotContainer.climber.setBrakes(true);
 
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -125,6 +127,7 @@ public class Robot extends LoggedRobot {
 
         //always init with brakes off
         m_robotContainer.drive.setBrake(false);
+        m_robotContainer.drive.setSwerveBrake(true);
         m_robotContainer.climber.setBrakes(true);
         m_robotContainer.climber.captureSetpoints();
     }

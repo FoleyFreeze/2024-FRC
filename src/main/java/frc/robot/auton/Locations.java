@@ -42,9 +42,9 @@ public class Locations {
     public static final Translation2d redNoteC = blueNoteC;
     public static final Translation2d redNoteD = blueNoteB;
     public static final Translation2d redNoteE = blueNoteA;
-    public static final Translation2d redNoteF = new Translation2d(fieldLength - Units.inchesToMeters(144), fieldWidth/2);
-    public static final Translation2d redNoteG = new Translation2d(fieldLength - Units.inchesToMeters(144), fieldWidth/2 + Units.inchesToMeters(57));
-    public static final Translation2d redNoteH = new Translation2d(fieldLength - Units.inchesToMeters(144), fieldWidth/2 + Units.inchesToMeters(57*2));
+    public static final Translation2d redNoteF = new Translation2d(fieldLength - Units.inchesToMeters(114), fieldWidth/2);
+    public static final Translation2d redNoteG = new Translation2d(fieldLength - Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57));
+    public static final Translation2d redNoteH = new Translation2d(fieldLength - Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57*2));
 
     //start locations
     public static final Pose2d blueSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(60));
@@ -69,7 +69,7 @@ public class Locations {
                                                                  new Translation2d(blueNoteG.getX() - Units.inchesToMeters(24), midY(blueNoteG, blueNoteH)), //between B and C, offset 2ft in
                                                                  new Translation2d(blueNoteG.getX() + Units.inchesToMeters(24), midY(blueNoteF, blueNoteG)), //between A and B, offset the other way
                                                                  new Translation2d(blueWingLine - Units.inchesToMeters(48), midY(blueNoteA, blueNoteB)), //speakerside, between DE | offset X 4ft in
-                                                                 new Translation2d(blueWingLine - Units.inchesToMeters(48), fieldWidth + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
+                                                                 new Translation2d(blueWingLine - Units.inchesToMeters(48), fieldWidth/2 + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
                                                                  new Translation2d(blueNoteH.getX() + Units.inchesToMeters(24), blueNoteH.getY() - Units.inchesToMeters(48)), //nonspeakerside, far forward, offset from noteC
                                                                 };
 
@@ -77,7 +77,7 @@ public class Locations {
                                                                  new Translation2d(redNoteG.getX() + Units.inchesToMeters(24), midY(redNoteG, redNoteH)), //between B and C, offset 2ft in
                                                                  new Translation2d(redNoteG.getX() - Units.inchesToMeters(24), midY(redNoteG, redNoteH)), //between B and C, offset the other way
                                                                  new Translation2d(redWingLine + Units.inchesToMeters(48), midY(redNoteD, redNoteE)), //speakerside, between DE | offset X 4ft in
-                                                                 new Translation2d(redWingLine + Units.inchesToMeters(48), fieldWidth + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
+                                                                 new Translation2d(redWingLine + Units.inchesToMeters(48), fieldWidth/2 + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
                                                                  new Translation2d(redNoteF.getX() - Units.inchesToMeters(24), redNoteF.getY() - Units.inchesToMeters(48)), //nonspeakerside, far forward, offset from noteC
                                                                 };
 
@@ -118,7 +118,8 @@ public class Locations {
 
     private static Translation2d from3dTag(int tag){
         Translation3d tag3d = tagLayout.getTagPose(tag).get().getTranslation();
-        return new Translation2d(tag3d.getX(), tag3d.getZ());
+        return tag3d.toTranslation2d();
+        //return new Translation2d(tag3d.getX(), tag3d.getZ());
     }
 
     public static void recalcForAlliance(){

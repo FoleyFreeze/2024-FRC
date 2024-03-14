@@ -162,7 +162,7 @@ public class DriveCals {
 
     public HolonomicPathFollowerConfig AutonPathFollowerConfig = new HolonomicPathFollowerConfig(
         new PIDConstants(5, 0, 0),
-        new PIDConstants(5, 0, 0),
+        new PIDConstants(4, 0, 0),
         maxWheelSpeed,
         wheelFL.wheelLocation.getNorm(),
         new ReplanningConfig()
