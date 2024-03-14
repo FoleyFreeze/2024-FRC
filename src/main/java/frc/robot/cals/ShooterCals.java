@@ -1,5 +1,6 @@
 package frc.robot.cals;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
 
@@ -11,10 +12,13 @@ public class ShooterCals {
     public double jogAngleIncriment = .5;
     public double jogSpeedIncriment = 200;
 
-    public double camDistance[] = {0, 0};
-    public double camAngle[] = {0, 0};
+    //note these are in inches (get converted later)
+    double di = 36;             //in front, podium, 19ft
+    public double camDistance[] = {di+17,  133,   di+19*12};
+    public double camAngle[] =    {55,      39,       25};
+    public double camRPM[] =      {6000,    6000,   6630};
     public double camVelocity[] = {0, 0};
-    public double camRPM[] = {0, 0};
+    
  
     public double maxFixedAngle = 61;
     public double minFixedAngle = 22;
@@ -56,4 +60,10 @@ public class ShooterCals {
 
     public double allowedAngleError = 1;
     public double allowedRPMError = 100;
+
+    public ShooterCals(){
+        for(int i=0;i<camDistance.length;i++){
+            camDistance[i] = Units.inchesToMeters(camDistance[i]);
+        }
+    }
 }    

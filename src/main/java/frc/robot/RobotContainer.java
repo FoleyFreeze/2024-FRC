@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -75,7 +76,7 @@ public class RobotContainer {
   }
 
   public enum StartLocationType{
-    SPEAKER_SIDE, SPEAKER_CENTER, SOURCE_SIDE, APRILTAG_0Deg, APRILTAG
+    AMP_SIDE, SPEAKER_CENTER, SOURCE_SIDE, APRILTAG_0Deg, APRILTAG
   }
 
   private LoggedDashboardChooser<AutonType> autoChooser;
@@ -91,6 +92,8 @@ public class RobotContainer {
   private LoggedDashboardChooser<StartLocationType> startChooser;
 
   public RobotContainer() {
+    Locations.loadTagData();
+
     inputs = new Inputs(this, new InputsCals());
     drive = new Drive(this, new DriveCals());
     gather = new Gather(this, new GatherCals());
@@ -147,7 +150,7 @@ public class RobotContainer {
 
     inputs.shootTriggerSWH
         .and(inputs.cameraEnableSWD.negate())
-        .and(state.hasNoteT)
+        //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
         //.and(inputs.SWBHi.negate())
@@ -155,6 +158,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.simpleShoot(this));
         //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
 
+    //climb commands
     inputs.shootTriggerSWH
         .and(state.hasTransferT)
         .and(state.climbDeployT.negate())
@@ -170,7 +174,12 @@ public class RobotContainer {
 
     inputs.shootTriggerSWH
         .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
-        .onTrue(CmdClimb.shoot(this));
+        .whileTrue(CmdClimb.shootTrap(this));
+
+    //unshooot trap
+    inputs.gatherTriggerSWE
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.CLIMBED))
+        .whileTrue(CmdClimb.unshootTrap(this));
 
     
 
@@ -300,12 +309,13 @@ public class RobotContainer {
     selectedAuton += notePriorityG.get();
     selectedAuton += notePriorityH.get();
     selectedAuton += totalNotes.get();
-    selectedAuton += drive.k.flipPath();
+    selectedAuton += getAlliance();
     selectedAuton += startChooser.get().ordinal();
 
     if (checkPoseError(autonStartPose, drive.getPose()) || !selectedAuton.equals(lastSelectedAuton)){
+      Locations.recalcForAlliance();
+      
       lastSelectedAuton = selectedAuton;
-      autonStartPose = drive.getPose();
 
       switch(startChooser.get()){
         case SOURCE_SIDE:
@@ -314,8 +324,8 @@ public class RobotContainer {
         case SPEAKER_CENTER:
           drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SPEAKER_CENTER.ordinal()]);
           break;
-        case SPEAKER_SIDE:
-          drive.resetFieldOdometry(Locations.startLocations[StartLocationType.SPEAKER_SIDE.ordinal()]);
+        case AMP_SIDE:
+          drive.resetFieldOdometry(Locations.startLocations[StartLocationType.AMP_SIDE.ordinal()]);
           break;
         case APRILTAG:
 
@@ -326,6 +336,8 @@ public class RobotContainer {
         default:
           break;
       }
+
+      autonStartPose = drive.getPose();
 
       switch(autoChooser.get()){
         //TODO: include totalNotes in the pregen path autos to stop early
@@ -351,7 +363,8 @@ public class RobotContainer {
                                 notePriorityF.get(),
                                 notePriorityG.get(),
                                 notePriorityH.get(),
-                                totalNotes.get()
+                                totalNotes.get(),
+                                startChooser.get()
           );
           break;
 
@@ -418,7 +431,7 @@ public class RobotContainer {
       autoChooser.addOption("Test", AutonType.TEST);
 
     startChooser.addDefaultOption("Center", StartLocationType.SPEAKER_CENTER);
-      startChooser.addOption("SpeakerSide", StartLocationType.SPEAKER_SIDE);
+      startChooser.addOption("AmpSide", StartLocationType.AMP_SIDE);
       startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE);
       startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
       startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
@@ -431,8 +444,15 @@ public class RobotContainer {
     addNoteOrderHelper(notePriorityF);
     addNoteOrderHelper(notePriorityG);
     addNoteOrderHelper(notePriorityH);
-    addNoteOrderHelper(totalNotes);
     totalNotes.addDefaultOption("0", 0);
+    totalNotes.addOption("1", 1);
+    totalNotes.addOption("2", 2);
+    totalNotes.addOption("3", 3);
+    totalNotes.addOption("4", 4);
+    totalNotes.addOption("5", 5);
+    totalNotes.addOption("6", 6);
+    totalNotes.addOption("7", 7);
+    totalNotes.addOption("8", 8);
 
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
     autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0, 0).withSize(2,1);
@@ -443,9 +463,9 @@ public class RobotContainer {
     autoTab.add("Note C", notePriorityC.getSendableChooser()).withPosition(3, 1);
     autoTab.add("Note D", notePriorityD.getSendableChooser()).withPosition(4, 1);
     autoTab.add("Note E", notePriorityE.getSendableChooser()).withPosition(5, 1);
-    autoTab.add("Note F", notePriorityF.getSendableChooser()).withPosition(1, 2);
-    autoTab.add("Note G", notePriorityG.getSendableChooser()).withPosition(2, 2);
-    autoTab.add("Note H", notePriorityH.getSendableChooser()).withPosition(3, 2);
+    autoTab.add("Note F", notePriorityF.getSendableChooser()).withPosition(2, 2);
+    autoTab.add("Note G", notePriorityG.getSendableChooser()).withPosition(3, 2);
+    autoTab.add("Note H", notePriorityH.getSendableChooser()).withPosition(4, 2);
   }
 
   private void addNoteOrderHelper(LoggedDashboardChooser<Integer> c){
@@ -463,5 +483,17 @@ public class RobotContainer {
   private boolean checkPoseError(Pose2d one, Pose2d two){
     return one.getTranslation().minus(two.getTranslation()).getNorm() > Units.inchesToMeters(12)
             || Math.abs(MathUtil.angleModulus(one.getRotation().minus(two.getRotation()).getRadians())) > Units.degreesToRadians(20);
+  }
+
+  private int getAlliance(){
+    if(DriverStation.getAlliance().isPresent()){
+      if(DriverStation.getAlliance().get() == Alliance.Blue){
+        return 1;
+      } else {
+        return 2;
+      }
+    } else {
+      return -1;
+    }
   }
 }

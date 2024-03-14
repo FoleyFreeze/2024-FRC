@@ -1,7 +1,29 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Auton/Auton Mode": "String Chooser",
+      "/Shuffleboard/Auton/Note A": "String Chooser",
+      "/Shuffleboard/Auton/Note B": "String Chooser",
+      "/Shuffleboard/Auton/Note C": "String Chooser",
+      "/Shuffleboard/Auton/Note D": "String Chooser",
+      "/Shuffleboard/Auton/Note E": "String Chooser",
+      "/Shuffleboard/Auton/Note F": "String Chooser",
+      "/Shuffleboard/Auton/Note G": "String Chooser",
+      "/Shuffleboard/Auton/Note H": "String Chooser",
+      "/Shuffleboard/Auton/Start Location": "String Chooser",
+      "/Shuffleboard/Auton/Total Notes": "String Chooser",
+      "/SmartDashboard/A Note Priority": "String Chooser",
+      "/SmartDashboard/AutonType": "String Chooser",
+      "/SmartDashboard/B Note Priority": "String Chooser",
+      "/SmartDashboard/C Note Priority": "String Chooser",
+      "/SmartDashboard/D Note Priority": "String Chooser",
+      "/SmartDashboard/E Note Priority": "String Chooser",
+      "/SmartDashboard/F Note Priority": "String Chooser",
+      "/SmartDashboard/G Note Priority": "String Chooser",
+      "/SmartDashboard/H Note Priority": "String Chooser",
+      "/SmartDashboard/Start Location": "String Chooser",
+      "/SmartDashboard/Total Notes": "String Chooser"
     }
   },
   "NetworkTables Info": {

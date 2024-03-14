@@ -93,6 +93,11 @@ public class Shooter extends SubsystemBase {
         //setRPM(getTestSpeed());
     }
 
+    public void commandPrime(double angle, double rpm){
+        setAngle(angle);
+        setRPM(rpm);
+    }
+
     public void visionPrime(){
         double distToTarget = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getNorm();
         distancePrime(distToTarget);
