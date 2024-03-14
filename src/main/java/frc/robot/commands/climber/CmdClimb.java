@@ -19,9 +19,9 @@ public class CmdClimb {
     static double unClimbPower = -.2;
 
     static double climbFinishedCurr;
-    static double winchTurnsForHooksUp = 0.4375 + 0.2;
-    static double winchTurnsToChain = 0.4375 - 0.2 + winchTurnsForHooksUp;
-    static double winchTurnsToFinish = 0.8 + winchTurnsToChain;
+    static double winchTurnsForHooksUp = 0.4375 + 0.4;
+    static double winchTurnsToChain = 0.4375 - 0.4 + winchTurnsForHooksUp;
+    static double winchTurnsToFinish = 2.05 + winchTurnsToChain;
 
     static double pushAgainstWallPower = 0.07;
 
@@ -117,14 +117,16 @@ public class CmdClimb {
             new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah),
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate())
         );*/
-        Command shoot = new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah);
+        Command shoot = new RunCommand(() -> r.slappah.setTransferPower(-1), r.slappah)
+                    .finallyDo(() -> r.slappah.setTransferPower(0));
 
         shoot.setName("Trap Score");
         return shoot;
     }
 
     public static Command unshootTrap(RobotContainer r){
-        Command unshoot = new InstantCommand(() -> r.slappah.setTransferPower(1), r.slappah);
+        Command unshoot = new RunCommand(() -> r.slappah.setTransferPower(1), r.slappah)
+                    .finallyDo(() -> r.slappah.setTransferPower(0));;
 
         unshoot.setName("Unshoot Trap");
         return unshoot;
