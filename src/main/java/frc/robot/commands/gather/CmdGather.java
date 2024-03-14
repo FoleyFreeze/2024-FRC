@@ -10,7 +10,7 @@ import frc.robot.RobotContainer;
 public class CmdGather {
     
     static double startupTime = 0.2;
-    static double extraIntakeTime = 0.3;
+    static double extraIntakeTime = 0.0;
 
     static double intakePower = 0.5;//0.4
     static double gatePower = 0.25;//0.15
