@@ -32,7 +32,8 @@ public class CmdAuton {
 
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
-                                       StartLocationType startLocation){
+                                       StartLocationType startLocation,
+                                       int waitTime){
 
         int noteOrder[] = new int[8];
         sort(noteOrder, a, 1);
@@ -65,6 +66,9 @@ public class CmdAuton {
         //Step3: fin
         
         SequentialCommandGroup fullSequence = new SequentialCommandGroup();
+
+        //Step -1: wait for a bit
+        fullSequence.addCommands(new WaitCommand(waitTime));
         
         //Step 0: set the start position
         fullSequence.addCommands(resetPosition(r, startLocation));
@@ -109,7 +113,7 @@ public class CmdAuton {
                 .andThen(new CmdDriveNoteTraj(r)
                     .raceWith(new WaitCommand(2))) //give it 4 seconds before moving on to the next note
                 .andThen(new WaitCommand(1))
-            .raceWith(CmdGather.gather(r));
+            .raceWith(CmdGather.autonGather(r));
 
             fullSequence.addCommands(noteCommand);
 

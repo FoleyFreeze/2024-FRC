@@ -91,6 +91,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> notePriorityH;
   private LoggedDashboardChooser<Integer> totalNotes;
   private LoggedDashboardChooser<StartLocationType> startChooser;
+  private LoggedDashboardChooser<Integer> waitChooser;
 
   public RobotContainer() {
     Locations.loadTagData();
@@ -316,6 +317,7 @@ public class RobotContainer {
     selectedAuton += totalNotes.get();
     selectedAuton += getAlliance();
     selectedAuton += startChooser.get().ordinal();
+    selectedAuton += waitChooser.get();
 
     if (/*checkPoseError(autonStartPose, drive.getPose()) || */!selectedAuton.equals(lastSelectedAuton)){
       Locations.recalcForAlliance();
@@ -371,7 +373,8 @@ public class RobotContainer {
                                 notePriorityG.get(),
                                 notePriorityH.get(),
                                 totalNotes.get(),
-                                startChooser.get()
+                                startChooser.get(),
+                                waitChooser.get()
           );
           break;
 
@@ -430,6 +433,7 @@ public class RobotContainer {
     notePriorityH = new LoggedDashboardChooser<>("H Note Priority");
     totalNotes = new LoggedDashboardChooser<>("Total Notes"); //stop after this many notes
     startChooser = new LoggedDashboardChooser<>("Start Location");
+    waitChooser = new LoggedDashboardChooser<>("Start Wait Time");
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
@@ -442,6 +446,18 @@ public class RobotContainer {
       startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE);
       startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
       startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
+
+    waitChooser.addDefaultOption("0sec", 0);
+      waitChooser.addOption("1sec", 1);
+      waitChooser.addOption("2sec", 2);
+      waitChooser.addOption("3sec", 3);
+      waitChooser.addOption("4sec", 4);
+      waitChooser.addOption("5sec", 5);
+      waitChooser.addOption("6sec", 6);
+      waitChooser.addOption("7sec", 7);
+      waitChooser.addOption("8sec", 8);
+      waitChooser.addOption("9sec", 9);
+      waitChooser.addOption("10sec", 10);
     
     addNoteOrderHelper(notePriorityA);
     addNoteOrderHelper(notePriorityB);

@@ -117,6 +117,7 @@ public class Robot extends LoggedRobot {
         //go to brake after auto in case we are 
         //coasting into a wall or something
         m_robotContainer.drive.setBrake(true);
+        m_robotContainer.shooter.setShootPower(0);
     }
 
     @Override
