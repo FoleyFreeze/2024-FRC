@@ -116,7 +116,7 @@ public class Drive extends SubsystemBase{
         if(fieldOriented){
             Rotation2d angle = getAngle();
             if(DriverStation.getAlliance().get() == Alliance.Red){
-                angle.plus(Rotation2d.fromDegrees(180));
+                angle = angle.plus(Rotation2d.fromDegrees(180));
             }
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, angle);
             speeds = ChassisSpeeds.discretize(speeds, 0.02);
