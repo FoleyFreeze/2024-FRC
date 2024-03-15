@@ -111,8 +111,8 @@ public class CmdAuton {
                             && r.vision.hasNoteImage() 
                             && botLoc.minus(r.vision.getCachedNoteLocation()).getNorm() < driveToNoteThresh;}) 
                 .andThen(new CmdDriveNoteTraj(r)
-                    .raceWith(new WaitCommand(2))) //give it 4 seconds before moving on to the next note
-                .andThen(new WaitCommand(1))
+                    .raceWith(new WaitCommand(1))) //give it 4 seconds before moving on to the next note
+                .andThen(new WaitCommand(0.5))
             .raceWith(CmdGather.autonGather(r));
 
             fullSequence.addCommands(noteCommand);
