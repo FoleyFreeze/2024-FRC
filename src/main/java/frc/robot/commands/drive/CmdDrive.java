@@ -37,16 +37,18 @@ public class CmdDrive extends Command {
     public void execute(){
         ChassisSpeeds speed = r.inputs.getChassisSpeeds();
         if(r.state.climbDeploy != ClimbState.NONE){
+            //give the driver reversed robot oriented drive
             speed.times(0.2);
+            //speed.omegaRadiansPerSecond *= -1;
             
             //init setpoint 
             if(!inAngleControl){
                 inAngleControl = true;
                 switch(r.inputs.getClimbDir()){
-                    case 1://left
+                    case -1://left
                         angleSetpoint = Rotation2d.fromDegrees(120);
                     break;
-                    case -1://right
+                    case 1://right
                         angleSetpoint = Rotation2d.fromDegrees(-120);
                     break;
                     case 0://back
@@ -84,7 +86,7 @@ public class CmdDrive extends Command {
         } else {
             inAngleControl = false;
         }
-        r.drive.swerveDrivePwr(speed, r.inputs.fieldOrientedSWA.getAsBoolean() && r.state.climbDeploy == ClimbState.NONE);    
+        r.drive.swerveDrivePwr(speed, r.inputs.fieldOrientedSWA.getAsBoolean()/*  && r.state.climbDeploy == ClimbState.NONE*/);    
     }
 
     @Override

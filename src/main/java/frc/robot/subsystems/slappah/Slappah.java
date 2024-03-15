@@ -19,6 +19,8 @@ public class Slappah extends SubsystemBase {
     double angleSetpoint;
     double transferSetPoint;
 
+    double angleJog = 0;
+
     public Slappah (RobotContainer r, SlappahCals k){
         this.k = k;
         this.r = r;
@@ -72,8 +74,13 @@ public class Slappah extends SubsystemBase {
     }
 
     public void setAngle(double position){
-        angleSetpoint = position;
+        angleSetpoint = position + angleJog;
         io.setPosition(position);
+    }
+
+    public void jogAngle(double jog){
+        angleJog += jog;
+        setAngle(angleSetpoint);
     }
 
     public void setAnglePwr(double power){

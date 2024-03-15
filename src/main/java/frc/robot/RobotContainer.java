@@ -292,6 +292,14 @@ public class RobotContainer {
         .onTrue(new InstantCommand(climber::winchJogRight));
 
     inputs.shiftB6.negate()
+        .and(inputs.armAngleJogUp)
+        .onTrue(new InstantCommand(() -> slappah.jogAngle(5)));
+
+    inputs.shiftB6.negate()
+        .and(inputs.armAngleJogDn)
+        .onTrue(new InstantCommand(() -> slappah.jogAngle(-5)));
+
+    inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         .and(state.hasTransferT)
         .onTrue(new InstantCommand(() -> slappah.setTransferPosition(.25)));

@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);
 
-        if(Math.abs(inputs.anglePosition) < 0.1){ 
+        if(Math.abs(inputs.anglePosition) < 20){ 
             io.setAngleEncoder(k.startAngle);
             System.out.println("Successfully reset shoot angle position from: " + inputs.anglePosition);
              
