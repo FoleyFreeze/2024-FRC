@@ -17,7 +17,7 @@ public class ClimberCals {
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
                                                                 .setPIDF(0.15, 0, 0, 0)
-                                                                .setPIDPwrLim(0.4)
+                                                                .setPIDPwrLim(0.6)
                                                                 .setRatio(1/40.0);
 
     public MotorCal winchL = new MotorCal(TypeMotor.SPARK, 15)  .invert()
@@ -25,7 +25,7 @@ public class ClimberCals {
                                                                 .setRampRate(0.1)
                                                                 .setBrakeMode(true)
                                                                 .setPIDF(0.15, 0, 0, 0)
-                                                                .setPIDPwrLim(0.4)
+                                                                .setPIDPwrLim(0.6)
                                                                 .setRatio(1/40.0);
 
 

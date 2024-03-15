@@ -301,13 +301,13 @@ public class RobotContainer {
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
-        .and(state.hasTransferT)
-        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(.25)));
+        .and(state.hasTransferT.or(state.climbDeployT))
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(.5)));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogDn)
-        .and(state.hasTransferT)
-        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-.25)));
+        .and(state.hasTransferT.or(state.climbDeployT))
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-.5)));
 
     inputs.shiftB6
         .and(new Trigger(DriverStation::isDisabled))

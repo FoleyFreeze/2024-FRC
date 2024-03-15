@@ -21,7 +21,7 @@ public class CmdClimb {
     static double climbFinishedCurr;
     static double winchTurnsForHooksUp = 0.4375 + 0.4;
     static double winchTurnsToChain = 0.4375 - 0.4 + winchTurnsForHooksUp;
-    static double winchTurnsToFinish = 2.05 + winchTurnsToChain;
+    static double winchTurnsToFinish = 2.15 + winchTurnsToChain;
 
     static double pushAgainstWallPower = 0.07;
 

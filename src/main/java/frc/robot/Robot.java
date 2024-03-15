@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -82,7 +83,10 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        m_robotContainer.slappah.setBrake(false);
+        if(DriverStation.isFMSAttached()){
+            //leave the arm in break on the field
+            m_robotContainer.slappah.setBrake(false);
+        }
         m_robotContainer.drive.setSwerveBrake(false);
     }
 
