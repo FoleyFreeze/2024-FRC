@@ -245,7 +245,7 @@ public class RobotContainer {
     inputs.gatherBtnB5
         .and(inputs.shiftB6)
         .and(state.climbDeployT.negate())
-        .and(state.hasTransferT.negate())
+        //.and(state.hasTransferT.negate())
         .whileTrue(CmdGather.unGather(this));
 
     //shoot
@@ -265,18 +265,22 @@ public class RobotContainer {
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
+        .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogDn)
+        .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
 
     inputs.shiftB6
         .and(inputs.shootAngleJogUp)
+        .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
 
     inputs.shiftB6
         .and(inputs.shootAngleJogDn)
+        .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
     
     inputs.shiftB6
@@ -287,9 +291,19 @@ public class RobotContainer {
         .and(inputs.armAngleJogDn)
         .onTrue(new InstantCommand(climber::winchJogRight));
 
+    inputs.shiftB6.negate()
+        .and(inputs.shootAngleJogUp)
+        .and(state.hasTransferT)
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(.25)));
+
+    inputs.shiftB6.negate()
+        .and(inputs.shootAngleJogDn)
+        .and(state.hasTransferT)
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-.25)));
+
     inputs.shiftB6
         .and(new Trigger(DriverStation::isDisabled))
-        .onTrue(new InstantCommand(() -> lights.testStage++));  
+        .onTrue(new InstantCommand(lights::incTestStage).ignoringDisable(true));  
 
     //driver ungather button
     inputs.SWC.whileTrue(CmdGather.unGather(this));

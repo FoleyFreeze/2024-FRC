@@ -40,20 +40,25 @@ public class Lights extends SubsystemBase{
         new Color(148,0,211)
     };
 
-    //auton
-    Color[] brain = {
-        new Color(245, 137, 237),
-        new Color(215, 123, 209),
-        new Color(239, 96, 229),
-        new Color(209, 85, 201),
-    };
-
     //has note
     Color[] garfield = {
-        new Color(240, 166, 55),
-        new Color(246, 158, 26),
-        new Color(228, 146, 24),
-        new Color(252, 157, 14),
+        //new Color(245, 90, 200),
+        //new Color(215, 100, 175),
+        //new Color(239, 96, 190),
+        //new Color(209, 85, 178),
+        new Color(10, 255, 0),
+        new Color(7, 255, 0),
+        new Color(12, 255, 0),
+        new Color(10, 255, 0),
+    };
+
+    //auton
+    Color[] brain = {
+        new Color(83, 240, 0),
+        new Color(75, 246, 0),
+        new Color(90, 228, 0),
+        new Color(75, 252, 0),
+        //new Color (0, 255, 0)
     };
 
     //has transfer
@@ -62,7 +67,7 @@ public class Lights extends SubsystemBase{
         new Color(12, 111, 223),
         new Color(95, 160, 235),
         new Color(8, 162, 239),        
-        new Color(240, 166, 55),
+        new Color(240, 166, 250),
         new Color(10, 140, 205),
         new Color(56, 149, 196),
         new Color(107, 161, 188),
@@ -73,10 +78,10 @@ public class Lights extends SubsystemBase{
         new Color(47, 245, 16),
         new Color(74, 242, 48),
         new Color(99, 236, 77),
-        new Color(110, 228, 92),
-        new Color(137, 233, 122),
-        new Color(158, 233, 146),
-        new Color(192, 238, 185)
+        new Color(100, 228, 92),
+        new Color(107, 233, 122),
+        new Color(110, 233, 120),
+        new Color(100, 238, 100)
     };
 
 
@@ -224,6 +229,11 @@ public class Lights extends SubsystemBase{
     }
     
     public int testStage = 0;
+    public void incTestStage(){
+        System.out.println("inc test stage: " + testStage);
+        testStage++;
+    }
+
     public void testMode(){
         int maxStage = 9;
         if(testStage > maxStage) testStage = 0;

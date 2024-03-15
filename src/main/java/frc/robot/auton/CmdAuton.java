@@ -21,7 +21,7 @@ import frc.robot.commands.gather.CmdGather;
 public class CmdAuton {
 
     static PathConstraints constraints = new PathConstraints(
-        2, //vel m/s
+        4, //vel m/s
         2, //accel m/s/s
         3, //vel rad/s
         3  //accel rad/s/s
@@ -228,7 +228,7 @@ public class CmdAuton {
         for (Translation2d loc : shootLocations){
             double dist = loc.minus(noteLoc).getNorm();
             if(nextLoc != null){
-                dist += nextLoc.minus(nextLoc).getNorm();
+                dist += loc.minus(nextLoc).getNorm();
             }
 
             if(dist < bestDist){
