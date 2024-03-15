@@ -83,22 +83,23 @@ public class CmdGather {
     }
 
     public static Command autonGather (RobotContainer r){
-        //start spinning things and wait for start up current to decay
-        Command c = new WaitCommand(startupTime)
-            .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
-                                                 r.shooter.setAngle(r.shooter.k.homePosition);}));
-        //detect when the piece has made it to the gate wheel
-        c = c.andThen(new WaitUntilCommand(() -> r.gather.inputs.proxSensor))
-            .finallyDo(() -> r.gather.setGatePower(0));
-        //move the piece to it's final holding position
-        c = c.andThen(new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
-                                                r.state.hasNote = true;}));
-        //intake pushes note all the way to the gate then stops; gate holds it at constant position
-        c = c.andThen(new WaitCommand(extraIntakeTime))
-            .finallyDo(() -> r.gather.setIntakePower(0));
+        Command c = new SequentialCommandGroup(
+            //start spinning things and wait for start up current to decay
+            new WaitCommand(startupTime)
+                .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                     r.shooter.setAngle(r.shooter.k.homePosition);}, r.gather, r.shooter)),
+            //detect when the piece has made it to the gate wheel
+            new WaitUntilCommand(() -> r.gather.inputs.proxSensor)
+                .finallyDo(() -> r.gather.setGatePower(0)),
+            //move the piece to it's final holding position
+            new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
+                                      r.state.hasNote = true;}, r.gather),
+            //intake pushes note all the way to the gate then stops; gate holds it at constant position
+            new WaitCommand(extraIntakeTime)
+                .finallyDo(() -> r.gather.setIntakePower(0))
+        );
 
-        c.addRequirements(r.gather, r.shooter);
-        c.setName("CmdGather");
+        c.setName("Auto Gather");
         return c;
     }
 

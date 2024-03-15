@@ -28,7 +28,7 @@ public class CmdDrive extends Command {
         this.r = r;
         addRequirements(r.drive);
 
-        pidController = new ProfiledPIDController(0.15, 0, 0, new Constraints(2, 2));
+        pidController = new ProfiledPIDController(1, 0, 0, new Constraints(2, 2));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
     }
     
