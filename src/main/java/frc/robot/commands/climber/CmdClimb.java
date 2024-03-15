@@ -27,7 +27,7 @@ public class CmdClimb {
 
     public static Command deployClimb(RobotContainer r){
         return new SequentialCommandGroup(
-            CmdTransfer.setup(r), //go to transfer pos but dont transfer yet
+            CmdTransfer.setup(r, false), //go to transfer pos but dont transfer yet
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
@@ -75,7 +75,7 @@ public class CmdClimb {
 
     public static Command hook(RobotContainer r){
         Command hook = new SequentialCommandGroup(
-            CmdTransfer.transfer(r),
+            CmdTransfer.transfer(r, true),
             CmdTransfer.goToPreTrap(r),
             new WaitUntilCommand(r.slappah::checkAngleError)
                             .deadlineWith(new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(0.13,0,0), false), r.drive)),

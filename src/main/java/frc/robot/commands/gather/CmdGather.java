@@ -66,7 +66,9 @@ public class CmdGather {
             //start spinning things and wait for start up current to decay
             new WaitCommand(startupTime)
                 .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
-                                                     r.shooter.goHome();}, r.gather, r.shooter)),
+                                                     r.shooter.goHome();
+                                                     r.slappah.setAngle(0);
+                                                    }, r.gather, r.shooter, r.slappah)),
             //detect when the piece has made it to the gate wheel
             new WaitUntilCommand(() -> r.gather.inputs.proxSensor)
                 .finallyDo(() -> r.gather.setGatePower(0)),

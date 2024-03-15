@@ -125,21 +125,21 @@ public class Lights extends SubsystemBase{
         new Color(245, 105, 156),
         new Color(253, 6, 22),
     };
-    public Lights(RobotContainer r, InputCal cal){
+    public Lights(RobotContainer r){
         this.r = r;
-        this.cal = cal;
+        //this.cal = cal;
         if(disabled) return;
 
         initOutputLed();
         ledOutEnable(true);
 
-        led = new AddressableLED(cal.LED_PORT);
-        ledBuffer = new AddressableLEDBuffer(cal.BUFFER_LENGTH);
+        led = new AddressableLED(0);
+        ledBuffer = new AddressableLEDBuffer(205);
 
         led.setLength(ledBuffer.getLength());
         led.start();
 
-        pdh = new PowerDistribution(1, ModuleType.kRev);
+        pdh = new PowerDistribution(21, ModuleType.kRev);
     }
 
     public void underglow(boolean on){
@@ -158,11 +158,11 @@ public class Lights extends SubsystemBase{
         SmartDashboard.putNumber("PDH Voltage", pdh.getVoltage());
 
         //dont underglow when disabled in the pits
-        underglow((DriverStation.isFMSAttached() || DriverStation.isEnabled()) && r.inputs.getFieldMode());
+        underglow((DriverStation.isFMSAttached() && DriverStation.isDisabled() || r.state.hasNote) /*&& r.inputs.getFieldMode()*/);
         
         if(DriverStation.isDisabled()){
             //disabled
-            if(r.inputs.selectedLevel == Level.NONE){
+            /*if(r.inputs.selectedLevel == Level.NONE){
                 if(DriverStation.getAlliance() == Alliance.Blue){
                     skittles2(blueStripes, false);
                 } else {
@@ -170,7 +170,11 @@ public class Lights extends SubsystemBase{
                 }
             } else{
                 testMode();
-            }
+            }*/
+
+            testMode();
+            //skittles2(rainbow, true);
+
             //put in order of important DONT FORGET LIBBY
         } else if(DriverStation.isAutonomous()){
             //auton
@@ -195,13 +199,17 @@ public class Lights extends SubsystemBase{
         } else if(r.state.hasNote){
             //has note
             skittles2(garfield, false);
-
-            //is this even possible lol
-        } else if(/*stage left switched*/){
+            
+        } else { //no note
+            skittles2(beast, false);
+        }
+        
+        //is this even possible lol
+        /*if(/*stage left switched*){
             //stage Left
             skittles2(belle, true);
 
-        } else if(/*stage right switched*/){
+        } else if(/*stage right switched*){
             //stage right
             skittles2(gaston, true);
 
@@ -212,10 +220,48 @@ public class Lights extends SubsystemBase{
 
         if(led != null){
             led.setData(ledBuffer);
-        }
+        }*/
     }
     
+    public int testStage = 0;
+    public void testMode(){
+        int maxStage = 9;
+        if(testStage > maxStage) testStage = 0;
 
+        switch(testStage){
+            case 0:
+                skittles2(rainbow, true);
+                break;
+            case 1:
+                skittles2(brain, true);
+                break;
+            case 2:
+                skittles2(garfield, true);
+                break;
+            case 3:
+                skittles2(blizzard, true);
+                break;    
+            case 4:
+                skittles2(oscar, true);
+                break;
+            case 5:
+                skittles2(stitch, true);
+                break;
+            case 6:
+                skittles2(snowballFight, true);
+                break;
+            case 7:
+                skittles2(belle, true);
+                break;
+            case 8:
+                skittles2(beast, true);
+                break;
+            case 9:
+                skittles2(gaston, true);
+                break;
+        }
+    }
+    /*
     public void testMode(){
         switch(r.inputs.buttonAssignment){
             case 1:
@@ -261,6 +307,7 @@ public class Lights extends SubsystemBase{
                 //skittles2(rainbow, false);
         }
     }
+    /* */
 
     int buildOffset = 0;
     public void build(Color[] colors){
@@ -313,6 +360,7 @@ public class Lights extends SubsystemBase{
                 offset--;
             }
             switchTime = Timer.getFPGATimestamp() + 0.03;
+            led.setData(ledBuffer);
         }
     }
 
@@ -320,7 +368,7 @@ public class Lights extends SubsystemBase{
     public void mirrorLed(int index, Color c){
         ledBuffer.setLED(index, c);
         int mirrorIdx = ledBuffer.getLength() - index - 1;
-        if(!r.inputs.isShelf() && mirrorIdx > 60 && mirrorIdx < 78){
+        if(/*!r.inputs.isShelf() &&*/ mirrorIdx > 60 && mirrorIdx < 78){
             ledBuffer.setLED(mirrorIdx, off);
         } else {
             ledBuffer.setLED(mirrorIdx, c);

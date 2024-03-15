@@ -118,7 +118,10 @@ public class RobotContainer {
     drive.setDefaultCommand(new CmdDrive(this).ignoringDisable(true));
     gather.setDefaultCommand(CmdGather.backwardsGather(this));
 
-    inputs.resetSwerveZerosTRIM2DN.onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
+    inputs.resetSwerveZerosTRIM2DN
+        .and(new Trigger(DriverStation::isFMSAttached).negate()) //disable rezeroing when connected to the field
+        .onTrue(new InstantCommand(drive::learnSwerveOffsets).ignoringDisable(true));
+    
     inputs.resetFieldOrientedLTRIM.onTrue(new InstantCommand(drive::resetFieldOrientedAngle).ignoringDisable(true));
     inputs.resetFieldOdometryRTRIM.onTrue(new InstantCommand(drive::resetFieldOdometry).ignoringDisable(true));
     inputs.resetArmLRTRIMR.onTrue(new InstantCommand(slappah::resetArmAngle).ignoringDisable(true));
@@ -283,6 +286,10 @@ public class RobotContainer {
     inputs.shiftB6
         .and(inputs.armAngleJogDn)
         .onTrue(new InstantCommand(climber::winchJogRight));
+
+    inputs.shiftB6
+        .and(new Trigger(DriverStation::isDisabled))
+        .onTrue(new InstantCommand(() -> lights.testStage++));  
 
     //driver ungather button
     inputs.SWC.whileTrue(CmdGather.unGather(this));
@@ -478,9 +485,10 @@ public class RobotContainer {
     totalNotes.addOption("8", 8);
 
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
-    autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0, 0).withSize(2,1);
-    autoTab.add("Total Notes", totalNotes.getSendableChooser()).withPosition(2, 0).withSize(2,1);
-    autoTab.add("Start Location", startChooser.getSendableChooser()).withPosition(4, 0).withSize(2,1);
+    autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0,0).withSize(2,1);
+    autoTab.add("Total Notes", totalNotes.getSendableChooser()).withPosition(2,0).withSize(2,1);
+    autoTab.add("Start Location", startChooser.getSendableChooser()).withPosition(4,0).withSize(2,1);
+    autoTab.add("Init Wait Time", waitChooser.getSendableChooser()).withPosition(6,0).withSize(2,1);
     autoTab.add("Note A", notePriorityA.getSendableChooser()).withPosition(1, 1);
     autoTab.add("Note B", notePriorityB.getSendableChooser()).withPosition(2, 1);
     autoTab.add("Note C", notePriorityC.getSendableChooser()).withPosition(3, 1);
