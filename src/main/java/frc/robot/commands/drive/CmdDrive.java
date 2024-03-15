@@ -45,12 +45,15 @@ public class CmdDrive extends Command {
                     case 1://left
                         angleSetpoint = Rotation2d.fromDegrees(120);
                     break;
-                    case 2://right
+                    case -1://right
                         angleSetpoint = Rotation2d.fromDegrees(-120);
                     break;
                     case 0://back
                         angleSetpoint = Rotation2d.fromDegrees(180);
                     break;
+                    default:
+                        angleSetpoint = new Rotation2d();
+                        System.out.println("Unknown climb dir: " + r.inputs.getClimbDir());
                 }
                 if(DriverStation.getAlliance().get() == Alliance.Red){
                     angleSetpoint.plus(Rotation2d.fromDegrees(180));

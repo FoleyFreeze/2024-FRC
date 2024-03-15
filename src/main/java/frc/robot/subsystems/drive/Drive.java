@@ -193,7 +193,13 @@ public class Drive extends SubsystemBase{
 
     public void resetFieldOrientedAngle(){
         //reset to 0
-        resetFieldOrientedAngle(new Rotation2d());
+        Rotation2d zeroAngle = new Rotation2d();
+        if(DriverStation.getAlliance().isPresent()){
+            if(DriverStation.getAlliance().get() == Alliance.Red){
+                zeroAngle = Rotation2d.fromDegrees(180);
+            }
+        }
+        resetFieldOrientedAngle(zeroAngle);
     }
 
     public void resetFieldOrientedAngle(Rotation2d newAngle){

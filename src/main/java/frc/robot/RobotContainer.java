@@ -128,12 +128,14 @@ public class RobotContainer {
         .and(inputs.cameraEnableSWD)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
+        .and(state.hasNoteT.negate())
         .whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
     
     inputs.gatherTriggerSWE
         .and(inputs.cameraEnableSWD.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
+        .and(state.hasNoteT.negate())
         .whileTrue(CmdGather.gather(this));
 
     inputs.gatherTriggerSWE
@@ -232,6 +234,7 @@ public class RobotContainer {
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
+        .and(state.hasNoteT.negate())
         .whileTrue(CmdGather.gather(this));
 
     //ungather
@@ -280,8 +283,9 @@ public class RobotContainer {
         .and(inputs.armAngleJogDn)
         .onTrue(new InstantCommand(climber::winchJogRight));
 
-    //TODO: map here for now
-    inputs.SWC.and(inputs.SWBHi.negate().and(inputs.SWBLo.negate())).whileTrue(CmdGather.unGather(this));
+    //driver ungather button
+    inputs.SWC.whileTrue(CmdGather.unGather(this));
+    
     //if in climb mode, ungather will transfer
     //inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdTransfer.transferForAmp(this, inputs.SWC));
     //inputs.SWC.and(inputs.SWBHi.or(inputs.SWBLo)).onTrue(CmdClimb.simpleClimb(this));

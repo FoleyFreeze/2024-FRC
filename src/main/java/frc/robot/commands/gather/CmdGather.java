@@ -110,7 +110,8 @@ public class CmdGather {
                          .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
                                             r.shooter.setShootPower(0);
                                             r.slappah.setTransferPower(0);
-                                            r.state.hasNote = false;});
+                                            r.state.hasNote = false;
+                                            r.state.hasTransfer = false;});
 
         c.addRequirements(r.gather, r.shooter, r.slappah);
         c.setName("CmdUngather");

@@ -51,7 +51,7 @@ public class CmdTransfer {
 
     //score
     static double scoreTransferPower = -1;
-    static double scoreWaitTime = 0.4;
+    static double scoreWaitTime = 0.6;
     static double scoreAnglePower = 0.1;
 
     public static Command unTransferFull(RobotContainer r, Trigger t){
@@ -201,7 +201,8 @@ public class CmdTransfer {
             new InstantCommand(() -> {r.slappah.setTransferPower(scoreTransferPower);
                                       r.slappah.setAnglePwr(scoreAnglePower);
                                      }, r.slappah),
-            new WaitCommand(scoreWaitTime),
+            new WaitCommand(scoreWaitTime), 
+            new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()), //wait until shoot released
             new InstantCommand(() -> {r.slappah.setAngle(slapHomePos);
                                       r.slappah.setTransferPower(0);
                                       r.state.hasNote = false;

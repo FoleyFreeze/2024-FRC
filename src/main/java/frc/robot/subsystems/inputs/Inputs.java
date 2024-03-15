@@ -162,9 +162,9 @@ public class Inputs extends SubsystemBase {
         //right triggr 3pos switch 
         //up is layup mid is freethrow down is threepoint
         if(SWGLo.getAsBoolean()){
-            return 2;
+            return 1;
         } else if(SWGHi.getAsBoolean()){
-            return 1;//TODO: back to 0 if we want a real third shooting location
+            return 0;//TODO: back to 0 if we want a real third shooting location
         }else {
             return 1;
         }
@@ -172,9 +172,9 @@ public class Inputs extends SubsystemBase {
 
     public int getClimbDir(){
         if(controlBoard2.getRawButton(3)){
-            return 1;
+            return 1;//right
         } else if(controlBoard2.getRawButton(2)) {
-            return -1;
+            return -1;//left
         } else {
             return 0;
         }
