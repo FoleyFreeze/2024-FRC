@@ -203,7 +203,7 @@ public class Lights extends SubsystemBase{
 
         } else if(r.state.hasNote){
             //has note
-            skittles2(garfield, false);
+            skittles2(garfield, false, r.state.isPrime);
             
         } else { //no note
             skittles2(beast, false);
@@ -353,8 +353,10 @@ public class Lights extends SubsystemBase{
             switchTime = Timer.getFPGATimestamp() + 0.03;
         }
     }
+
+    Color black = new Color(0,0,0);
     //this is the important one
-    public void skittles2(Color[] colors, boolean up){
+    public void skittles2(Color[] colors, boolean up, boolean skip){
         if(Timer.getFPGATimestamp() > switchTime){
             int len = ledBuffer.getLength() / 2;
             for(int i = 0; i < len; i++){
@@ -362,7 +364,11 @@ public class Lights extends SubsystemBase{
                 if(idx < 0) idx += len;
                 int colorIdx = ((i) % (colors.length * 2)) / 2;
                 if(colorIdx < 0) colorIdx += colors.length;
-                mirrorLed(idx, colors[colorIdx]);
+                if(offset % 9 < 3 && skip){
+                    mirrorLed(idx, black);
+                } else {
+                    mirrorLed(idx, colors[colorIdx]);
+                }
             }
             if (up){
                 offset++;
@@ -372,6 +378,10 @@ public class Lights extends SubsystemBase{
             switchTime = Timer.getFPGATimestamp() + 0.03;
             led.setData(ledBuffer);
         }
+    }
+
+    public void skittles2(Color[] colors, boolean up){
+        skittles2(colors,up, false);
     }
 
     Color off = new Color(0,0,0);

@@ -20,7 +20,9 @@ public class CMDShoot {
 
     public static Command simpleShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
-            new RunCommand(() -> r.shooter.fixedPrime(), r.shooter)
+            new RunCommand(() -> {r.shooter.fixedPrime();
+                                  r.state.isPrime = true;
+                                }, r.shooter)
                 .until(() -> r.shooter.checkAngleError() 
                           && r.shooter.checkRPMError() 
                           && r.inputs.shootTriggerSWH.getAsBoolean()),
@@ -30,9 +32,10 @@ public class CMDShoot {
                                       r.gather.setGatePower(0); 
                                       r.state.hasNote = false;}, 
                                             r.shooter, r.gather),
-            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean())
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> r.state.isPrime = false)
             //make sure trigger is released so it doesnt immediately run again
-        ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+        );//.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
         c.setName("CmdSimpleShoot");
         return c;

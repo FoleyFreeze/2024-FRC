@@ -11,6 +11,8 @@ public class RoboState {
         HOOKED,
         CLIMBED
     }
+
+    public boolean isPrime;
     public boolean hasNote;//in shooter or arm
     public boolean hasTransfer; //in arm, probably for amp
     public ClimbState climbDeploy = ClimbState.NONE; //climb deployed, but maybe not in arm yet
