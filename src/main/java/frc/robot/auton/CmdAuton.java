@@ -28,6 +28,7 @@ public class CmdAuton {
     );
 
     static double driveToNoteThresh = Units.inchesToMeters(-1);
+    static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
     public static Command selectedAuto(RobotContainer r, 
@@ -110,7 +111,7 @@ public class CmdAuton {
                         return botLoc.minus(noteLocation).getNorm() < driveToNoteThresh
                             && r.vision.hasNoteImage() 
                             && botLoc.minus(r.vision.getCachedNoteLocation()).getNorm() < driveToNoteThresh;}) 
-                .andThen(new CmdDriveNoteTraj(r)
+                .andThen(new CmdDriveNoteTraj(r).onlyIf(() -> r.drive.getPose().getTranslation().minus(r.vision.getCachedNoteLocation()).getNorm() < driveToNoteThresh2)
                     .raceWith(new WaitCommand(1))) //give it 4 seconds before moving on to the next note
                 .andThen(new WaitCommand(0.5))
             .raceWith(CmdGather.autonGather(r));

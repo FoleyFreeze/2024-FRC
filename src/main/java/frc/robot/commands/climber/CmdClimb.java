@@ -15,6 +15,8 @@ import frc.robot.subsystems.RoboState.ClimbState;
 
 public class CmdClimb {
 
+    static double winchShooterAngle = 92;
+
     static double climbPower = 0.3;
     static double unClimbPower = -.2;
 
@@ -77,6 +79,7 @@ public class CmdClimb {
         Command hook = new SequentialCommandGroup(
             CmdTransfer.transfer(r, true),
             CmdTransfer.goToPreTrap(r),
+            new InstantCommand(() -> r.shooter.setAngle(winchShooterAngle)),
             new WaitUntilCommand(r.slappah::checkAngleError)
                             .deadlineWith(new RunCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds(0.13,0,0), false), r.drive)),
             new InstantCommand(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()), r.drive),
@@ -100,8 +103,9 @@ public class CmdClimb {
 
     public static Command climb(RobotContainer r){
         Command climb = new SequentialCommandGroup(
-            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToFinish)),
             new InstantCommand(() -> r.slappah.setAnglePwr(pushAgainstWallPower), r.slappah), //force the arm against the wall to maintain robot pitch while climbing
+            new WaitCommand(.5),
+            new InstantCommand(() -> r.climber.setWinchPosition(winchTurnsToFinish)),
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()),
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.CLIMBED)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
