@@ -27,7 +27,8 @@ public class CmdAuton {
         3  //accel rad/s/s
     );
 
-    static double driveToNoteThresh = Units.inchesToMeters(-1);
+    static double driveToNoteThreshClose = Units.inchesToMeters(0);
+    static double driveToNoteThreshFar = Units.inchesToMeters(36);
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
@@ -103,6 +104,14 @@ public class CmdAuton {
                 constraints,
                 0.0, 0.0
             ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+
+            //if close notes
+            double driveToNoteThresh;
+            if(noteOrder[i] > 5){
+                driveToNoteThresh = driveToNoteThreshClose;
+            } else {
+                driveToNoteThresh = driveToNoteThreshFar;
+            }
 
             //construct the complex pathfind to note and gather it with vision command
             Command noteCommand = pathFindingCommand
