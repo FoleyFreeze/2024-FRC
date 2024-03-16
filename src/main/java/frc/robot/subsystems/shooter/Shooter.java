@@ -94,8 +94,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void commandPrime(double angle, double rpm){
-        setAngle(angle);
-        setRPM(rpm);
+        setAngle(angle + angleJog);
+        setRPM(rpm + speedJog);
     }
 
     public void visionPrime(){

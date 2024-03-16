@@ -41,8 +41,8 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 8.0;
-    static double climbTransferRotations = 7.0;
+    static double transferRotations = 7.0;
+    static double climbTransferRotations = 6.0;
     static double transferCurrentLimit = 4;
 
     //unTransfer

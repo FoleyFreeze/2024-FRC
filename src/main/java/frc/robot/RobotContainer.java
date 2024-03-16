@@ -255,6 +255,12 @@ public class RobotContainer {
         .and(state.hasTransferT)
         .onTrue(CmdTransfer.scoreInAmp(this));
 
+    inputs.shootBtnB1
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT.negate())
+        .onTrue(CMDShoot.simpleCtrlBoardShoot(this));
+
     //coast winch motors
     inputs.shiftB6
         .and(inputs.climbDeployB4)
