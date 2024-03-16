@@ -28,11 +28,11 @@ public class Locations {
     private static final double speakerSideEdgeLength = Units.inchesToMeters(40.9);
 
     //notes
-    public static final Translation2d blueNoteA = new Translation2d (fieldLength/2, fieldWidth - Units.inchesToMeters(29.625));
-    public static final Translation2d blueNoteB = new Translation2d (fieldLength/2, fieldWidth - Units.inchesToMeters(66 + 29.625));
+    public static final Translation2d blueNoteA = new Translation2d (fieldLength/2, fieldWidth/2 + Units.inchesToMeters(66*2));
+    public static final Translation2d blueNoteB = new Translation2d (fieldLength/2, fieldWidth/2 + Units.inchesToMeters(66));
     public static final Translation2d blueNoteC = new Translation2d (fieldLength/2, fieldWidth/2);
-    public static final Translation2d blueNoteD = new Translation2d (fieldLength/2, fieldWidth/2 + Units.inchesToMeters(66));
-    public static final Translation2d blueNoteE = new Translation2d (fieldLength/2, fieldWidth/2 + Units.inchesToMeters(66*2));
+    public static final Translation2d blueNoteD = new Translation2d (fieldLength/2, fieldWidth/2 - Units.inchesToMeters(66));
+    public static final Translation2d blueNoteE = new Translation2d (fieldLength/2, fieldWidth/2 - Units.inchesToMeters(66*2));
     public static final Translation2d blueNoteF = new Translation2d (Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57 * 2));
     public static final Translation2d blueNoteG = new Translation2d (Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57));
     public static final Translation2d blueNoteH = new Translation2d (Units.inchesToMeters(114), fieldWidth/2);
