@@ -15,7 +15,7 @@ public class ShooterCals {
     //note these are in inches (get converted later)
     double di = 36;             //in front, podium, 19ft
     public double camDistance[] = {di+17,  102,  113, di+14*12,  di+19*12};
-    public double camAngle[] =    {55,     41.5,  40,   27,    25};
+    public double camAngle[] =    {55,     41.5,  40,   26,    24};
     public double camRPM[] =      {5000,   6000, 6000, 6500,     6630};
     public double camVelocity[] = {0, 0};
     
