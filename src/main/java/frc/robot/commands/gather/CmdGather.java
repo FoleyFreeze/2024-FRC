@@ -2,11 +2,15 @@ package frc.robot.commands.gather;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
+import frc.robot.commands.drive.CmdDrive;
+import frc.robot.commands.drive.CmdDriveNoteTraj;
 
 public class CmdGather {
     
@@ -81,6 +85,37 @@ public class CmdGather {
         );
     
         c.setName("CmdGather");
+        return c;
+    }
+
+    public static Command cameraGather(RobotContainer r){
+        Command c = new ParallelDeadlineGroup(
+            new ParallelRaceGroup(
+                CmdGather.gather(r),
+                //continue running gather for an extra second
+                //to make sure that any in-process notes get fully gathered
+                new SequentialCommandGroup(
+                    new WaitUntilCommand(r.inputs.gatherTriggerSWE.negate()),
+                    new WaitCommand(1)
+                )
+            ),
+            new SequentialCommandGroup(
+                new ParallelRaceGroup(
+                    //run camera drive until trigger is released
+                    //or the intake wheels see a spike
+                    new CmdDriveNoteTraj(r),
+                    new WaitUntilCommand(r.inputs.gatherTriggerSWE.negate()),
+                    new SequentialCommandGroup(
+                        new WaitCommand(startupTime),
+                        new WaitUntilCommand(() -> r.gather.getCurrent() > 12)
+                    )
+                ),
+                //then immediately return control to the driver
+                new CmdDrive(r)
+            )
+        );
+
+        c.setName("CameraGather");
         return c;
     }
 

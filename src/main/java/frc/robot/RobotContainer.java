@@ -29,7 +29,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auton.ChoreoAuto;
 import frc.robot.auton.CmdAuton;
@@ -133,14 +135,19 @@ public class RobotContainer {
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
         .and(state.hasNoteT.negate())
-        .whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)).ignoringDisable(true));
+        //.whileTrue(CmdGather.gather(this).deadlineWith(new CmdDriveNoteTraj(this)));
+        .onTrue(CmdGather.cameraGather(this));
     
     inputs.gatherTriggerSWE
         .and(inputs.cameraEnableSWD.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
         .and(state.hasNoteT.negate())
-        .whileTrue(CmdGather.gather(this));
+        //.whileTrue(CmdGather.gather(this));
+        .onTrue(CmdGather.gather(this)
+                //continue gathering until 1 sec after the trigger is released
+                .raceWith(new WaitUntilCommand(inputs.gatherTriggerSWE.negate())
+                      .andThen(new WaitCommand(1))));
 
     inputs.gatherTriggerSWE
         .and(state.hasTransferT)
