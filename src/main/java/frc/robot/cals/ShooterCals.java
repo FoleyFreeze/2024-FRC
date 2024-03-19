@@ -27,8 +27,8 @@ public class ShooterCals {
     public double fixedAngle[] = {57, 36.7, 36.7};//note far shot is cal'd out in inputs
     public double fixedRPM[] = {5500, 6000, 6000};
 
-    public double ctrlBoardShootAngle = 24;
-    public double ctrlBoardShootSpeed = 3500;
+    public double ctrlBoardShootAngle = 59;
+    public double ctrlBoardShootSpeed = 3000;
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 
