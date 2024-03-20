@@ -162,6 +162,7 @@ public class CmdTransfer {
                                               r.gather.setGatePosition(extraReverseGate);
                                              }, r.slappah, r.gather),
                     //new PrintCommand("stage 3"),
+                    //TODO: figure out a better way for this
                     new WaitUntilCommand(r.slappah::checkAngleError)
                         .raceWith(new SequentialCommandGroup(
                             new WaitCommand(0.5),

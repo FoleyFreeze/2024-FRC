@@ -1,10 +1,14 @@
 package frc.robot.subsystems.vision;
 
-import org.littletonrobotics.junction.Logger;
+import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -12,6 +16,7 @@ import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.auton.Locations;
 import frc.robot.cals.VisionCals;
 
 public class Vision extends SubsystemBase{
@@ -21,6 +26,10 @@ public class Vision extends SubsystemBase{
     VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
     Translation2d lastNoteLocation;
+
+    int badIdErr = 0;
+    int badHeightErr = 0;
+    int badXErr = 0;
 
     DoubleEntry rioTime = NetworkTableInstance.getDefault().getDoubleTopic("/Vision/RIO Time").getEntry(0);
 
@@ -93,6 +102,7 @@ public class Vision extends SubsystemBase{
 
         return fieldRelNoteLocation;
     }
+
     public Translation2d getCachedNoteLocation(){
         return lastNoteLocation;
     }
@@ -102,7 +112,15 @@ public class Vision extends SubsystemBase{
     }
 
     public boolean hasNewNoteImage(){
-        return hasNoteImage() && !inputs.noteData.isProcessed;
+        return !inputs.noteData.isProcessed && hasNoteImage();
+    }
+
+    public boolean hasTagImage(){
+        return inputs.now - inputs.tagData.timestamp < k.maxTagAge;
+    }
+
+    public boolean hasNewTagImage(){
+        return !inputs.tagData.isProcessed && hasTagImage();
     }
 
     static final Translation2d zeroT2D = new Translation2d();
@@ -123,5 +141,67 @@ public class Vision extends SubsystemBase{
             //Logger.recordOutput("Vision/fieldRelNoteLocation", zeroT2D);
         }
         
+
+        if(hasNewTagImage()){
+            for(int i=0;i<inputs.tagData.tagCount;i++){
+                VisionTag tag = inputs.tagData.tags[i];
+
+                //create pose3d
+                Pose3d rawTagPose = new Pose3d(new Translation3d(tag.transX, tag.transY, tag.transZ), new Rotation3d(tag.rotX, tag.rotY, tag.rotZ));
+                Logger.recordOutput("Vision/RawTagPose", rawTagPose);
+                Logger.recordOutput("Vision/RawTag/RotX", Math.toDegrees(rawTagPose.getRotation().getX()));
+                Logger.recordOutput("Vision/RawTag/RotY", Math.toDegrees(rawTagPose.getRotation().getY()));
+                Logger.recordOutput("Vision/RawTag/RotZ", Math.toDegrees(rawTagPose.getRotation().getZ()));
+
+                Pose3d tempPose = rawTagPose.rotateBy(k.tagCamLocation.getRotation());
+                Pose3d rawRobotPose = new Pose3d(tempPose.getTranslation().plus(k.tagCamLocation.getTranslation()), tempPose.getRotation());
+                Logger.recordOutput("Vision/RawRobotTagPose", rawRobotPose);
+                Logger.recordOutput("Vision/RawRobotTag/RotX", Math.toDegrees(rawRobotPose.getRotation().getX()));
+                Logger.recordOutput("Vision/RawRobotTag/RotY", Math.toDegrees(rawRobotPose.getRotation().getY()));
+                Logger.recordOutput("Vision/RawRobotTag/RotZ", Math.toDegrees(rawRobotPose.getRotation().getZ()));
+
+
+                Pose2d robotPose = posePicker(inputs.tagData.timestamp);
+                Pose3d botFieldPose = new Pose3d(new Translation3d(robotPose.getX(), robotPose.getY(), 0), new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
+                tempPose = rawRobotPose = rawRobotPose.rotateBy(botFieldPose.getRotation());
+                Pose3d tagFieldPose = new Pose3d(tempPose.getTranslation().plus(botFieldPose.getTranslation()), tempPose.getRotation());
+                Logger.recordOutput("Vision/FieldTagPose", tagFieldPose);
+                Logger.recordOutput("Vision/FieldTag/RotX", Math.toDegrees(tagFieldPose.getRotation().getX()));
+                Logger.recordOutput("Vision/FieldTag/RotY", Math.toDegrees(tagFieldPose.getRotation().getY()));
+                Logger.recordOutput("Vision/FieldTag/RotZ", Math.toDegrees(tagFieldPose.getRotation().getZ()));
+                
+                //first check height vs reality to reject incorrect heights
+                Optional<Pose3d> fieldTagPose = Locations.tagLayout.getTagPose(tag.tagId);
+                if(!fieldTagPose.isPresent()) {
+                    System.out.println("Tag: " + tag.tagId + " does not exist");
+                    badIdErr++;
+                    Logger.recordOutput("Vision/ErrorBadId", badIdErr);
+                    break;
+                } 
+
+                double targetHeight = fieldTagPose.get().getZ();
+                if(Math.abs(targetHeight - rawRobotPose.getZ()) > Units.inchesToMeters(4)){
+                    System.out.println("Tag height doesn't match the field id:" + tag.tagId + " height: " + Units.metersToInches(rawRobotPose.getZ()));
+                    badHeightErr++;
+                    Logger.recordOutput("Vision/ErrorBadHeight", badHeightErr);
+                    break;
+                }
+
+                if(tag.transX < 0){
+                    System.out.println("Tag is located behind the camera?!? id: " + tag.tagId + " x: " + Units.metersToInches(tag.transX));
+                    badXErr++;
+                    Logger.recordOutput("Vision/ErrorBadDist", badXErr);
+                    break;
+                }
+
+                
+
+                
+
+            }
+
+            inputs.tagData.isProcessed = true;
+
+        }
     }
 }

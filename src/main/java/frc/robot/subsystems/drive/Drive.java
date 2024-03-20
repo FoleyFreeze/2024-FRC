@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -15,6 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -168,6 +171,7 @@ public class Drive extends SubsystemBase{
 
         //update apriltags
         //coming soon to a robot near you
+        
 
         robotPose = odometry.getEstimatedPosition();
         robotRelVelocity = kinematics.toChassisSpeeds(getWheelStates());
@@ -268,5 +272,11 @@ public class Drive extends SubsystemBase{
         for(Wheel w: wheels){
             w.setSwerveBrake(on);
         }
+    }
+
+    Matrix<N3,N1> visionMat = VecBuilder.fill(0.9, 0.9, 0.9);
+    public void applyVisionDataToOdometry(Pose2d visionBotLocation, double timestamp, double estAccuracy){
+        Matrix<N3,N1> mat = visionMat.times(estAccuracy);
+        odometry.addVisionMeasurement(visionBotLocation, timestamp, mat);
     }
 }
