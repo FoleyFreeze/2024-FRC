@@ -64,6 +64,9 @@ public class SparkMotor implements Motor{
             brakeMode = false;
         }
 
+        encoder.setAverageDepth(2);
+        encoder.setMeasurementPeriod(16);
+
         errorCount = 0;
     }
 

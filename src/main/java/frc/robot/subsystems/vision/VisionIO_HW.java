@@ -25,7 +25,7 @@ public class VisionIO_HW implements VisionIO{
     VisionNoteData noteData = new VisionNoteData();
     VisionTagData tagData = new VisionTagData(0);
 
-    
+    //based on the 2023-FRC project
     public VisionIO_HW(){
         active = NetworkTableInstance.getDefault().getBooleanTopic("/Vision/Active").getEntry(true);
         notesActive = NetworkTableInstance.getDefault().getBooleanTopic("/Vision/Note Enable").getEntry(true);
@@ -88,7 +88,7 @@ public class VisionIO_HW implements VisionIO{
     @Override
     public void updateInputs (VisionIOInputs inputs){
         inputs.noteData = noteData;
-        //inputs.tagData = tagData;
+        inputs.tagData = tagData;
 
         inputs.now = Logger.getRealTimestamp()/1000000.0;
 

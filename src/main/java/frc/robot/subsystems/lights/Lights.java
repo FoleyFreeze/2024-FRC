@@ -235,7 +235,7 @@ public class Lights extends SubsystemBase{
     }
 
     public void testMode(){
-        int maxStage = 9;
+        int maxStage = 10;
         if(testStage > maxStage) testStage = 0;
 
         switch(testStage){
@@ -249,24 +249,27 @@ public class Lights extends SubsystemBase{
                 skittles2(garfield, true);
                 break;
             case 3:
+                skittles2(garfield, true, true);
+                break;
+            case 4:
                 skittles2(blizzard, true);
                 break;    
-            case 4:
+            case 5:
                 skittles2(oscar, true);
                 break;
-            case 5:
+            case 6:
                 skittles2(stitch, true);
                 break;
-            case 6:
+            case 7:
                 skittles2(snowballFight, true);
                 break;
-            case 7:
+            case 8:
                 skittles2(belle, true);
                 break;
-            case 8:
+            case 9:
                 skittles2(beast, true);
                 break;
-            case 9:
+            case 10:
                 skittles2(gaston, true);
                 break;
         }

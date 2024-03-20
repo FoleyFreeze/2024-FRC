@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.util.Units;
+
 public class VisionTag {
     public byte tagId;
     public byte eBits;
@@ -16,12 +18,18 @@ public class VisionTag {
         this.tagId = tagId;
         this.eBits = eBits;
         this.decisionMargin = decisionMargin;
-        this.transX = transX;
-        this.transY = transY;
-        this.transZ = transZ;
-        this.rotX = rotX;
-        this.rotY = rotY;
-        this.rotZ = rotZ;
+        /*this.transX = (float) Units.inchesToMeters(transZ);
+        this.transY = (float) Units.inchesToMeters(-transX);
+        this.transZ = (float) Units.inchesToMeters(transY);
+        this.rotX = (float) Units.degreesToRadians(rotZ);
+        this.rotY = (float) Units.degreesToRadians(-rotX);
+        this.rotZ = (float) Units.degreesToRadians(rotY);*/
+        this.transX = transZ;
+        this.transY = -transX;
+        this.transZ = -transY;
+        this.rotX = rotZ;
+        this.rotY = -rotX;
+        this.rotZ = -rotY;
     }
     
     public static final VisionTagStruct struct = new VisionTagStruct();
