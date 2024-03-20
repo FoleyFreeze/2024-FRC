@@ -24,7 +24,7 @@ public class CmdTransfer {
     static double slapTransferPos = 10;
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
-    static double slapPreAmpPos = 90;
+    static double slapPreAmpPos = 55;//90;
     static double slapAmpScorePos = 108;
     static double slapPreTrapPos = 75;
     static double slapTrapScorePos = 108; //TODO: find actual number

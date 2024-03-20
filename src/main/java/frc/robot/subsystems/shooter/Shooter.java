@@ -146,7 +146,9 @@ public class Shooter extends SubsystemBase {
 
     public void periodic(){
         io.updateInputs(inputs);
-        Logger.processInputs("shooter", inputs);
+        Logger.processInputs("Shooter", inputs);
+        Logger.recordOutput("Shooter/AngleSetpoint", angleSetpoint);
+        Logger.recordOutput("Shooter/RPMSetpoint", rpmSetpoint);
 
         SmartDashboard.putNumber("shoot angle", inputs.anglePosition);
         SmartDashboard.putNumber("shoot speeds bottom", inputs.shootBottomVelocity);

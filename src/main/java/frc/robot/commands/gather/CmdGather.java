@@ -157,6 +157,8 @@ public class CmdGather {
     }
 
     public static Command backwardsGather(RobotContainer r){
-        return new RunCommand(() -> r.gather.setIntakePower(backwardsGatherPower), r.gather);
+        Command c = new RunCommand(() -> r.gather.setIntakePower(backwardsGatherPower), r.gather);
+        c.setName("BackUngather");
+        return c;
     }
 }

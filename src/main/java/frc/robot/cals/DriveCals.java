@@ -66,7 +66,7 @@ public class DriveCals {
     double swerveRatio = 7 / 150.0;
     
     double driveRatio = 14 / 50.0 * 28 / 16.0 * 15 / 45.0; //mk4i L3
-    double driveCurrLim = 60;
+    double driveCurrLim = 40;//TODO:go back to 60+ for good batteries
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 

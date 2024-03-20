@@ -248,6 +248,12 @@ public class RobotContainer {
         .and(state.hasNoteT.negate())
         .whileTrue(CmdGather.gather(this));
 
+    inputs.gatherBtnB5
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(state.hasTransferT)
+        .onTrue(CmdTransfer.goToPreAmp(this));
+
     //ungather
     inputs.gatherBtnB5
         .and(inputs.shiftB6)
@@ -315,12 +321,12 @@ public class RobotContainer {
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         .and(state.hasTransferT.or(state.climbDeployT))
-        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(.5)));
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(1)));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogDn)
         .and(state.hasTransferT.or(state.climbDeployT))
-        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-.5)));
+        .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-1)));
 
     inputs.shiftB6
         .and(new Trigger(DriverStation::isDisabled))
