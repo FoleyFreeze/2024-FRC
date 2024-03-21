@@ -3,7 +3,9 @@ package frc.robot.auton;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.Pair;
@@ -16,8 +18,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
@@ -33,13 +38,21 @@ public class CmdAuton {
         3  //accel rad/s/s
     );
 
+    static PathConstraints noTurnConstraints = new PathConstraints(
+        4.5,
+        3,
+        2,
+        2
+    );
+
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
     static double driveToNoteThreshFar = Units.inchesToMeters(36);
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
     static boolean fastCloseNoteShots = false;
-
+    static double fastDistToNoteThresh = 48;
+    static double fastDistToBotThresh = 48;
 
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
@@ -55,28 +68,6 @@ public class CmdAuton {
         sort(noteOrder, f, 6);
         sort(noteOrder, g, 7);
         sort(noteOrder, h, 8);
-
-        
-        
-
-        //Step1: shoot the note you start with
-        //Step2: for each note in order do:
-        //     A: create a path to it
-        //     B: add a command to follow that path
-        //          i: calculate the angle to point the robot to by looking at the vector to the note
-        //         ii: run the gatherer in parallel
-        //        iii: if within x dist of the note and we see it then we should stop pathfinding and use the driveToNote function
-        //     C: If we gathered a note, then:
-        //          i: find the best shooting position for that note
-        //              -> this will be the shooting position that is closest to the current note and the next one (if there is one)
-        //         ii: create a path to the shooting position
-        //        iii: calculate the angle to point the robot to by looking at the vector to the speaker
-        //         iv: add a command to follow that path
-        //          v: add a command to prime the shooter
-        //         vi: Shoot
-        //     C-else: If we did not gather a note, then someone stole it first, continue on to the next note
-        //     
-        //Step3: fin
         
         SequentialCommandGroup fullSequence = new SequentialCommandGroup();
 
@@ -86,14 +77,215 @@ public class CmdAuton {
             fullSequence.addCommands(new WaitCommand(waitTime));
         }
         
+        if(fastCloseNoteShots){
+            fullSequence.addCommands(fastAuto(r, noteOrder, startLocation));
+        } else {
+            fullSequence.addCommands(slowButWorkingAuto(r, noteOrder, startLocation));
+        }
+
+        Command cmd = fullSequence.finallyDo(() -> stopAll(r));
+        cmd.setName("SelectableAuto");
+        return cmd;
+    }
+
+    private static boolean stateMissingNote = false;
+    private static Command fastAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation){
+        SequentialCommandGroup sequence = new SequentialCommandGroup();
+
         //Step 0: set the start position
-        fullSequence.addCommands(resetPosition(r, startLocation));
+        // and shoot first note
+        sequence.addCommands(new ParallelCommandGroup(
+             resetPosition(r, startLocation),
+             new InstantCommand(() -> stateMissingNote = false), //reset state
+             //shoot first note
+             new SequentialCommandGroup(
+                prime(r, startLocation),
+                new WaitCommand(0.3),//TODO: how much faster before we miss
+                shoot(r)
+             )
+        ));
+        
+        Pose2d startPose = getStartPose(r, startLocation);
+
+        //for each note
+        int prevNote = 0;
+        Translation2d lastNoteLocation = startPose.getTranslation();
+        Translation2d lastShootLocation = startPose.getTranslation();
+        for(int i=0;i<noteOrder.length;i++){
+            int currNote = noteOrder[i];
+            int nextNote = 0;
+            if(i+1 < noteOrder.length){
+                nextNote = noteOrder[i+1];
+            }
+            if(currNote == 0){
+                //no next note, we are done
+                break;
+            }
+
+
+            //get positions
+            Translation2d noteLocation = Locations.notes[currNote -1];
+            Translation2d nextNoteLoc = null;
+            if(nextNote > 0){
+                nextNoteLoc = Locations.notes[nextNote -1];
+            }
+            Translation2d shootLocation = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
+
+            if(currNote > 5){
+                //close notes - use immediate shoot strategy
+                Translation2d shootVec = noteLocation.minus(Locations.tagSpeaker); //note that the subtraction is inverted so the angle points the back of the robot at the speaker
+                Rotation2d targetAngleToSpeaker = shootVec.getAngle();
+                Rotation2d targetAngleForShot = targetAngleToSpeaker.plus(shooterOffset);//we shoot slightly right
+                //shoot location is a bit less than half a robot length from the note in the speaker direction
+                shootLocation = noteLocation.minus(new Translation2d(Locations.robotLength/2 - Units.inchesToMeters(6), 0).rotateBy(targetAngleToSpeaker));
+                double shotDistance = shootLocation.minus(Locations.tagSpeaker).getNorm();
+                Translation2d preShootLoc;
+                Rotation2d forwardDir;
+                if(isBlueAlliance()){
+                    forwardDir = new Rotation2d();
+                    preShootLoc = shootLocation.minus(new Translation2d(Units.inchesToMeters(36), 0));
+                } else {
+                    forwardDir = Rotation2d.fromDegrees(180);
+                    preShootLoc = shootLocation.plus(new Translation2d(Units.inchesToMeters(36), 0));
+                }
+
+                //create path into note directly
+                List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                    new Pose2d(preShootLoc, forwardDir),
+                    new Pose2d(shootLocation, forwardDir)
+                );
+
+                PathPlannerPath path = new PathPlannerPath(
+                    bezierPoints, 
+                    constraints, 
+                    new GoalEndState(0, targetAngleForShot)
+                );
+
+                Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+                    path,
+                    constraints
+                );
+
+                sequence.addCommands(
+                    //start gather/gate/shooter so the note will pass through as fast as possible
+                    new InstantCommand(() -> {r.gather.setGatherPower(0.65, 1);
+                                              r.shooter.distancePrime(shotDistance);
+                                             }, r.gather, r.shooter),
+                    new ParallelRaceGroup(
+                        new SequentialCommandGroup(
+                            new ParallelRaceGroup(
+                                pathfindingCommand,
+                                //abort path command when we see a note with the camera in the right place
+                                new WaitUntilCommand(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThresh))
+                            ),
+                            new SequentialCommandGroup(
+                                new CmdDriveNoteTraj(r, forwardDir, targetAngleForShot),
+                                new WaitCommand(1.25) //TODO: figure out the right time
+                            ).onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThresh)),
+                            new WaitCommand(0.2)
+                        ),
+                        new SequentialCommandGroup(
+                            //wait until shooter up to speed
+                            new WaitUntilCommand(() -> (r.shooter.rpmSetpoint*2 - r.shooter.inputs.shootBottomVelocity - r.shooter.inputs.shootTopVelocity)
+                                                        < 600),
+                            //wait until shooter speed drops due to note passing through
+                            new WaitUntilCommand(() -> (r.shooter.rpmSetpoint*2 - r.shooter.inputs.shootBottomVelocity - r.shooter.inputs.shootTopVelocity) 
+                                                        > 1000)
+                        )
+                    )
+                );
+
+            } else {
+                //far notes, use the drive, pickup, drive, shoot strategy
+
+
+
+                sequence.addCommands(
+                    CmdGather.autonGather(r)
+                );
+
+            }
+            
+
+            prevNote = currNote;
+            lastNoteLocation = noteLocation;
+            lastShootLocation = shootLocation;
+        }
+        
+            //in fast mode, just run the intake, gate, shooter at max speed so that the note just goes immediately through the robot
+            /*if(fastCloseNoteShots){
+                if(currNote > 5){
+                    //for close notes
+                    if(prevNote < 5 && prevNote > 0){
+                        //if coming from a far note
+                        //target something offset half a note so that you don't hit the note coming in
+
+
+                    } else if(prevNote == 0){
+                        //if coming from a start position
+                        //
+
+                    } else {
+                        //if coming from a previous close note
+                        //
+
+                    }
+
+                } else {
+                    //use the old strat for far notes, but use the intake curr spike for starting the drive back
+                    Command fullCommand = new SequentialCommandGroup(
+                        
+                    );
+                    fullSequence.addCommands(fullCommand);
+                }
+            }*/
+
+        return sequence;
+    }
+
+    public static boolean noteIsSeenInRange(RobotContainer r, Translation2d noteLoc, double threshToNote, double threshToBot){
+        if(r.vision.hasNoteImage()){
+            Translation2d camNote = r.vision.getCachedNoteLocation();
+            //the note is relatively close to the robot
+            double distToBot = r.drive.getPose().getTranslation().minus(camNote).getNorm();
+            //the note is relatively close to where it is supposed to be on the field
+            double distToNote = noteLoc.minus(camNote).getNorm();
+            return distToBot < threshToBot && distToNote < threshToNote;
+        } else {
+            //no image
+            return false;
+        }
+    }
+
+    //Step1: shoot the note you start with
+    //Step2: for each note in order do:
+    //     A: create a path to it
+    //     B: add a command to follow that path
+    //          i: calculate the angle to point the robot to by looking at the vector to the note
+    //         ii: run the gatherer in parallel
+    //        iii: if within x dist of the note and we see it then we should stop pathfinding and use the driveToNote function
+    //     C: If we gathered a note, then:
+    //          i: find the best shooting position for that note
+    //              -> this will be the shooting position that is closest to the current note and the next one (if there is one)
+    //         ii: create a path to the shooting position
+    //        iii: calculate the angle to point the robot to by looking at the vector to the speaker
+    //         iv: add a command to follow that path
+    //          v: add a command to prime the shooter
+    //         vi: Shoot
+    //     C-else: If we did not gather a note, then someone stole it first, continue on to the next note
+    //     
+    //Step3: fin
+    private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation){
+        SequentialCommandGroup fullCommand = new SequentialCommandGroup();
+        
+        //Step 0: set the start position
+        fullCommand.addCommands(resetPosition(r, startLocation));
 
         //shoot first note
         Pose2d startPose = getStartPose(r, startLocation);
         double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
 
-        fullSequence.addCommands(new SequentialCommandGroup(
+        fullCommand.addCommands(new SequentialCommandGroup(
             prime(r, startLocation),
             new WaitCommand(0.4),
             shoot(r)
@@ -148,9 +340,7 @@ public class CmdAuton {
                 .andThen(new WaitCommand(0.5))
             .raceWith(CmdGather.autonGather(r));
 
-            if(!fastCloseNoteShots){
-                fullSequence.addCommands(noteCommand);
-            }
+            fullCommand.addCommands(noteCommand);
 
             
             // ----------- Pathfind to Shoot -------------
@@ -179,42 +369,12 @@ public class CmdAuton {
             );
 
             //only run the shoot sequence if we successfully gathered a note
-            if(!fastCloseNoteShots){
-                fullSequence.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
-            }
-
-            //in fast mode, just run the intake, gate, shooter at max speed so that the note just goes immediately through the robot
-            if(fastCloseNoteShots){
-                if(currNote > 5){
-                    //for close notes
-                    if(prevNote < 5 && prevNote > 0){
-                        //if coming from a far note
-                        //target something offset half a note so that you don't hit the note coming in
-
-
-                    } else if(prevNote == 0){
-                        //if coming from a start position
-                        //
-
-                    } else {
-                        //if coming from a previous close note
-                        //
-
-                    }
-
-                } else {
-                    //use the old strat for far notes, but use the intake curr spike for starting the drive back
-                    Command fullCommand = new SequentialCommandGroup(
-                        
-                    );
-                    fullSequence.addCommands(fullCommand);
-                }
-            }
+            fullCommand.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
 
             prevNote = currNote;
         }
 
-        return fullSequence.finallyDo(() -> stopAll(r));
+        return fullCommand;
     }
 
     public static Command prime(RobotContainer r, double distance){
@@ -243,7 +403,8 @@ public class CmdAuton {
     public static Command shoot(RobotContainer r){
         return new SequentialCommandGroup(
             new InstantCommand(() -> r.gather.setGatePower(1)),
-            new WaitCommand(0.2)
+            new WaitCommand(0.2),
+            new InstantCommand(() -> r.state.hasNote = false)
         );
     }
 

@@ -16,10 +16,10 @@ public class Shooter extends SubsystemBase {
     RobotContainer r;
 
     ShooterIO io;
-    ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+    public ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     double angleSetpoint;
-    double rpmSetpoint;
+    public double rpmSetpoint;
 
     double speedJog;
     double angleJog;
@@ -124,6 +124,7 @@ public class Shooter extends SubsystemBase {
 
     public void setShootPower(double power){
         io.setShooterVoltage(power*12);
+        rpmSetpoint = 0;
     }
 
     public boolean checkAngleError(){

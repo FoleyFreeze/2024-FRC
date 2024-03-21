@@ -38,9 +38,18 @@ public class CmdDriveNoteTraj extends Command{
 
     Translation2d pathEndLocation;
 
-    public CmdDriveNoteTraj(RobotContainer r){
+    Rotation2d pathAngle;
+    Rotation2d botAngle;
+
+    public CmdDriveNoteTraj(RobotContainer r, Rotation2d pathAngle, Rotation2d botAngle){
         this.r = r;
+        this.pathAngle = pathAngle;
+        this.botAngle = botAngle;
         addRequirements(r.drive);
+    }
+
+    public CmdDriveNoteTraj(RobotContainer r){
+        this(r, null, null);
     }
 
     @Override
@@ -98,18 +107,28 @@ public class CmdDriveNoteTraj extends Command{
     }
 
     public Command createPathFollower(){
+        Rotation2d pathAngle;
+        Rotation2d botAngle;
+        if(this.pathAngle == null){
+            pathAngle = r.drive.getAngle();
+            botAngle = r.drive.getAngle();
+        } else {
+            pathAngle = this.pathAngle;
+            botAngle = this.botAngle;
+        }
+
         pathEndLocation = r.vision.getCachedNoteLocation();
         Translation2d pathStart = r.drive.getPose().getTranslation();
         Translation2d pathVector = pathEndLocation.minus(pathStart);
 
         //modify endLocation to be 6in further
         Translation2d additionalDist = new Translation2d(Units.inchesToMeters(6), 0);
-        additionalDist.rotateBy(r.drive.getAngle());
+        additionalDist.rotateBy(pathAngle);
         pathEndLocation.plus(additionalDist);
         
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-            new Pose2d(pathStart, getVelocityAngle(r.drive.getRelVelocity(), pathVector)),
-            new Pose2d(pathEndLocation, r.drive.getAngle())
+            new Pose2d(pathStart, getVelocityAngle(r.drive.getRelVelocity(), pathVector, botAngle)),
+            new Pose2d(pathEndLocation, pathAngle)
         );
 
         System.out.println("Created path starting at: " + bezierPoints.get(0).toString());
@@ -118,7 +137,7 @@ public class CmdDriveNoteTraj extends Command{
         PathPlannerPath path = new PathPlannerPath(
             bezierPoints, 
             pathConstraints, 
-            new GoalEndState(0, r.drive.getAngle())
+            new GoalEndState(0, botAngle)
         );
 
         return new FollowPathHolonomic(
@@ -135,11 +154,10 @@ public class CmdDriveNoteTraj extends Command{
     Rotation2d positiveY = new Rotation2d(Math.PI/2.0);
     Rotation2d negativeY = new Rotation2d(-Math.PI/2.0);
 
-    private Rotation2d getVelocityAngle(ChassisSpeeds speed, Translation2d pathVector){
+    private Rotation2d getVelocityAngle(ChassisSpeeds speed, Translation2d pathVector, Rotation2d botAngle){
         if(Math.hypot(speed.vxMetersPerSecond, speed.vyMetersPerSecond) < 0.2){
             //if we are not moving, start our path perpendicular to the target orientation
             System.out.println("Zero init vel");
-            Rotation2d botAngle = r.drive.getAngle();
             return (pathVector.getAngle().minus(botAngle).getSin() > 0 ? positiveY : negativeY).plus(botAngle);
         } else {
             System.out.println("Nonzero init vel");
