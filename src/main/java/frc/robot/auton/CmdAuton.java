@@ -1,7 +1,12 @@
 package frc.robot.auton;
 
+import java.util.List;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +22,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.gather.CmdGather;
+import frc.robot.subsystems.drive.Drive;
 
 public class CmdAuton {
 
@@ -32,6 +38,9 @@ public class CmdAuton {
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
+    static boolean fastCloseNoteShots = false;
+
+
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
                                        StartLocationType startLocation,
@@ -46,6 +55,8 @@ public class CmdAuton {
         sort(noteOrder, f, 6);
         sort(noteOrder, g, 7);
         sort(noteOrder, h, 8);
+
+        
         
 
         //Step1: shoot the note you start with
@@ -70,7 +81,10 @@ public class CmdAuton {
         SequentialCommandGroup fullSequence = new SequentialCommandGroup();
 
         //Step -1: wait for a bit
-        fullSequence.addCommands(new WaitCommand(waitTime));
+        //might as well save the 20ms of time when wait is zero
+        if(waitTime > 0){
+            fullSequence.addCommands(new WaitCommand(waitTime));
+        }
         
         //Step 0: set the start position
         fullSequence.addCommands(resetPosition(r, startLocation));
@@ -86,35 +100,43 @@ public class CmdAuton {
         ));
 
         //for each note
+        int prevNote = 0;
         for(int i=0;i<noteOrder.length;i++){
             if(noteOrder[i] == 0){
                 //stop if there is no note at this position
                 break;
             }
+            int currNote = noteOrder[i];
+            int nextNote = 0;
+            if(i+1 < noteOrder.length){
+                nextNote = noteOrder[i+1];
+            }
 
             // ----------- Pathfind to Note -------------
-            Translation2d noteLocation = Locations.notes[noteOrder[i] - 1];
+            Translation2d noteLocation = Locations.notes[currNote - 1];
             Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
             //offset the note 1/3 robot len in the direction we will approach from
             Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/3, 0).rotateBy(vecToNote.getAngle()));
-            Pose2d targetPose = new Pose2d(targetLocation, vecToNote.getAngle());
+            Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle());
 
             Command pathFindingCommand = AutoBuilder.pathfindToPose(
-                targetPose,
+                noteTargetPose,
                 constraints,
                 0.0, 0.0
             ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
             //if close notes
             double driveToNoteThresh;
-            if(noteOrder[i] > 5){
+            if(currNote > 5){
                 driveToNoteThresh = driveToNoteThreshClose;
             } else {
                 driveToNoteThresh = driveToNoteThreshFar;
             }
 
             //construct the complex pathfind to note and gather it with vision command
-            Command noteCommand = pathFindingCommand
+            Command noteCommand;
+            
+            noteCommand = pathFindingCommand
                 //until we are close to the note (and vision sees a note that close)
                 .until(() -> {var botLoc = r.drive.getPose().getTranslation();
                         return botLoc.minus(noteLocation).getNorm() < driveToNoteThresh
@@ -126,26 +148,26 @@ public class CmdAuton {
                 .andThen(new WaitCommand(0.5))
             .raceWith(CmdGather.autonGather(r));
 
-            fullSequence.addCommands(noteCommand);
+            if(!fastCloseNoteShots){
+                fullSequence.addCommands(noteCommand);
+            }
 
             
             // ----------- Pathfind to Shoot -------------
 
             //determine best shooting location
             Translation2d nextNoteLoc = null;
-            if(i+1 < noteOrder.length){
-                if(noteOrder[i+1] > 0){
-                    nextNoteLoc = Locations.notes[noteOrder[i+1] - 1];
-                }
+            if(nextNote > 0){
+                nextNoteLoc = Locations.notes[nextNote - 1];
             }
             //dont forget that the BACK of the robot needs to face the speaker
             Translation2d shootLoc = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
             Translation2d vecToSpeaker = Locations.tagSpeaker.minus(shootLoc);
             Rotation2d targetAngle = vecToSpeaker.getAngle().plus(Rotation2d.fromDegrees(180));
-            targetPose = new Pose2d(shootLoc, targetAngle.plus(shooterOffset));
+            Pose2d shotTargetPose = new Pose2d(shootLoc, targetAngle.plus(shooterOffset));
 
             pathFindingCommand = AutoBuilder.pathfindToPose(
-                targetPose,
+                shotTargetPose,
                 constraints,
                 0.0, 0.0
             ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
@@ -157,7 +179,39 @@ public class CmdAuton {
             );
 
             //only run the shoot sequence if we successfully gathered a note
-            fullSequence.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
+            if(!fastCloseNoteShots){
+                fullSequence.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
+            }
+
+            //in fast mode, just run the intake, gate, shooter at max speed so that the note just goes immediately through the robot
+            if(fastCloseNoteShots){
+                if(currNote > 5){
+                    //for close notes
+                    if(prevNote < 5 && prevNote > 0){
+                        //if coming from a far note
+                        //target something offset half a note so that you don't hit the note coming in
+
+
+                    } else if(prevNote == 0){
+                        //if coming from a start position
+                        //
+
+                    } else {
+                        //if coming from a previous close note
+                        //
+
+                    }
+
+                } else {
+                    //use the old strat for far notes, but use the intake curr spike for starting the drive back
+                    Command fullCommand = new SequentialCommandGroup(
+                        
+                    );
+                    fullSequence.addCommands(fullCommand);
+                }
+            }
+
+            prevNote = currNote;
         }
 
         return fullSequence.finallyDo(() -> stopAll(r));
@@ -170,11 +224,11 @@ public class CmdAuton {
     public static Command prime(RobotContainer r, StartLocationType start){
         if(DriverStation.getAlliance().isPresent()){
             if(DriverStation.getAlliance().get() == Alliance.Blue){
-                if(start == StartLocationType.AMP_SIDE){
+                if(start == StartLocationType.AMP_SIDE_SPEAKER){
                     return new InstantCommand(() -> r.shooter.commandPrime(59, 5500));
                 }
             } else {
-                if(start == StartLocationType.SOURCE_SIDE){
+                if(start == StartLocationType.SOURCE_SIDE_SPEAKER){
                     return new InstantCommand(() -> r.shooter.commandPrime(59, 5500));
                 }
             }
@@ -201,8 +255,8 @@ public class CmdAuton {
 
     public static Command resetPosition(RobotContainer r, StartLocationType start){
         switch(start){
-            case AMP_SIDE:
-            case SOURCE_SIDE:
+            case AMP_SIDE_SPEAKER:
+            case SOURCE_SIDE_SPEAKER:
             case SPEAKER_CENTER:
                 return new InstantCommand(() -> r.drive.resetFieldOdometry(Locations.startLocations[start.ordinal()]));
             case APRILTAG_0Deg:
@@ -215,8 +269,8 @@ public class CmdAuton {
 
     public static Pose2d  getStartPose(RobotContainer r, StartLocationType start){
         switch(start){
-            case AMP_SIDE:
-            case SOURCE_SIDE:
+            case AMP_SIDE_SPEAKER:
+            case SOURCE_SIDE_SPEAKER:
             case SPEAKER_CENTER:
                 return Locations.startLocations[start.ordinal()];
             case APRILTAG_0Deg:
@@ -249,6 +303,17 @@ public class CmdAuton {
         }
 
         return bestPosition;
+    }
+
+    public static boolean isBlueAlliance(){
+        if(DriverStation.getAlliance().isPresent()){
+            if(DriverStation.getAlliance().get() == Alliance.Blue){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
     
     /*

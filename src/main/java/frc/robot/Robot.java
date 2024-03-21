@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auton.LocalADStarAK;
+import frc.robot.auton.RotationOverride;
 import frc.robot.util.CommandLogger;
 
 public class Robot extends LoggedRobot {
@@ -108,6 +109,8 @@ public class Robot extends LoggedRobot {
         m_robotContainer.drive.setSwerveBrake(true);
         m_robotContainer.climber.setBrakes(true);
 
+        RotationOverride.disableRotation();
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
@@ -137,6 +140,8 @@ public class Robot extends LoggedRobot {
         m_robotContainer.drive.setSwerveBrake(true);
         m_robotContainer.climber.setBrakes(true);
         m_robotContainer.climber.captureSetpoints();
+
+        RotationOverride.disableRotation();
     }
 
     @Override

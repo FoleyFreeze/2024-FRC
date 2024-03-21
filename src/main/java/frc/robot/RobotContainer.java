@@ -9,6 +9,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -36,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auton.ChoreoAuto;
 import frc.robot.auton.CmdAuton;
 import frc.robot.auton.Locations;
+import frc.robot.auton.RotationOverride;
 import frc.robot.cals.ClimberCals;
 import frc.robot.cals.DriveCals;
 import frc.robot.cals.GatherCals;
@@ -79,7 +82,7 @@ public class RobotContainer {
   }
 
   public enum StartLocationType{
-    AMP_SIDE, SPEAKER_CENTER, SOURCE_SIDE, APRILTAG_0Deg, APRILTAG
+    AMP_SIDE_SPEAKER, SPEAKER_CENTER, SOURCE_SIDE_SPEAKER, AMP, SOURCE, APRILTAG_0Deg, APRILTAG
   }
 
   private LoggedDashboardChooser<AutonType> autoChooser;
@@ -275,7 +278,7 @@ public class RobotContainer {
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
-        .onTrue(CMDShoot.simpleCtrlBoardShoot(this));
+        .onTrue(CMDShoot.simpleCtrlBoardShoot(this, inputs.shootBtnB1));
 
     //coast winch motors
     inputs.shiftB6
@@ -470,6 +473,10 @@ public class RobotContainer {
             drive.k::flipPath,
             drive // Reference to this subsystem to set requirements
     );
+
+    PPHolonomicDriveController.setRotationTargetOverride(RotationOverride::getRotationTargetOverride);
+
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   private void configureAutonSelection(){
@@ -493,8 +500,8 @@ public class RobotContainer {
       autoChooser.addOption("Test", AutonType.TEST);
 
     startChooser.addDefaultOption("Center", StartLocationType.SPEAKER_CENTER);
-      startChooser.addOption("AmpSide", StartLocationType.AMP_SIDE);
-      startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE);
+      startChooser.addOption("AmpSide", StartLocationType.AMP_SIDE_SPEAKER);
+      startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE_SPEAKER);
       startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
       startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
 

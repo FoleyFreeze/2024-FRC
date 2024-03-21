@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 
 public class CMDShoot {
@@ -54,21 +55,21 @@ public class CMDShoot {
         */
     }
 
-    public static Command simpleCtrlBoardShoot(RobotContainer r){
+    public static Command simpleCtrlBoardShoot(RobotContainer r, Trigger t){
         Command c = new SequentialCommandGroup(
             new RunCommand(() -> {r.shooter.commandPrime(r.shooter.k.ctrlBoardShootAngle, r.shooter.k.ctrlBoardShootSpeed);
                                   r.state.isPrime = true;
                                 }, r.shooter)
                 .until(() -> r.shooter.checkAngleError() 
                           && r.shooter.checkRPMError() 
-                          && r.inputs.shootTriggerSWH.getAsBoolean()),
+                          && t.getAsBoolean()),
             new InstantCommand(() -> r.gather.setGatePower(1), r.gather),
             new WaitCommand(shootWaitTime),
             new InstantCommand(() -> {r.shooter.goHome();
                                       r.gather.setGatePower(0); 
                                       r.state.hasNote = false;}, 
                                             r.shooter, r.gather),
-            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
+            new WaitUntilCommand(t.negate()),
             new InstantCommand(() -> r.state.isPrime = false)
             //make sure trigger is released so it doesnt immediately run again
         );//.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
