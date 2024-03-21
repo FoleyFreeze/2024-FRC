@@ -232,13 +232,13 @@ public class RobotContainer {
         .onTrue(CmdClimb.undeployClimb(this));
 
     inputs.climbWinchB2
-        .and(state.climbDeployT.or(new Trigger(()->slappah.inputs.anglePosition > 45)))
+        //.and(state.climbDeployT.or(new Trigger(()->slappah.inputs.anglePosition > 45)))
         .and(inputs.shiftB6.negate())
         .whileTrue(new RunCommand(climber::winchUp,climber)
             .finallyDo(climber::winchHold));
 
     inputs.climbWinchB2
-        .and(state.climbDeployT.or(new Trigger(()->slappah.inputs.anglePosition > 45)))
+        //.and(state.climbDeployT.or(new Trigger(()->slappah.inputs.anglePosition > 45)))
         .and(inputs.shiftB6)
         .whileTrue(new RunCommand(climber::winchDown,climber)
             .finallyDo(climber::winchHold));
