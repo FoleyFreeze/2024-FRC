@@ -178,6 +178,7 @@ public class RobotContainer {
         .and(state.climbDeployT.negate())
         .onTrue(CmdTransfer.scoreInAmp(this));
 
+    /*
     inputs.shootTriggerSWH
         .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
         .onTrue(CmdClimb.hook(this));
@@ -189,6 +190,7 @@ public class RobotContainer {
     inputs.shootTriggerSWH
         .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
         .whileTrue(CmdClimb.shootTrap(this));
+    */
 
     //unshooot trap
     inputs.gatherTriggerSWE
@@ -218,14 +220,15 @@ public class RobotContainer {
     inputs.climbDeployB4
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
-        .and(state.hasTransferT.negate())
-        .onTrue(CmdClimb.deployClimb(this));
+        //.and(state.hasTransferT.negate())
+        //.onTrue(CmdClimb.deployClimb(this));
+        .onTrue(CmdClimb.deployClimb2(this));
 
     //undeploy climb
     inputs.climbDeployB4
         .and(inputs.shiftB6)
         .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
-        .and(state.hasTransferT.negate())
+        //.and(state.hasTransferT.negate())
         .onTrue(CmdClimb.undeployClimb(this));
 
     inputs.climbWinchB2

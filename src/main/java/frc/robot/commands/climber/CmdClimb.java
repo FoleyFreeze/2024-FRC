@@ -27,6 +27,10 @@ public class CmdClimb {
 
     static double pushAgainstWallPower = 0.07;
 
+    static double c2TurnsForHooksUp = -0.4375;
+    static double c2ArmAngle = 55;
+    static double c2ShooterAngle = 95;
+
     public static Command deployClimb(RobotContainer r){
         return new SequentialCommandGroup(
             CmdTransfer.setup(r, false), //go to transfer pos but dont transfer yet
@@ -41,6 +45,17 @@ public class CmdClimb {
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
+    public static Command deployClimb2(RobotContainer r){
+        Command c = new SequentialCommandGroup(
+            new InstantCommand(() -> r.slappah.setAngle(c2ArmAngle), r.slappah),
+            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),
+            new InstantCommand(() -> r.shooter.setAngle(c2ShooterAngle), r.shooter),
+            new InstantCommand(() -> r.climber.setWinchPosition(c2TurnsForHooksUp), r.climber),
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
+        );
+        c.setName("DeployClimb2");
+        return c;
+    }
 
 
     public static Command visionClimb(RobotContainer r){
