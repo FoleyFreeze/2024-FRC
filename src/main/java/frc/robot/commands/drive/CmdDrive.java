@@ -23,9 +23,9 @@ public class CmdDrive extends Command {
     boolean inClimbAngleControl = false;
     boolean inPodiumAngleControl = false;
 
-    Rotation2d podiumAngleBlue = Rotation2d.fromDegrees(-20);
-    Rotation2d podiumAngleRed = Rotation2d.fromDegrees(200);
-    double driverOverrideTime = 0.75;//seconds
+    Rotation2d podiumAngleBlue = Rotation2d.fromDegrees(-30 + 4.5);
+    Rotation2d podiumAngleRed =  Rotation2d.fromDegrees(30  + 180 + 4.5);
+    double driverOverrideTime = 0.25;//seconds
 
     Rotation2d angleSetpoint;
 
@@ -100,6 +100,7 @@ public class CmdDrive extends Command {
             //if we are priming for a podium shot, go to the right angle
 
             if(!inPodiumAngleControl){
+                inPodiumAngleControl = true; //for podium shots 3/21
                 if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
                     angleSetpoint = podiumAngleRed;
                 } else {

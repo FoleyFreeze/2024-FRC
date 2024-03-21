@@ -20,7 +20,7 @@ public class SlappahCals {
                                     .setCurrLim(20)
                                     //.setRampRate(0.1)
                                     .setPIDF(0.1, 0.00000, 0.0, 0)
-                                    .setRatio(1 / 4.0)
+                                    .setRatio(1 / 3.0)  //was 4.0 before 3/21/24
                                     .setPIDPwrLim(0.6);
 
     public double allowedAngleError = 4; //degrees

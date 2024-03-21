@@ -24,7 +24,7 @@ public class CmdTransfer {
     static double slapTransferPos = 5;//10
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
-    static double slapPreAmpPos = 55;//90;
+    static double slapPreAmpPos = 90; // was on 3/20/2024 55;//90;
     static double slapAmpScorePos = 108;
     static double slapPreTrapPos = 75;
     static double slapTrapScorePos = 108; //TODO: find actual number
@@ -41,14 +41,14 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 7.0;
+    static double transferRotations = 6.0; //was 7.0; on 3/20/2024
     static double climbTransferRotations = 6.0;
     static double transferCurrentLimit = 4;
 
     //unTransfer
     static double unShootPower = -0.55;
     static double unGatePower = -0.3;
-    static double unTransferPower = -0.3;
+    static double unTransferPower = -.6; //was on 3/20 -0.3;
     static double extraReverseGate = -1;
 
     //score
