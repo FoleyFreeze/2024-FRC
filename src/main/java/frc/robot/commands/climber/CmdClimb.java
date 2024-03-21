@@ -28,7 +28,7 @@ public class CmdClimb {
     static double pushAgainstWallPower = 0.07;
 
     static double c2TurnsForHooksUp = -0.4375;
-    static double c2ArmAngle = 55;
+    static double c2ArmAngle = 60;
     static double c2ShooterAngle = 95;
 
     public static Command deployClimb(RobotContainer r){

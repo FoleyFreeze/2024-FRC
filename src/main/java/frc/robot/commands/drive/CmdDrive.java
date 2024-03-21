@@ -46,10 +46,10 @@ public class CmdDrive extends Command {
                 inAngleControl = true;
                 switch(r.inputs.getClimbDir()){
                     case -1://left
-                        angleSetpoint = Rotation2d.fromDegrees(120);
+                        angleSetpoint = Rotation2d.fromDegrees(120-180);
                     break;
                     case 1://right
-                        angleSetpoint = Rotation2d.fromDegrees(-120);
+                        angleSetpoint = Rotation2d.fromDegrees(-120-180);
                     break;
                     case 0://back
                         angleSetpoint = Rotation2d.fromDegrees(180);
