@@ -20,10 +20,18 @@ public class CmdDrive extends Command {
     
     RobotContainer r;
 
-    boolean inAngleControl = false;
+    boolean inClimbAngleControl = false;
+    boolean inPodiumAngleControl = false;
+
+    Rotation2d podiumAngleBlue = Rotation2d.fromDegrees(-20);
+    Rotation2d podiumAngleRed = Rotation2d.fromDegrees(200);
+    double driverOverrideTime = 0.75;//seconds
+
     Rotation2d angleSetpoint;
 
     ProfiledPIDController pidController;
+
+    Timer timeSinceDriverRotate;
 
     public CmdDrive(RobotContainer r){
         this.r = r;
@@ -31,6 +39,9 @@ public class CmdDrive extends Command {
 
         pidController = new ProfiledPIDController(1, 0, 0, new Constraints(2, 2));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
+
+        timeSinceDriverRotate = new Timer();
+        timeSinceDriverRotate.restart();
     }
     
     @Override
@@ -42,8 +53,8 @@ public class CmdDrive extends Command {
             //speed.omegaRadiansPerSecond *= -1;
             
             //init setpoint 
-            if(!inAngleControl){
-                inAngleControl = true;
+            if(!inClimbAngleControl){
+                inClimbAngleControl = true;
                 switch(r.inputs.getClimbDir()){
                     case -1://left
                         angleSetpoint = Rotation2d.fromDegrees(120);
@@ -83,14 +94,54 @@ public class CmdDrive extends Command {
                 Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
             }
 
+            inPodiumAngleControl = false;
+
+        } else if(r.state.isPrime && r.inputs.getFixedTarget() == 1){
+            //if we are priming for a podium shot, go to the right angle
+
+            if(!inPodiumAngleControl){
+                if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
+                    angleSetpoint = podiumAngleRed;
+                } else {
+                    angleSetpoint = podiumAngleBlue;
+                }
+
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+            }
+
+            if(Math.abs(speed.omegaRadiansPerSecond) > 0.05){
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+
+                timeSinceDriverRotate.restart();
+            } else if(!timeSinceDriverRotate.hasElapsed(driverOverrideTime)){
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+
+            } else {
+                //run the pid
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                double goal = MathUtil.angleModulus(angleSetpoint.getRadians());
+                speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
+                speed.omegaRadiansPerSecond = MathUtil.clamp(speed.omegaRadiansPerSecond, -0.3, 0.3);
+
+                Logger.recordOutput("Drive/AnglePID/Goal", goal);
+                Logger.recordOutput("Drive/AnglePID/Setpoint", pidController.getSetpoint().position);
+                Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
+            }
+
+            inClimbAngleControl = false;
         } else {
-            inAngleControl = false;
+            inClimbAngleControl = false;
+            inPodiumAngleControl = false;
         }
+
         r.drive.swerveDrivePwr(speed, r.inputs.fieldOrientedSWA.getAsBoolean()/*  && r.state.climbDeploy == ClimbState.NONE*/);    
     }
 
     @Override
     public void end(boolean interrupted){
-        r.drive.swerveDrivePwr(new ChassisSpeeds(0, 0 , 0), false);
+        r.drive.swerveDrivePwr(new ChassisSpeeds(), false);
     }
 }
