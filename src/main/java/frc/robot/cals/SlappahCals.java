@@ -8,9 +8,9 @@ public class SlappahCals {
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 5)
                                     .invert()
-                                    .setPIDF(0.05, 0, 0.8, 0)
+                                    .setPIDF(0.07, 0, 0.8, 0)//.05, 0, 0
                                     .setBrakeMode(true)
-                                    .setPIDPwrLim(0.25, -0.25)
+                                    .setPIDPwrLim(0.40, -0.25)//.25, -.25
                                     .setCurrLim(25)
                                     .setRatio(1/45.0 * 34/44.0 * 360); //something like 100deg / 20rotations = 5
                                     //fixed now: this is actually 1 / 45.0 * 34 / 44.0 * 360deg = 6.181818

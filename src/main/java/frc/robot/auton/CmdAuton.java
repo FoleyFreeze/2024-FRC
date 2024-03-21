@@ -22,7 +22,7 @@ public class CmdAuton {
 
     static PathConstraints constraints = new PathConstraints(
         4, //vel m/s
-        2.75, //accel m/s/s 
+        3, //2.75, //accel m/s/s 
         3, //vel rad/s
         3  //accel rad/s/s
     );

@@ -20,8 +20,8 @@ public class CmdTransfer {
     static double startupDelay = 0.15;
 
     //slappah positions in degrees
-    static double slapHomePos = 0;
-    static double slapTransferPos = 10;
+    static double slapHomePos = -3;//0
+    static double slapTransferPos = 5;//10
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
     static double slapPreAmpPos = 55;//90;
