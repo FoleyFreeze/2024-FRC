@@ -60,7 +60,7 @@ public class CmdDrive extends Command {
                         angleSetpoint = Rotation2d.fromDegrees(120-180);
                     break;
                     case 1://right
-                        angleSetpoint = Rotation2d.fromDegrees(-120-180);
+                        angleSetpoint = Rotation2d.fromDegrees(-120-180); //was also -180 at the end 3/20
                     break;
                     case 0://back
                         angleSetpoint = Rotation2d.fromDegrees(180);

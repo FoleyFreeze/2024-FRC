@@ -46,7 +46,7 @@ public class CmdTransfer {
     static double transferCurrentLimit = 4;
 
     //unTransfer
-    static double unShootPower = -0.55;
+    static double unShootPower = -0.75;//55
     static double unGatePower = -0.3;
     static double unTransferPower = -.6; //was on 3/20 -0.3;
     static double extraReverseGate = -1;

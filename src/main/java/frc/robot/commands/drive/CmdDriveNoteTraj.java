@@ -30,9 +30,9 @@ public class CmdDriveNoteTraj extends Command{
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
     //only recalc path if the note has moved more than x distance
-    double recalcError = Units.inchesToMeters(4);
+    double recalcError = Units.inchesToMeters(8);
     //only recalc path if the note is further away than x distance
-    double recalcBounds = Units.inchesToMeters(9999);
+    double recalcBounds = Units.inchesToMeters(24);
 
     Command driveCommand;
 
