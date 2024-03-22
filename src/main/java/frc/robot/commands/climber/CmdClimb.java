@@ -27,7 +27,7 @@ public class CmdClimb {
 
     static double pushAgainstWallPower = 0.07;
 
-    static double c2TurnsForHooksUp = -1.05; //was .4365
+    static double c2TurnsForHooksUp = -1.05; //was -.4365
     static double c2ArmAngle = 80;     //was 60; on 3/20
     static double c2ShooterAngle = 103; //Was 95 on 3/20 bot tipping to far fwd
 

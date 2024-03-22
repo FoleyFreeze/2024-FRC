@@ -66,7 +66,8 @@ public class DriveCals {
     double swerveRatio = 7 / 150.0;
     
     double driveRatio = 14 / 50.0 * 28 / 16.0 * 15 / 45.0; //mk4i L3
-    double driveCurrLim = 40;//TODO:go back to 60+ for good batteries
+    double driveCurrLim1 = 60;//TODO:go back to 60+ for good batteries
+    double driveCurrLim2 = 80;
     double driveDiameter = Units.inchesToMeters(4);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
@@ -82,7 +83,7 @@ public class DriveCals {
             .setRatio(conversionFactor)
             .invert()
             .setBrakeMode(false)
-            .setCurrLim(driveCurrLim);
+            .setCurrLim(driveCurrLim1, driveCurrLim2);
         wheelFL.swerveMotor = new MotorCal(TypeMotor.SPARK, 11)
             .invert()
             .setPIDF(swerveKp, swerveKi, swerveKd, swerveKf)
@@ -99,7 +100,7 @@ public class DriveCals {
     public WheelCal wheelFR = new WheelCal();{
         wheelFR.driveMotor = new MotorCal(TypeMotor.SPARK, 8)
             .setRatio(conversionFactor)
-            .setCurrLim(driveCurrLim)
+            .setCurrLim(driveCurrLim1, driveCurrLim2)
             .setBrakeMode(false);
         wheelFR.swerveMotor = new MotorCal(TypeMotor.SPARK, 9)
             //.invert()
@@ -117,7 +118,7 @@ public class DriveCals {
     public WheelCal wheelBL = new WheelCal();{
         wheelBL.driveMotor = new MotorCal(TypeMotor.SPARK, 18)
             .setRatio(conversionFactor)
-            .setCurrLim(driveCurrLim)
+            .setCurrLim(driveCurrLim1, driveCurrLim2)
             .setBrakeMode(false);
         wheelBL.swerveMotor = new MotorCal(TypeMotor.SPARK, 19)  
             .invert()
@@ -135,7 +136,7 @@ public class DriveCals {
     public WheelCal wheelBR = new WheelCal();{
         wheelBR.driveMotor = new MotorCal(TypeMotor.SPARK, 20)
             .setRatio(conversionFactor)
-            .setCurrLim(driveCurrLim)
+            .setCurrLim(driveCurrLim1, driveCurrLim2)
             .setBrakeMode(false);
         wheelBR.swerveMotor = new MotorCal(TypeMotor.SPARK, 1)
             .invert()
