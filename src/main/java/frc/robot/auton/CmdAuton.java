@@ -189,6 +189,7 @@ public class CmdAuton {
     public static Command shoot(RobotContainer r){
         return new SequentialCommandGroup(
             new InstantCommand(() -> r.gather.setGatePower(1)),
+            new InstantCommand(() -> r.state.hasNote = false),
             new WaitCommand(0.2)
         );
     }
