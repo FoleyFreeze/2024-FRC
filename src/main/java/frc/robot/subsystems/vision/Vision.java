@@ -160,10 +160,9 @@ public class Vision extends SubsystemBase{
                 Logger.recordOutput("Vision/RawRobotTag/RotY", Math.toDegrees(rawRobotPose.getRotation().getY()));
                 Logger.recordOutput("Vision/RawRobotTag/RotZ", Math.toDegrees(rawRobotPose.getRotation().getZ()));
 
-
                 Pose2d robotPose = posePicker(inputs.tagData.timestamp);
                 Pose3d botFieldPose = new Pose3d(new Translation3d(robotPose.getX(), robotPose.getY(), 0), new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
-                tempPose = rawRobotPose = rawRobotPose.rotateBy(botFieldPose.getRotation());
+                tempPose = rawRobotPose.rotateBy(botFieldPose.getRotation());
                 Pose3d tagFieldPose = new Pose3d(tempPose.getTranslation().plus(botFieldPose.getTranslation()), tempPose.getRotation());
                 Logger.recordOutput("Vision/FieldTagPose", tagFieldPose);
                 Logger.recordOutput("Vision/FieldTag/RotX", Math.toDegrees(tagFieldPose.getRotation().getX()));
@@ -173,7 +172,7 @@ public class Vision extends SubsystemBase{
                 //first check height vs reality to reject incorrect heights
                 Optional<Pose3d> fieldTagPose = Locations.tagLayout.getTagPose(tag.tagId);
                 if(!fieldTagPose.isPresent()) {
-                    System.out.println("Tag: " + tag.tagId + " does not exist");
+                    //System.out.println("Tag: " + tag.tagId + " does not exist");
                     badIdErr++;
                     Logger.recordOutput("Vision/ErrorBadId", badIdErr);
                     break;
@@ -181,14 +180,14 @@ public class Vision extends SubsystemBase{
 
                 double targetHeight = fieldTagPose.get().getZ();
                 if(Math.abs(targetHeight - rawRobotPose.getZ()) > Units.inchesToMeters(4)){
-                    System.out.println("Tag height doesn't match the field id:" + tag.tagId + " height: " + Units.metersToInches(rawRobotPose.getZ()));
+                    //System.out.println("Tag height doesn't match the field id:" + tag.tagId + " height: " + Units.metersToInches(rawRobotPose.getZ()));
                     badHeightErr++;
                     Logger.recordOutput("Vision/ErrorBadHeight", badHeightErr);
                     break;
                 }
 
                 if(tag.transX < 0){
-                    System.out.println("Tag is located behind the camera?!? id: " + tag.tagId + " x: " + Units.metersToInches(tag.transX));
+                    //System.out.println("Tag is located behind the camera?!? id: " + tag.tagId + " x: " + Units.metersToInches(tag.transX));
                     badXErr++;
                     Logger.recordOutput("Vision/ErrorBadDist", badXErr);
                     break;

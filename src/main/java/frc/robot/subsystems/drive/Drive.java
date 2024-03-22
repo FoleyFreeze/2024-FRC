@@ -36,7 +36,7 @@ public class Drive extends SubsystemBase{
 
     Wheel[] wheels;
     SwerveDriveKinematics kinematics;
-    SwerveDrivePoseEstimator odometry;
+    public SwerveDrivePoseEstimator odometry;
 
     public Pose2d robotPose = new Pose2d();
     public ChassisSpeeds robotRelVelocity = new ChassisSpeeds();

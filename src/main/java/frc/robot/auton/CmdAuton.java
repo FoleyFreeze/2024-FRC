@@ -456,6 +456,8 @@ public class CmdAuton {
             case AMP_SIDE_SPEAKER:
             case SOURCE_SIDE_SPEAKER:
             case SPEAKER_CENTER:
+            case AMP:
+            case SOURCE:
                 return new InstantCommand(() -> r.drive.resetFieldOdometry(Locations.startLocations[start.ordinal()]));
             case APRILTAG_0Deg:
                 return new InstantCommand(() -> r.drive.resetFieldOrientedAngle(new Rotation2d()));
@@ -470,6 +472,8 @@ public class CmdAuton {
             case AMP_SIDE_SPEAKER:
             case SOURCE_SIDE_SPEAKER:
             case SPEAKER_CENTER:
+            case AMP:
+            case SOURCE:
                 return Locations.startLocations[start.ordinal()];
             case APRILTAG_0Deg:
             case APRILTAG:

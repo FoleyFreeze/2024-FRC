@@ -499,9 +499,11 @@ public class RobotContainer {
       autoChooser.addOption("Selectable", AutonType.SELECTABLE);
       autoChooser.addOption("Test", AutonType.TEST);
 
-    startChooser.addDefaultOption("Center", StartLocationType.SPEAKER_CENTER);
-      startChooser.addOption("AmpSide", StartLocationType.AMP_SIDE_SPEAKER);
-      startChooser.addOption("SourceSide", StartLocationType.SOURCE_SIDE_SPEAKER);
+    startChooser.addDefaultOption("CenterSpeaker", StartLocationType.SPEAKER_CENTER);
+      startChooser.addOption("AmpSideSpeaker", StartLocationType.AMP_SIDE_SPEAKER);
+      startChooser.addOption("SourceSideSpeaker", StartLocationType.SOURCE_SIDE_SPEAKER);
+      startChooser.addOption("FullAmp", StartLocationType.AMP);
+      startChooser.addOption("FullSource", StartLocationType.SOURCE);
       startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
       startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
 

@@ -21,6 +21,8 @@ public class Locations {
     private static final double fieldLength = Units.feetToMeters(54 + 3.25/12);
     private static final double blueWingLine = Units.inchesToMeters(76.1+155.1);
     private static final double redWingLine = fieldLength - Units.inchesToMeters(76.1+155.1);
+    private static final double blueAutoLine = Units.inchesToMeters(76.1);
+    private static final double redAutoLine = fieldLength - Units.inchesToMeters(76.1);
 
     private static final double blueSpeakerEdge = Units.inchesToMeters(76.1 - 39.93);
     private static final double redSpeakerEdge = fieldLength - Units.inchesToMeters(76.1 - 39.93);
@@ -50,17 +52,22 @@ public class Locations {
     public static final Pose2d blueSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(60));
     public static final Pose2d blueCenterSide = new Pose2d(new Translation2d(blueSpeakerEdge + robotLength/2.0, blueNoteG.getY()), new Rotation2d());
     public static final Pose2d blueSourceSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2 - speakerSideEdgeLength).rotateBy(Rotation2d.fromDegrees(-60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()-speakerEdgeLength/2.0)), Rotation2d.fromDegrees(-60));
+    public static final Pose2d blueAmp = new Pose2d(blueAutoLine - robotLength/2, fieldWidth - Units.inchesToMeters(17.75) - robotWidth/2, new Rotation2d());
+    public static final Pose2d blueSource = new Pose2d();
+    //note blue source is actually the red alliance source, but its on the blue side of the field
 
     public static final Pose2d redSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2 - speakerSideEdgeLength).rotateBy(Rotation2d.fromDegrees(120)).plus(new Translation2d(redSpeakerEdge, redNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(120));
     public static final Pose2d redCenterSide = new Pose2d(new Translation2d(redSpeakerEdge - robotLength/2.0, redNoteG.getY()), Rotation2d.fromDegrees(180));
     public static final Pose2d redSourceSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(240)).plus(new Translation2d(redSpeakerEdge, redNoteG.getY()-speakerEdgeLength/2.0)), Rotation2d.fromDegrees(240));
+    public static final Pose2d redAmp = new Pose2d(redAutoLine + robotLength/2, fieldWidth - Units.inchesToMeters(17.75) - robotWidth/2, new Rotation2d());
+    public static final Pose2d redSource = new Pose2d();
 
     //field things
-    public static final Translation2d bluePodium = new Translation2d (Units.inchesToMeters(120.5), fieldWidth/2);
+    public static final Translation2d bluePodium = new Translation2d(Units.inchesToMeters(120.5), fieldWidth/2);
     public static final Translation2d blueStageLeft = new Translation2d (0,0);//opposite of l+r from drivers station
     public static final Translation2d blueStageRight = new Translation2d (0,0);
 
-    public static final Translation2d redPodium = new Translation2d (fieldLength - Units.inchesToMeters(120.5), fieldWidth/2);
+    public static final Translation2d redPodium = new Translation2d(fieldLength - Units.inchesToMeters(120.5), fieldWidth/2);
     public static final Translation2d redStageLeft = new Translation2d (0,0);//opposite of l+r from drivers station
     public static final Translation2d redStageRight = new Translation2d (0,0);
 
@@ -84,8 +91,8 @@ public class Locations {
     //things that flip on alliance change
     public static final Translation2d blueNotes[] = {blueNoteA, blueNoteB, blueNoteC, blueNoteD, blueNoteE, blueNoteF, blueNoteG, blueNoteH};
     public static final Translation2d redNotes[] = {redNoteA, redNoteB, redNoteC, redNoteD, redNoteE, redNoteF, redNoteG, redNoteH};
-    public static final Pose2d[] blueStarts = {blueSpeakerSide, blueCenterSide, blueSourceSide};
-    public static final Pose2d[] redStarts = {redSpeakerSide, redCenterSide, redSourceSide};
+    public static final Pose2d[] blueStarts = {blueSpeakerSide, blueCenterSide, blueSourceSide, blueAmp, blueSource};
+    public static final Pose2d[] redStarts = {redSpeakerSide, redCenterSide, redSourceSide, redAmp, redSource};
     
     public static Translation2d[] notes = blueNotes;
     public static Translation2d[] shootingPositions = blueShootingPositions;
