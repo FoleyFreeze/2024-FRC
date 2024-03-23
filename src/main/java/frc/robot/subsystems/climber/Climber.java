@@ -110,6 +110,8 @@ public class Climber extends SubsystemBase{
     public void captureSetpoints(){
         winchStartL = inputs.winchLPosition;
         winchStartR = inputs.winchRPosition;
+        setpointL = winchStartL;
+        setpointR = winchStartR;
     }
 
     public void setWinchPosition(double delta){
