@@ -112,6 +112,7 @@ public class Climber extends SubsystemBase{
         winchStartR = inputs.winchRPosition;
         setpointL = winchStartL;
         setpointR = winchStartR;
+        io.setWinchVoltage(0, 0);//force no climb command
     }
 
     public void setWinchPosition(double delta){
