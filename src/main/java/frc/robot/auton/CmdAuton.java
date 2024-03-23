@@ -33,6 +33,10 @@ import frc.robot.subsystems.drive.Drive;
 
 public class CmdAuton {
 
+    static double[] centerCloseNoteShot = {41, 6000};
+    static double[] leftCloseNoteShot = {38, 6000};
+    static double[] rightCloseNoteShot = {38, 6000};
+
     static PathConstraints constraints = new PathConstraints(
         4, //vel m/s
         3, //2.75, //accel m/s/s 
@@ -132,7 +136,6 @@ public class CmdAuton {
                 break;
             }
 
-
             //get positions
             Translation2d noteLocation = Locations.notes[currNote -1];
             Translation2d nextNoteLoc = null;
@@ -150,6 +153,22 @@ public class CmdAuton {
                 shootLocation = noteLocation.minus(new Translation2d(Locations.robotLength/2 - Units.inchesToMeters(6), 0).rotateBy(targetAngleToSpeaker));
                 double shotDistance = shootLocation.minus(Locations.tagSpeaker).getNorm();
                 Translation2d preShootLoc;
+
+                double[] selectedShot;
+                switch(currNote){
+                    case 6:
+                        selectedShot = leftCloseNoteShot;
+                        break;
+                    case 7:
+                        selectedShot = centerCloseNoteShot;
+                        break;
+                    case 8:
+                        selectedShot = rightCloseNoteShot;
+                        break;
+                    default:
+                        selectedShot = centerCloseNoteShot;
+                }
+
                 if(isBlueAlliance()){
                     preShootLoc = shootLocation.minus(new Translation2d(Units.inchesToMeters(36), 0));
                 } else {
@@ -176,7 +195,8 @@ public class CmdAuton {
                 sequence.addCommands(
                     //start gather/gate/shooter so the note will pass through as fast as possible
                     new InstantCommand(() -> {r.gather.setGatherPower(0.65, 1);
-                                              r.shooter.distancePrime(shotDistance);
+                                              //r.shooter.distancePrime(shotDistance);
+                                              r.shooter.commandPrime(selectedShot[0], selectedShot[1]);
                                              }, r.gather, r.shooter),
                     new ParallelRaceGroup(
                         new SequentialCommandGroup(

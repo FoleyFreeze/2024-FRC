@@ -10,6 +10,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,12 +28,15 @@ public class CmdDriveNoteTraj extends Command{
     double maxAngularAccel = 2;//rad/s
     double maxAngularVelocity = 2;//rad/s/s
 
+    LinearFilter filterX = LinearFilter.movingAverage(3);
+    LinearFilter filterY = LinearFilter.movingAverage(3);
+
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
     //only recalc path if the note has moved more than x distance
-    double recalcError = Units.inchesToMeters(12);
+    double recalcError = Units.inchesToMeters(6);
     //only recalc path if the note is further away than x distance
-    double recalcBounds = Units.inchesToMeters(12);
+    double recalcBounds = Units.inchesToMeters(6);
 
     Command driveCommand;
 
@@ -54,8 +58,13 @@ public class CmdDriveNoteTraj extends Command{
 
     @Override
     public void initialize(){
+        filterX.reset();
+        filterY.reset();
         if(r.vision.hasNoteImage()){
-            driveCommand = createPathFollower();
+            Translation2d noteLocation = r.vision.getCachedNoteLocation();
+            Translation2d filteredNote = new Translation2d(filterX.calculate(noteLocation.getX()),
+                                                           filterY.calculate(noteLocation.getY()));
+            driveCommand = createPathFollower(filteredNote);
             driveCommand.initialize();
         } else {
             driveCommand = null;
@@ -67,13 +76,16 @@ public class CmdDriveNoteTraj extends Command{
         //if there is new note data
         //  calculate the new path offset so it can be applied to the robot pose
         if(r.vision.hasNoteImage()){
+            Translation2d noteLocation = r.vision.getCachedNoteLocation();
+            Translation2d filteredNote = new Translation2d(filterX.calculate(noteLocation.getX()),
+                                                           filterY.calculate(noteLocation.getY()));
             if(driveCommand == null){
-                driveCommand = createPathFollower();
+                driveCommand = createPathFollower(filteredNote);
                 driveCommand.initialize();
             } else {
                 Translation2d distToGoal = pathEndLocation.minus(r.drive.robotPose.getTranslation());
 
-                Translation2d noteError = pathEndLocation.minus(r.vision.getCachedNoteLocation());
+                Translation2d noteError = pathEndLocation.minus(filteredNote);
                 Logger.recordOutput("Vision/NoteError", noteError);
 
                 //if path has diverged too far, and we are not close, make a new one
@@ -82,7 +94,7 @@ public class CmdDriveNoteTraj extends Command{
                     
                     driveCommand.end(true); //call this because its doing logging things we dont understand
                                             //and we would rather not break anything
-                    driveCommand = createPathFollower();
+                    driveCommand = createPathFollower(filteredNote);
                     driveCommand.initialize();
                 }
             }
@@ -106,7 +118,7 @@ public class CmdDriveNoteTraj extends Command{
         }
     }
 
-    public Command createPathFollower(){
+    public Command createPathFollower(Translation2d note){
         Rotation2d pathAngle;
         Rotation2d botAngle;
         if(this.pathAngle == null){
@@ -117,7 +129,7 @@ public class CmdDriveNoteTraj extends Command{
             botAngle = this.botAngle;
         }
 
-        pathEndLocation = r.vision.getCachedNoteLocation();
+        pathEndLocation = note;
         Translation2d pathStart = r.drive.getPose().getTranslation();
         Translation2d pathVector = pathEndLocation.minus(pathStart);
 
