@@ -139,7 +139,7 @@ public class Lights extends SubsystemBase{
         ledOutEnable(true);
 
         led = new AddressableLED(0);
-        ledBuffer = new AddressableLEDBuffer(205);
+        ledBuffer = new AddressableLEDBuffer(250);
 
         led.setLength(ledBuffer.getLength());
         led.start();

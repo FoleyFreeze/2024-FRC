@@ -52,10 +52,10 @@ public class CmdAuton {
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
-    static boolean fastCloseNoteShots = false;
-    static double fastDistToNoteThresh = 48;
-    static double fastDistToBotThreshClose = 48;
-    static double fastDistToBotThreshFar = 96;
+    static boolean fastCloseNoteShots = true;
+    static double fastDistToNoteThresh = Units.inchesToMeters(36);
+    static double fastDistToBotThreshClose = Units.inchesToMeters(12);
+    static double fastDistToBotThreshFar = Units.inchesToMeters(48);
 
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,

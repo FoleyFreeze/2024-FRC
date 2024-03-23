@@ -132,6 +132,9 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean checkRPMError(){
+        //if zero we are not up to speed
+        if(rpmSetpoint == 0) return false;
+
         double avg = (inputs.shootBottomVelocity + inputs.shootTopVelocity)/2.0;
         return Math.abs(rpmSetpoint - avg) < k.allowedRPMError;
     }
