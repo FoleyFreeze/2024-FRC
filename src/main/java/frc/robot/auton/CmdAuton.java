@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -34,7 +35,7 @@ import frc.robot.subsystems.drive.Drive;
 public class CmdAuton {
 
     static double[] centerCloseNoteShot = {41, 6000};
-    static double[] leftCloseNoteShot = {37, 6000};
+    static double[] leftCloseNoteShot = {36.5, 6000};
     static double[] rightCloseNoteShot = {38.5, 6000};
 
     static PathConstraints constraints = new PathConstraints(
@@ -149,6 +150,13 @@ public class CmdAuton {
                 Translation2d shootVec = noteLocation.minus(Locations.tagSpeaker); //note that the subtraction is inverted so the angle points the back of the robot at the speaker
                 Rotation2d targetAngleToSpeaker = shootVec.getAngle();
                 Rotation2d targetAngleForShot = targetAngleToSpeaker.plus(shooterOffset);//we shoot slightly right
+                
+                //extra angle for podium 
+                if(isBlueAlliance() && currNote == 8){
+                    targetAngleForShot = targetAngleForShot.plus(Rotation2d.fromDegrees(-3));
+                } else if(!isBlueAlliance() && currNote == 6){
+                    targetAngleForShot = targetAngleForShot.plus(Rotation2d.fromDegrees(3));
+                }
                 //shoot location is a bit less than half a robot length from the note in the speaker direction
                 shootLocation = noteLocation.minus(new Translation2d(Locations.robotLength/2 - Units.inchesToMeters(6), 0).rotateBy(targetAngleToSpeaker));
                 double shotDistance = shootLocation.minus(Locations.tagSpeaker).getNorm();
@@ -205,19 +213,23 @@ public class CmdAuton {
                                 //abort path command when we see a note with the camera in the right place
                                 new WaitUntilCommand(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose))
                             ),
+                            new PrintCommand("end pathfind begin drivenote, note: " + currNote),
                             new ParallelRaceGroup(
-                                new CmdDriveNoteTraj(r, forwardDir, targetAngleForShot),
-                                new WaitCommand(1.25) //TODO: figure out the right time
+                                new CmdDriveNoteTraj(r, forwardDir, targetAngleForShot, 36),
+                                new WaitCommand(2.5) //TODO: figure out the right time
                             ).onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose)),
-                            new WaitCommand(0.2)
+                            new WaitCommand(0.2),
+                            new PrintCommand("end alldrive, note: " + currNote)
                         ),
                         new SequentialCommandGroup(
+                            new WaitCommand(0.75),
                             //wait until shooter up to speed
                             new WaitUntilCommand(() -> (r.shooter.rpmSetpoint*2 - r.shooter.inputs.shootBottomVelocity - r.shooter.inputs.shootTopVelocity)
                                                         < 600),
                             //wait until shooter speed drops due to note passing through
                             new WaitUntilCommand(() -> (r.shooter.rpmSetpoint*2 - r.shooter.inputs.shootBottomVelocity - r.shooter.inputs.shootTopVelocity) 
-                                                        > 1000)
+                                                        > 1000),
+                            new PrintCommand("end shot, note: " + currNote)
                         )
                     )
                 );
@@ -263,29 +275,33 @@ public class CmdAuton {
                                         ),
                                         () -> stateMissingNote //did we miss the previous gather
                                     ),
+                                    new PrintCommand("end pathfind, note: " + currNote),
                                     new ParallelRaceGroup(
-                                        new CmdDriveNoteTraj(r),
-                                        new WaitCommand(1.25) 
+                                        new CmdDriveNoteTraj(r, 18),
+                                        new WaitCommand(1.5) 
                                     ).onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose)),
                                     new WaitCommand(0.2),
                                     //if we get here, we missed the note
-                                    new InstantCommand(() -> stateMissingNote = true)
+                                    new InstantCommand(() -> stateMissingNote = true),
+                                    new PrintCommand("end alldrive, note: " + currNote)
                                 ),
                                 new SequentialCommandGroup(
                                     new WaitCommand(0.25), //spinup time
                                     new WaitUntilCommand(() -> r.gather.inputs.intakeCurrentAmps > 12),
                                     new InstantCommand(() -> stateMissingNote = false),
-                                    new WaitCommand(0.1) //bit of extra time to insure note is in robot
+                                    new PrintCommand("end gathercurrent, note: " + currNote),
+                                    new WaitCommand(0.2) //bit of extra time to insure note is in robot
                                 )
                             ),
                             //shoot logic
                             new SequentialCommandGroup(
                                 prime(r, shootVec.getNorm()),
                                 shootPathfindingCommand,
+                                new PrintCommand("end shoot pathfind, note: " + currNote),
                                 shoot(r)
                             ).onlyIf(() -> !stateMissingNote)
                         ),//end seq
-                        CmdGather.autonGather(r)
+                        CmdGather.autonGather(r).andThen(new PrintCommand("end fullgather, note: " + currNote))
                     )//end deadline
                 );
 

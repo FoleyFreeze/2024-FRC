@@ -38,7 +38,7 @@ public class RoboState {
 
     public void periodic(){
         Logger.recordOutput("State/hasNote", hasNote);
-        Logger.recordOutput("State/hasTransfer", hasNote);
+        Logger.recordOutput("State/hasTransfer", hasTransfer);
         Logger.recordOutput("State/climbDeploy", climbDeploy);
 
         hasNoteEntry.setBoolean(hasNote);

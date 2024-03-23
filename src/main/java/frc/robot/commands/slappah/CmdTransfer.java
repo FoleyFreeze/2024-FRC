@@ -111,11 +111,11 @@ public class CmdTransfer {
                         //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() > shooterCurrentLim)
                         //new WaitUntilCommand(() -> r.slappah.getTransferCurrent() > transferCurrentLimit)
                         new WaitUntilCommand(() -> !r.gather.inputs.proxSensor)
-                                            .raceWith(new WaitCommand(1.5)),//dont get stuck
+                                            .raceWith(new WaitCommand(1)),//dont get stuck
                         //new WaitUntilCommand(() -> r.shooter.getShooterCurrent() < shooterCurrentLim)
                         new InstantCommand(() -> r.slappah.setTransferPosition(rotations)),
                         new WaitUntilCommand(r.slappah::checkTransferError)
-                                            .raceWith(new WaitCommand(2)),//make sure we cant get stuck here
+                                            .raceWith(new WaitCommand(0.75)),//make sure we cant get stuck here
                         //new PrintCommand("stage 5"),
                         new InstantCommand(() -> {r.shooter.setShootPower(0);
                                                   r.gather.setGatePower(0);

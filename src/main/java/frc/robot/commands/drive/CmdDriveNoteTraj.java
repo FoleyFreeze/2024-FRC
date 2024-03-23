@@ -28,15 +28,17 @@ public class CmdDriveNoteTraj extends Command{
     double maxAngularAccel = 2;//rad/s
     double maxAngularVelocity = 2;//rad/s/s
 
-    LinearFilter filterX = LinearFilter.movingAverage(3);
-    LinearFilter filterY = LinearFilter.movingAverage(3);
+    final int filtSize = 3;
+    LinearFilter filterX = LinearFilter.movingAverage(filtSize);
+    LinearFilter filterY = LinearFilter.movingAverage(filtSize);
+    boolean filtInit = false;
 
     PathConstraints pathConstraints = new PathConstraints(maxVelocity, maxAccel, maxAngularVelocity, maxAngularAccel);
 
     //only recalc path if the note has moved more than x distance
-    double recalcError = Units.inchesToMeters(6);
+    double recalcError = Units.inchesToMeters(12);
     //only recalc path if the note is further away than x distance
-    double recalcBounds = Units.inchesToMeters(6);
+    double recalcBounds = Units.inchesToMeters(12);
 
     Command driveCommand;
 
@@ -45,23 +47,37 @@ public class CmdDriveNoteTraj extends Command{
     Rotation2d pathAngle;
     Rotation2d botAngle;
 
-    public CmdDriveNoteTraj(RobotContainer r, Rotation2d pathAngle, Rotation2d botAngle){
+    double extraDist;
+
+    public CmdDriveNoteTraj(RobotContainer r, Rotation2d pathAngle, Rotation2d botAngle, double extraDist){
         this.r = r;
         this.pathAngle = pathAngle;
         this.botAngle = botAngle;
+        this.extraDist = Units.inchesToMeters(extraDist); 
         addRequirements(r.drive);
     }
 
     public CmdDriveNoteTraj(RobotContainer r){
-        this(r, null, null);
+        this(r, null, null, 6);
+    }
+
+    public CmdDriveNoteTraj(RobotContainer r, double extraDist){
+        this(r, null, null, extraDist);
     }
 
     @Override
     public void initialize(){
         filterX.reset();
         filterY.reset();
+        filtInit = false;
         if(r.vision.hasNoteImage()){
             Translation2d noteLocation = r.vision.getCachedNoteLocation();
+            //preload the filter
+            filtInit = true;
+            for(int i=0;i<filtSize-1;i++){
+                filterX.calculate(noteLocation.getX());
+                filterY.calculate(noteLocation.getY());
+            }
             Translation2d filteredNote = new Translation2d(filterX.calculate(noteLocation.getX()),
                                                            filterY.calculate(noteLocation.getY()));
             driveCommand = createPathFollower(filteredNote);
@@ -77,6 +93,14 @@ public class CmdDriveNoteTraj extends Command{
         //  calculate the new path offset so it can be applied to the robot pose
         if(r.vision.hasNoteImage()){
             Translation2d noteLocation = r.vision.getCachedNoteLocation();
+            if(!filtInit){
+                //preload the filter
+                filtInit = true;
+                for(int i=0;i<filtSize-1;i++){
+                    filterX.calculate(noteLocation.getX());
+                    filterY.calculate(noteLocation.getY());
+                }
+            }
             Translation2d filteredNote = new Translation2d(filterX.calculate(noteLocation.getX()),
                                                            filterY.calculate(noteLocation.getY()));
             if(driveCommand == null){
@@ -134,9 +158,8 @@ public class CmdDriveNoteTraj extends Command{
         Translation2d pathVector = pathEndLocation.minus(pathStart);
 
         //modify endLocation to be 6in further
-        Translation2d additionalDist = new Translation2d(Units.inchesToMeters(6), 0);
-        additionalDist.rotateBy(pathAngle);
-        pathEndLocation.plus(additionalDist);
+        Translation2d additionalDist = new Translation2d(extraDist, 0).rotateBy(pathAngle);
+        pathEndLocation = pathEndLocation.plus(additionalDist);
         
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
             new Pose2d(pathStart, getVelocityAngle(r.drive.getRelVelocity(), pathVector, botAngle)),
