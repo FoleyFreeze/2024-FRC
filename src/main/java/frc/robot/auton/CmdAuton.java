@@ -34,8 +34,8 @@ import frc.robot.subsystems.drive.Drive;
 public class CmdAuton {
 
     static double[] centerCloseNoteShot = {41, 6000};
-    static double[] leftCloseNoteShot = {38, 6000};
-    static double[] rightCloseNoteShot = {38, 6000};
+    static double[] leftCloseNoteShot = {37, 6000};
+    static double[] rightCloseNoteShot = {38.5, 6000};
 
     static PathConstraints constraints = new PathConstraints(
         4, //vel m/s
@@ -170,9 +170,9 @@ public class CmdAuton {
                 }
 
                 if(isBlueAlliance()){
-                    preShootLoc = shootLocation.minus(new Translation2d(Units.inchesToMeters(36), 0));
+                    preShootLoc = shootLocation.minus(new Translation2d(Units.inchesToMeters(28), 0));
                 } else {
-                    preShootLoc = shootLocation.plus(new Translation2d(Units.inchesToMeters(36), 0));
+                    preShootLoc = shootLocation.plus(new Translation2d(Units.inchesToMeters(28), 0));
                 }
 
                 //create path into note directly

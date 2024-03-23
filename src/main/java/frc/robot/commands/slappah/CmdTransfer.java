@@ -33,6 +33,7 @@ public class CmdTransfer {
     static double shootPreTransPos = 60;
     static double shootTransPos = 100;
     static double shootUntransPos = 97;
+    static double shootClimbPos = 95;
 
     //transfer
     static double shootPower = 0.30;
@@ -140,9 +141,15 @@ public class CmdTransfer {
     }
 
     public static Command setup(RobotContainer r, boolean isUntransfer){
+        return setup(r, isUntransfer, false);
+    }
+
+    public static Command setup(RobotContainer r, boolean isUntransfer, boolean isClimb){
         //move shooter and arm to the right angle
         double shooterAngle;
-        if(isUntransfer){
+        if(isClimb){
+            shooterAngle = shootClimbPos;
+        } else if(isUntransfer){
             shooterAngle = shootUntransPos;
         } else {
             shooterAngle = shootTransPos;

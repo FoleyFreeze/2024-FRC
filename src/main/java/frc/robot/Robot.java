@@ -89,7 +89,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        if(DriverStation.isFMSAttached()){
+        if(!DriverStation.isFMSAttached()){
             //leave the arm in break on the field
             m_robotContainer.slappah.setBrake(false);
         }
