@@ -238,9 +238,11 @@ public class Lights extends SubsystemBase{
         int maxStage = 10;
         if(testStage > maxStage) testStage = 0;
 
+        int lightLen = 150 + (int) (50 * r.inputs.getRightDial());
+
         switch(testStage){
             case 0:
-                skittles2(rainbow, true);
+                skittles2(rainbow, true, false, lightLen);
                 break;
             case 1:
                 skittles2(brain, true);
@@ -359,18 +361,20 @@ public class Lights extends SubsystemBase{
 
     Color black = new Color(0,0,0);
     //this is the important one
-    public void skittles2(Color[] colors, boolean up, boolean skip){
+    public void skittles2(Color[] colors, boolean up, boolean skip, int activeLength){
         if(Timer.getFPGATimestamp() > switchTime){
-            int len = ledBuffer.getLength() / 2;
+            int len = ledBuffer.getLength();
             for(int i = 0; i < len; i++){
                 int idx = (i + offset) % len;
                 if(idx < 0) idx += len;
                 int colorIdx = ((i) % (colors.length * 2)) / 2;
                 if(colorIdx < 0) colorIdx += colors.length;
                 if(offset % 9 < 3 && skip){
-                    mirrorLed(idx, black);
+                    //mirrorLed(idx, black);
+                    ledBuffer.setLED(idx, black);
                 } else {
-                    mirrorLed(idx, colors[colorIdx]);
+                    //mirrorLed(idx, colors[colorIdx]);
+                    ledBuffer.setLED(idx, colors[colorIdx]);
                 }
             }
             if (up){
@@ -384,7 +388,11 @@ public class Lights extends SubsystemBase{
     }
 
     public void skittles2(Color[] colors, boolean up){
-        skittles2(colors,up, false);
+        skittles2(colors,up, false, 999);
+    }
+
+    public void skittles2(Color[] colors, boolean up, boolean skip){
+        skittles2(colors, up, skip, 999);
     }
 
     Color off = new Color(0,0,0);
