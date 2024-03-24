@@ -434,9 +434,9 @@ public class RobotContainer {
 
         case TEST:
           drive.k.dontFlip = false;
-          //autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
+          autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
           //autonCommand = ChoreoAuto.getPathPlannerAuto("TestArc", this);
-          autonCommand = ChoreoAuto.getChoreoPath("TestArcSpin", this);
+          //autonCommand = ChoreoAuto.getChoreoPath("TestArcSpin", this);
           break;
 
         case DO_NOTHING:

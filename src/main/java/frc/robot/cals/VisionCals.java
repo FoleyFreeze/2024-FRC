@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.auton.Locations;
 
 public class VisionCals {
     
@@ -21,7 +22,8 @@ public class VisionCals {
 
     public double maxTagAge = 0.2;
 
-    public Pose2d camLocation = new Pose2d(Units.inchesToMeters(13 ), 0, Rotation2d.fromDegrees(0)); 
+    public Pose2d camLocation = new Pose2d(Locations.robotLength/2, 0, Rotation2d.fromDegrees(0)); 
+                                    //originally 13in, but we are now dist from bumper so botlen/2 it is
 
     public Pose3d tagCamLocation = new Pose3d(new Translation3d(
                                                             Units.inchesToMeters(-13.25),
