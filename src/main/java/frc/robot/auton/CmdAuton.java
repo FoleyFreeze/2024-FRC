@@ -414,7 +414,7 @@ public class CmdAuton {
                 .andThen(new CmdDriveNoteTraj(r).onlyIf(() -> r.vision.hasNoteImage() 
                                                            && r.drive.getPose().getTranslation().minus(r.vision.getCachedNoteLocation()).getNorm() < driveToNoteThresh2)
                     .raceWith(new WaitCommand(1))) //give it 4 seconds before moving on to the next note
-                .andThen(new WaitCommand(1))
+                .andThen(new WaitCommand(0.5))
             .raceWith(CmdGather.autonGather(r));
 
             fullCommand.addCommands(noteCommand);
