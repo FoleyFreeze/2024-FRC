@@ -431,8 +431,23 @@ public class CmdAuton {
             Translation2d shootLoc = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
             Translation2d vecToSpeaker = Locations.tagSpeaker.minus(shootLoc);
             Rotation2d targetAngle = vecToSpeaker.getAngle().plus(Rotation2d.fromDegrees(180));
-            Pose2d shotTargetPose = new Pose2d(shootLoc, targetAngle.plus(shooterOffset));
 
+            Translation2d offsetDrive = new Translation2d();
+            if(shootLoc == Locations.redShootingPositions[4]){
+                System.out.println("offsetting red stage shoot position for note: " + currNote);
+                offsetDrive = new Translation2d(-Units.inchesToMeters(3), Units.inchesToMeters(6));
+            } else if(shootLoc == Locations.blueShootingPositions[4]){
+                System.out.println("offsetting blue stage shoot position for note: " + currNote);
+                offsetDrive = new Translation2d(Units.inchesToMeters(3), Units.inchesToMeters(6));
+            }
+            Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset));
+
+            double extraShootDist = 0;
+            if(currNote < 6){
+                extraShootDist = Units.inchesToMeters(9);
+                System.out.println("offsetting shoot dist 9in for note: " + currNote);
+            }
+            
             pathFindingCommand = AutoBuilder.pathfindToPose(
                 shotTargetPose,
                 constraints,
@@ -440,7 +455,7 @@ public class CmdAuton {
             ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
             Command shootCommand = new SequentialCommandGroup(
-                prime(r, vecToSpeaker.getNorm()),
+                prime(r, vecToSpeaker.getNorm() + extraShootDist),
                 pathFindingCommand,
                 shoot(r)
             );
