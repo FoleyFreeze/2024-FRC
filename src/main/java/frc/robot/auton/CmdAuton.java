@@ -428,11 +428,13 @@ public class CmdAuton {
                 nextNoteLoc = Locations.notes[nextNote - 1];
             }
             //dont forget that the BACK of the robot needs to face the speaker
+            System.out.println("find best shoot loc for note " + currNote);
             Translation2d shootLoc = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
             Translation2d vecToSpeaker = Locations.tagSpeaker.minus(shootLoc);
             Rotation2d targetAngle = vecToSpeaker.getAngle().plus(Rotation2d.fromDegrees(180));
 
             Translation2d offsetDrive = new Translation2d();
+            /*
             if(shootLoc == Locations.redShootingPositions[4]){
                 System.out.println("offsetting red stage shoot position for note: " + currNote);
                 offsetDrive = new Translation2d(-Units.inchesToMeters(3), Units.inchesToMeters(6));
@@ -440,6 +442,7 @@ public class CmdAuton {
                 System.out.println("offsetting blue stage shoot position for note: " + currNote);
                 offsetDrive = new Translation2d(Units.inchesToMeters(3), Units.inchesToMeters(6));
             }
+            */
             Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset));
 
             double extraShootDist = 0;
@@ -547,6 +550,8 @@ public class CmdAuton {
     public static Translation2d getBestShootLocation(Translation2d[] shootLocations, Translation2d noteLoc, Translation2d nextLoc){
         Translation2d bestPosition = shootLocations[0];
         double bestDist = Double.MAX_VALUE; 
+        int count = 0;
+        int bestIdx = 0;
 
         for (Translation2d loc : shootLocations){
             double dist = loc.minus(noteLoc).getNorm();
@@ -557,9 +562,12 @@ public class CmdAuton {
             if(dist < bestDist){
                 bestDist = dist;
                 bestPosition = loc;
+                bestIdx = count;
             }
+            count++;
         }
 
+        System.out.println("picked shoot position " + bestIdx);
         return bestPosition;
     }
 
