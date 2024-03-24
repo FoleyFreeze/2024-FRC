@@ -57,9 +57,9 @@ public class CmdAuton {
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
-    static boolean fastCloseNoteShots = true;
+    static boolean fastCloseNoteShots = false;
     static double fastDistToNoteThresh = Units.inchesToMeters(36);
-    static double fastDistToBotThreshClose = Units.inchesToMeters(12);
+    static double fastDistToBotThreshClose = Units.inchesToMeters(0);
     static double fastDistToBotThreshFar = Units.inchesToMeters(48);
 
     public static Command selectedAuto(RobotContainer r, 
@@ -108,7 +108,7 @@ public class CmdAuton {
              //shoot first note
              new SequentialCommandGroup(
                 prime(r, startLocation),
-                new WaitCommand(0.3),//TODO: how much faster before we miss
+                new WaitCommand(0.4),//TODO: how much faster before we miss
                 shoot(r)
              )
         ));
@@ -184,9 +184,10 @@ public class CmdAuton {
                 }
 
                 //create path into note directly
+                Translation2d overdrive = new Translation2d(Units.inchesToMeters(6), 0).rotateBy(forwardDir);
                 List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                     new Pose2d(preShootLoc, forwardDir),
-                    new Pose2d(shootLocation, forwardDir)
+                    new Pose2d(shootLocation.plus(overdrive), forwardDir)
                 );
 
                 PathPlannerPath path = new PathPlannerPath(
@@ -215,7 +216,7 @@ public class CmdAuton {
                             ),
                             new PrintCommand("end pathfind begin drivenote, note: " + currNote),
                             new ParallelRaceGroup(
-                                new CmdDriveNoteTraj(r, forwardDir, targetAngleForShot, 36),
+                                new CmdDriveNoteTraj(r, forwardDir, targetAngleForShot, 0),
                                 new WaitCommand(2.5) //TODO: figure out the right time
                             ).onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose)),
                             new WaitCommand(0.2),
@@ -236,8 +237,10 @@ public class CmdAuton {
 
             } else {
                 //far notes, use the drive, pickup, drive, shoot strategy
+
+                Translation2d overdrive = new Translation2d(Units.inchesToMeters(16),0).rotateBy(forwardDir);
                 Command notePathfindingCommand = AutoBuilder.pathfindToPose(
-                    new Pose2d(noteLocation, forwardDir),
+                    new Pose2d(noteLocation.plus(overdrive), forwardDir),
                     constraints
                 );
 
@@ -267,22 +270,23 @@ public class CmdAuton {
                                         new ParallelRaceGroup(
                                             missedNotePathfindingCommand,
                                             new WaitUntilCommand(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshFar))
-                                        ),
+                                        ).beforeStarting(new PrintCommand("begin path, missed note, currNote: " + currNote)),
                                         //go to next note gather from shoot position
                                         new ParallelRaceGroup(
                                             notePathfindingCommand,
                                             new WaitUntilCommand(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshFar))
-                                        ),
+                                        ).beforeStarting(new PrintCommand("begin path, gathered note, currNote: " + currNote)),
                                         () -> stateMissingNote //did we miss the previous gather
                                     ),
                                     new PrintCommand("end pathfind, note: " + currNote),
                                     new ParallelRaceGroup(
                                         new CmdDriveNoteTraj(r, 18),
                                         new WaitCommand(1.5) 
-                                    ).onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose)),
-                                    new WaitCommand(0.2),
-                                    //if we get here, we missed the note
+                                    ).beforeStarting(new PrintCommand("begin drivenote, currNote: " + currNote))
+                                        .onlyIf(() -> noteIsSeenInRange(r, noteLocation, fastDistToNoteThresh, fastDistToBotThreshClose)),
                                     new InstantCommand(() -> stateMissingNote = true),
+                                    new WaitCommand(0.4),
+                                    //if we get here, we missed the note
                                     new PrintCommand("end alldrive, note: " + currNote)
                                 ),
                                 new SequentialCommandGroup(
@@ -442,7 +446,8 @@ public class CmdAuton {
             );
 
             //only run the shoot sequence if we successfully gathered a note
-            fullCommand.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
+            //TODO: add this back if we can fix the robot direction
+            fullCommand.addCommands(shootCommand/*.onlyIf(() -> r.state.hasNote)*/);
 
             prevNote = currNote;
         }

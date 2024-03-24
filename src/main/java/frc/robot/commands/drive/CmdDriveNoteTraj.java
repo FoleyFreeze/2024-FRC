@@ -43,6 +43,7 @@ public class CmdDriveNoteTraj extends Command{
     Command driveCommand;
 
     Translation2d pathEndLocation;
+    Translation2d pathEndNoteLocation;
 
     Rotation2d pathAngle;
     Rotation2d botAngle;
@@ -107,9 +108,9 @@ public class CmdDriveNoteTraj extends Command{
                 driveCommand = createPathFollower(filteredNote);
                 driveCommand.initialize();
             } else {
-                Translation2d distToGoal = pathEndLocation.minus(r.drive.robotPose.getTranslation());
+                Translation2d distToGoal = pathEndNoteLocation.minus(r.drive.robotPose.getTranslation());
 
-                Translation2d noteError = pathEndLocation.minus(filteredNote);
+                Translation2d noteError = pathEndNoteLocation.minus(filteredNote);
                 Logger.recordOutput("Vision/NoteError", noteError);
 
                 //if path has diverged too far, and we are not close, make a new one
@@ -153,6 +154,7 @@ public class CmdDriveNoteTraj extends Command{
             botAngle = this.botAngle;
         }
 
+        pathEndNoteLocation = note;
         pathEndLocation = note;
         Translation2d pathStart = r.drive.getPose().getTranslation();
         Translation2d pathVector = pathEndLocation.minus(pathStart);
