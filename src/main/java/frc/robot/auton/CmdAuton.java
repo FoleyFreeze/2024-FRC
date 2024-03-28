@@ -6,9 +6,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,7 +27,6 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.gather.CmdGather;
-import frc.robot.subsystems.drive.Drive;
 
 public class CmdAuton {
 
@@ -38,24 +34,17 @@ public class CmdAuton {
     static double[] leftCloseNoteShot = {36.5, 6000};
     static double[] rightCloseNoteShot = {38.5, 6000};
 
-    static PathConstraints constraints = new PathConstraints(
+    public static PathConstraints constraints = new PathConstraints(
         4, //vel m/s
         3, //2.75, //accel m/s/s 
         3, //vel rad/s
         3  //accel rad/s/s
     );
 
-    static PathConstraints noTurnConstraints = new PathConstraints(
-        4.5,
-        3,
-        2,
-        2
-    );
-
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
     static double driveToNoteThreshFar = Units.inchesToMeters(36);
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
-    static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
+    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
 
     static boolean fastCloseNoteShots = false;
     static double fastDistToNoteThresh = Units.inchesToMeters(36);

@@ -1,8 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import java.nio.ByteBuffer;
-
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.struct.Struct;
 
 public class VisionTagDataStruct implements Struct<VisionTagData>{

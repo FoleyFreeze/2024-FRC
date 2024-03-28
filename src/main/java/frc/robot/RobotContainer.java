@@ -6,32 +6,21 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,8 +37,6 @@ import frc.robot.cals.SlappahCals;
 import frc.robot.cals.VisionCals;
 import frc.robot.commands.climber.CmdClimb;
 import frc.robot.commands.drive.CmdDrive;
-import frc.robot.commands.drive.CmdDriveNoteTraj;
-import frc.robot.commands.drive.CmdDriveToNote;
 import frc.robot.commands.gather.CmdGather;
 import frc.robot.commands.shooter.CMDShoot;
 import frc.robot.commands.slappah.CmdTransfer;
@@ -158,6 +145,7 @@ public class RobotContainer {
         .onTrue(CmdTransfer.goToPreAmp(this));
 
     //shoot commands
+
     /*inputs.shootTriggerSWH
         .and(inputs.cameraEnableSWD.negate())
         .and(state.isPrimeT.negate())
@@ -166,7 +154,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.fixedPrime(this));*/
 
     inputs.shootTriggerSWH
-        //.and(inputs.cameraEnableSWD.negate()) //TODO: add when camera shoot exists
+        .and(inputs.SWBHi.negate()) //TODO: add when camera shoot exists
         //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
@@ -174,12 +162,19 @@ public class RobotContainer {
         //.and(inputs.SWBLo.negate())
         .onTrue(CMDShoot.simpleShoot(this));
         //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
+    
+    inputs.shootTriggerSWH
+      .and(inputs.SWBHi)
+      .and(state.climbDeployT.negate())
+      .and(state.hasTransferT.negate())
+      .onTrue(CMDShoot.visionShoot(this));
 
     //climb commands
     inputs.shootTriggerSWH
         .and(state.hasTransferT)
         .and(state.climbDeployT.negate())
         .onTrue(CmdTransfer.scoreInAmp(this));
+
 
     /*
     inputs.shootTriggerSWH
@@ -453,9 +448,14 @@ public class RobotContainer {
     //log path data with advantage scope
     PathPlannerLogging.setLogActivePathCallback((path) -> {
         Logger.recordOutput("PathPlanner/ActivePath", path.toArray(new Pose2d[path.size()]));
+        drive.newPath = true;
     });
-    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> Logger.recordOutput("PathPlanner/CurrentPose", pose));
-    PathPlannerLogging.setLogTargetPoseCallback((pose) -> Logger.recordOutput("PathPlanner/TargetPose", pose));
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {Logger.recordOutput("PathPlanner/CurrentPose", pose);
+                                                            drive.currentPose = pose;});
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {Logger.recordOutput("PathPlanner/TargetPose", pose);
+                                                           drive.targetPose = pose;});
+    drive.profilePID = drive.k.autonPathFollowerConfig.translationConstants; // Translation PID constants  
+    drive.profileConstraints = CmdAuton.constraints;
 
     //configure auto builder
     AutoBuilder.configureHolonomic(
@@ -463,13 +463,14 @@ public class RobotContainer {
             drive::resetFieldOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             drive::getRelVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             drive::swerveDriveVel, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(11.0, 0.0, 0.0), // Translation PID constants
+            drive.k.autonPathFollowerConfig,
+            /*new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(11.0, 0.0, 0.0), // Translation PID constants  
                     new PIDConstants(9.0, 0.0, 0.75), // Rotation PID constants
                     drive.k.maxWheelSpeed, // Max module speed, in m/s
                     drive.k.wheelBR.wheelLocation.getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
+            ),*/
             drive.k::flipPath,
             drive // Reference to this subsystem to set requirements
     );

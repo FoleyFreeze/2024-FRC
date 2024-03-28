@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
+import frc.robot.auton.Locations;
 
 public class CMDShoot {
     //simple shoot cmd
@@ -129,15 +129,26 @@ public class CMDShoot {
     */
 
     public static Command visionShoot(RobotContainer r){
-        Command c = new RunCommand( () -> r.shooter.fixedPrime());
-                c = c.until(() -> r.shooter.checkAngleError() && r.shooter.checkRPMError() && r.inputs.shootTriggerSWH.getAsBoolean());
-                c = c.andThen(new InstantCommand(() -> {r.gather.setGatePower(1); }));
-                c = c.andThen(new WaitCommand(shootWaitTime)); 
-                c = c.finallyDo(() -> {r.shooter.goHome(); r.gather.setGatePower(0); r.state.hasNote = false;});
-
-                c.addRequirements(r.shooter, r.gather);
-                c.setName("VisionPrime");
-
+        Command c = new SequentialCommandGroup(
+            new RunCommand(() -> {r.shooter.distancePrime(Locations.tagSpeaker.getDistance(r.drive.getPose().getTranslation()));
+                                  r.state.isPrime = true;
+                                }, r.shooter)
+                .until(() -> r.shooter.checkAngleError() 
+                          && r.shooter.checkRPMError() 
+                          && r.drive.atAngleSetpoint
+                          && r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> r.gather.setGatePower(1), r.gather),
+            new WaitCommand(shootWaitTime),
+            new InstantCommand(() -> {r.shooter.goHome();
+                                      r.gather.setGatePower(0); 
+                                      r.state.hasNote = false;}, 
+                                            r.shooter, r.gather),
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
+            new InstantCommand(() -> r.state.isPrime = false)
+            //make sure trigger is released so it doesnt immediately run again
+        );
+        
+        c.setName("VisionShoot");
         return c;    
     }
 

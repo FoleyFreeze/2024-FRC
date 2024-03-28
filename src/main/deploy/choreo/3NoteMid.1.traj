@@ -460,33 +460,5 @@
       "timestamp": 4.841814216036958
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 1.491025570853553,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutonShoot"
-        }
-      }
-    },
-    {
-      "timestamp": 3.5006489320669942,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutonShoot"
-        }
-      }
-    },
-    {
-      "timestamp": 4.641814216036958,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutonShoot"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

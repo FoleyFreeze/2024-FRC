@@ -1,22 +1,14 @@
 package frc.robot.subsystems.inputs;
 
 import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringSubscriber;
-import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.cals.InputsCals;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class Inputs extends SubsystemBase {
     

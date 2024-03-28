@@ -7,7 +7,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Robot;
 import frc.robot.cals.DriveCals.WheelCal;
 
@@ -52,15 +51,15 @@ public class Wheel {
         return new SwerveModuleState(inputs.driveVelocity, inputs.swervePosition);
     }
 
-    public SwerveModuleState moveWheel(SwerveModuleState state, boolean stopped, boolean isVelocity){
+    public SwerveModuleState moveWheel(SwerveModuleState state, boolean stopped){
         var optimizedState = SwerveModuleState.optimize(state, inputs.swervePosition);
         if(stopped){
             io.setDriveVoltage(0);
-        } else if(isVelocity && k.driveWithVel){
+        }/* else if(isVelocity && k.driveWithVel){
             double velRadPerSec = optimizedState.speedMetersPerSecond / k.wheelRadius;
             io.setDriveVoltage(driveFF.calculate(velRadPerSec) + driveFB.calculate(Units.rotationsPerMinuteToRadiansPerSecond(inputs.driveVelocity), velRadPerSec));
             io.setSwerveAngle(optimizedState.angle);
-        } else {
+        } */else {
             io.setDriveVoltage(12 * optimizedState.speedMetersPerSecond / k.maxSpeed);
             io.setSwerveAngle(optimizedState.angle);
         }

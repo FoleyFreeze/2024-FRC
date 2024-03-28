@@ -51,6 +51,7 @@ public class DriveCals {
     private double wheelLocationY = wheelWidth / 2.0;
 
     public double maxWheelSpeed = Units.feetToMeters(14);
+    public double kA = 0;//0.1; //Acceleration feedfoward constant TODO: Cal this
     
     //TODO: current limits
 
@@ -157,15 +158,15 @@ public class DriveCals {
         new PIDConstants(5, 0, 0),
         new PIDConstants(5, 0, 0),
         maxWheelSpeed,
-        wheelFL.wheelLocation.getNorm(),
+        wheelBR.wheelLocation.getNorm(),
         new ReplanningConfig()
     );
 
-    public HolonomicPathFollowerConfig AutonPathFollowerConfig = new HolonomicPathFollowerConfig(
-        new PIDConstants(5, 0, 0),
-        new PIDConstants(4, 0, 0),
+    public HolonomicPathFollowerConfig autonPathFollowerConfig = new HolonomicPathFollowerConfig(
+        new PIDConstants(11, 0, 0),
+        new PIDConstants(9, 0, 0.75),
         maxWheelSpeed,
-        wheelFL.wheelLocation.getNorm(),
+        wheelBR.wheelLocation.getNorm(),
         new ReplanningConfig()
     );
 

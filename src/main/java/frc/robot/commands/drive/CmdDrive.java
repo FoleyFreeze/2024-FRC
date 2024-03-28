@@ -3,17 +3,17 @@ package frc.robot.commands.drive;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.auton.CmdAuton;
+import frc.robot.auton.Locations;
 import frc.robot.subsystems.RoboState.ClimbState;
 
 public class CmdDrive extends Command {
@@ -22,6 +22,7 @@ public class CmdDrive extends Command {
 
     boolean inClimbAngleControl = false;
     boolean inPodiumAngleControl = false;
+    boolean inCameraAngleControl = false;
 
     Rotation2d podiumAngleBlue = Rotation2d.fromDegrees(-30 + 4.5);
     Rotation2d podiumAngleRed =  Rotation2d.fromDegrees(30  + 180 + 4.5);
@@ -39,6 +40,7 @@ public class CmdDrive extends Command {
 
         pidController = new ProfiledPIDController(1, 0, 0, new Constraints(2, 2));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
+        pidController.setTolerance(Math.toRadians(3), 0.5); //3deg error and 0.5 rad/s
 
         timeSinceDriverRotate = new Timer();
         timeSinceDriverRotate.restart();
@@ -95,12 +97,13 @@ public class CmdDrive extends Command {
             }
 
             inPodiumAngleControl = false;
+            inCameraAngleControl = false;
 
         } else if(r.state.isPrime && r.inputs.getFixedTarget() == 1){
             //if we are priming for a podium shot, go to the right angle
 
             if(!inPodiumAngleControl){
-                inPodiumAngleControl = true; //for podium shots 3/21
+                inPodiumAngleControl = true; 
                 if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
                     angleSetpoint = podiumAngleRed;
                 } else {
@@ -133,9 +136,54 @@ public class CmdDrive extends Command {
             }
 
             inClimbAngleControl = false;
+            inCameraAngleControl = false;
+
+        } else if(r.state.isPrime && r.inputs.SWBHi.getAsBoolean()){
+            //if camera aiming, aim at the speaker
+
+            if(!inCameraAngleControl){
+                inCameraAngleControl = true; 
+                
+                //since robot must point backwards at speaker, draw a line from speaker to robot and point along it
+                angleSetpoint = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getAngle().plus(CmdAuton.shooterOffset);
+
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+                r.drive.atAngleSetpoint = pidController.atGoal();
+            }
+
+            if(Math.abs(speed.omegaRadiansPerSecond) > 0.05){
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+                r.drive.atAngleSetpoint = pidController.atGoal();
+
+                timeSinceDriverRotate.restart();
+            } else if(!timeSinceDriverRotate.hasElapsed(driverOverrideTime)){
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                pidController.reset(measurement);
+                r.drive.atAngleSetpoint = pidController.atGoal();
+
+            } else {
+                //run the pid
+                double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
+                double goal = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getAngle().plus(CmdAuton.shooterOffset).getRadians();
+                speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
+                speed.omegaRadiansPerSecond = MathUtil.clamp(speed.omegaRadiansPerSecond, -0.3, 0.3);
+
+                r.drive.atAngleSetpoint = pidController.atGoal();
+
+                Logger.recordOutput("Drive/AnglePID/Goal", goal);
+                Logger.recordOutput("Drive/AnglePID/Setpoint", pidController.getSetpoint().position);
+                Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
+            }
+            
+            inClimbAngleControl = false;
+            inPodiumAngleControl = false;
+
         } else {
             inClimbAngleControl = false;
             inPodiumAngleControl = false;
+            inCameraAngleControl = false;
         }
 
         r.drive.swerveDrivePwr(speed, r.inputs.fieldOrientedSWA.getAsBoolean()/*  && r.state.climbDeploy == ClimbState.NONE*/);    

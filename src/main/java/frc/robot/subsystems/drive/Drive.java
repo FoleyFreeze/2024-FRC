@@ -2,23 +2,22 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -40,7 +39,9 @@ public class Drive extends SubsystemBase{
 
     public Pose2d robotPose = new Pose2d();
     public ChassisSpeeds robotRelVelocity = new ChassisSpeeds();
-    
+
+    //used for determining if robot is aligned for camera shoot 
+    public boolean atAngleSetpoint = false;
 
     public Drive (RobotContainer r, DriveCals k){
         this.r = r;
@@ -89,21 +90,69 @@ public class Drive extends SubsystemBase{
         swerveDrivePwr(power, false);
     }
 
+    
     public void swerveDriveVel(ChassisSpeeds speeds){
+        //attempt to back calculate an accel feedfoward
+
+        double dt = Timer.getFPGATimestamp() - prevTime;
+        prevTime = Timer.getFPGATimestamp();
+
+        //calculate what the velocity setpoint would have been without the position PID
+        Translation2d poseError = targetPose.getTranslation().minus(currentPose.getTranslation());
+        Translation2d extraVelAdded = poseError.times(profilePID.kP);
+        ChassisSpeeds fieldRelSpeedsRaw = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getAngle());
+        ChassisSpeeds fieldRelSpeedsFF = new ChassisSpeeds();
+        fieldRelSpeedsFF.vxMetersPerSecond = fieldRelSpeedsRaw.vxMetersPerSecond - extraVelAdded.getX();
+        fieldRelSpeedsFF.vyMetersPerSecond = fieldRelSpeedsRaw.vyMetersPerSecond - extraVelAdded.getY();
+
+        //reset when a new path is generated
+        Logger.recordOutput("Drive/Accels2/NewPath", newPath);
+        if(newPath){
+            prevFieldRelChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRelVelocity(), getAngle());
+            newPath = false;
+        }
+        ChassisSpeeds accel2 = fieldRelSpeedsFF.minus(prevFieldRelChassisSpeeds).div(dt);
+        prevFieldRelChassisSpeeds = fieldRelSpeedsFF;
+        ChassisSpeeds botRelAccel2 = ChassisSpeeds.fromFieldRelativeSpeeds(accel2, getAngle());
+        Logger.recordOutput("Drive/Accels2/FieldRelSpeedsRaw", fieldRelSpeedsRaw);
+        Logger.recordOutput("Drive/Accels2/FieldRelSpeedsFF", fieldRelSpeedsFF);
+        Logger.recordOutput("Drive/Accels2/FieldRelAccel", accel2);
+        Logger.recordOutput("Drive/Accels2/BotRelAccel", botRelAccel2);
+
+        //limit the calculated accel to the constraints placed on the path
+        ChassisSpeeds limitedAccel2 = new ChassisSpeeds(botRelAccel2.vxMetersPerSecond, botRelAccel2.vyMetersPerSecond, botRelAccel2.omegaRadiansPerSecond);
+        double maxAccel = Math.hypot(botRelAccel2.vxMetersPerSecond, botRelAccel2.vyMetersPerSecond);
+        if(maxAccel > profileConstraints.getMaxAccelerationMpsSq()){
+            double ratio = maxAccel / profileConstraints.getMaxAccelerationMpsSq();
+            limitedAccel2.vxMetersPerSecond /= ratio;
+            limitedAccel2.vyMetersPerSecond /= ratio;
+        }
+        Logger.recordOutput("Drive/Accels2/LimitedBotRelAccel", limitedAccel2);
+
+        
         //use as velocity this time
-        swerveDrivePwr(speeds, false, true);
+        swerveDrivePwr(speeds, false, limitedAccel2);
     }
+
+    //for accel calcs
+    public double prevTime;
+    public boolean newPath = false;
+    public Pose2d currentPose = new Pose2d();
+    public Pose2d targetPose = new Pose2d();
+    public PIDConstants profilePID = new PIDConstants(0);
+    public ChassisSpeeds prevFieldRelChassisSpeeds = new ChassisSpeeds();
+    public PathConstraints profileConstraints = new PathConstraints(0, 0, 0, 0);
 
     public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented){
-        swerveDrivePwr(speeds, fieldOriented, false);
+        swerveDrivePwr(speeds, fieldOriented, null);
     }
 
-    public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented, boolean isVelocity){
+    public void swerveDrivePwr(ChassisSpeeds speeds, boolean fieldOriented, ChassisSpeeds accel){
         boolean stopped = Math.abs(speeds.vxMetersPerSecond) < 0.002
                         && Math.abs(speeds.vyMetersPerSecond) < 0.002
                         && Math.abs(speeds.omegaRadiansPerSecond) < 0.002;
 
-        if(!isVelocity) {
+        if(accel == null) {
             limitSpeeds(speeds, k.fieldModePwr);
             //scale to m/s
             //TODO: make cleaner
@@ -113,7 +162,22 @@ public class Drive extends SubsystemBase{
             double radius = k.wheelBL.wheelLocation.getNorm();
             speeds.omegaRadiansPerSecond *= k.maxWheelSpeed / radius / 1.2;
         } else {
+            //add acceleration to the requested chassis speeds
+            //but only take the portion of the accel vector that points in the same direction as the velocity vector
+            double accelAngle = Math.atan2(accel.vyMetersPerSecond, accel.vxMetersPerSecond);
+            double velAngle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+            double accelHyp = Math.hypot(accel.vxMetersPerSecond, accel.vyMetersPerSecond) * Math.cos(accelAngle - velAngle);
+            double vxAccel = accelHyp * Math.cos(velAngle) * k.kA * k.maxWheelSpeed;
+            double vyAccel = accelHyp * Math.sin(velAngle) * k.kA * k.maxWheelSpeed;
 
+            speeds.vxMetersPerSecond += vxAccel;
+            speeds.vyMetersPerSecond += vyAccel;
+
+            Logger.recordOutput("Drive/Accels2/AccelAngle", accelAngle);
+            Logger.recordOutput("Drive/Accels2/VelAngle", velAngle);
+            Logger.recordOutput("Drive/Accels2/AccelMagnitude", accelHyp);
+            Logger.recordOutput("Drive/Accels2/AccelExtraXVel", vxAccel);
+            Logger.recordOutput("Drive/Accels2/AccelExtraYVel", vyAccel);
         }
         
         if(fieldOriented){
@@ -124,6 +188,8 @@ public class Drive extends SubsystemBase{
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, angle);
             speeds = ChassisSpeeds.discretize(speeds, 0.02);
         }
+
+        
         
         SwerveModuleState[] wheelStates = kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(wheelStates, k.maxWheelSpeed);
@@ -131,7 +197,7 @@ public class Drive extends SubsystemBase{
         SwerveModuleState[]  optimizedWheelStates = new SwerveModuleState[4]; 
 
         for(int i = 0; i < 4; i++){
-            optimizedWheelStates[i] = wheels[i].moveWheel(wheelStates[i], stopped, isVelocity);
+            optimizedWheelStates[i] = wheels[i].moveWheel(wheelStates[i], stopped);
         }
 
         Logger.recordOutput("Drive/SwerveSetpoints", wheelStates);

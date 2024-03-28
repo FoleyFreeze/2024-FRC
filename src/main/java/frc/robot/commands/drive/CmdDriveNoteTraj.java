@@ -1,15 +1,11 @@
 package frc.robot.commands.drive;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.auton.CmdAuton;
 
 public class CmdDriveNoteTraj extends Command{
 
@@ -83,6 +80,8 @@ public class CmdDriveNoteTraj extends Command{
                                                            filterY.calculate(noteLocation.getY()));
             driveCommand = createPathFollower(filteredNote);
             driveCommand.initialize();
+            r.drive.profilePID = r.drive.k.notePathFollowerConfig.translationConstants;
+            r.drive.profileConstraints = pathConstraints;
         } else {
             driveCommand = null;
         }
@@ -121,6 +120,8 @@ public class CmdDriveNoteTraj extends Command{
                                             //and we would rather not break anything
                     driveCommand = createPathFollower(filteredNote);
                     driveCommand.initialize();
+                    r.drive.profilePID = r.drive.k.notePathFollowerConfig.translationConstants;
+                    r.drive.profileConstraints = pathConstraints;
                 }
             }
         }
@@ -130,7 +131,11 @@ public class CmdDriveNoteTraj extends Command{
 
     @Override 
     public void end(boolean interrupted){
-        if(driveCommand != null) driveCommand.end(interrupted);
+        if(driveCommand != null) {
+            driveCommand.end(interrupted);
+            r.drive.profilePID = r.drive.k.autonPathFollowerConfig.translationConstants;
+            r.drive.profileConstraints = CmdAuton.constraints;
+        }
     }
 
     @Override

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -160,6 +159,7 @@ public class Vision extends SubsystemBase{
                 Logger.recordOutput("Vision/RawRobotTag/RotY", Math.toDegrees(rawRobotPose.getRotation().getY()));
                 Logger.recordOutput("Vision/RawRobotTag/RotZ", Math.toDegrees(rawRobotPose.getRotation().getZ()));
 
+                /*
                 Pose2d robotPose = posePicker(inputs.tagData.timestamp);
                 Pose3d botFieldPose = new Pose3d(new Translation3d(robotPose.getX(), robotPose.getY(), 0), new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
                 tempPose = rawRobotPose.rotateBy(botFieldPose.getRotation());
@@ -168,6 +168,9 @@ public class Vision extends SubsystemBase{
                 Logger.recordOutput("Vision/FieldTag/RotX", Math.toDegrees(tagFieldPose.getRotation().getX()));
                 Logger.recordOutput("Vision/FieldTag/RotY", Math.toDegrees(tagFieldPose.getRotation().getY()));
                 Logger.recordOutput("Vision/FieldTag/RotZ", Math.toDegrees(tagFieldPose.getRotation().getZ()));
+                */
+                //dont do it the above way, instead use where the tag should be, and offset that by the camera location to get the robot pose according to the camera
+
                 
                 //first check height vs reality to reject incorrect heights
                 Optional<Pose3d> fieldTagPose = Locations.tagLayout.getTagPose(tag.tagId);
@@ -193,9 +196,19 @@ public class Vision extends SubsystemBase{
                     break;
                 }
 
-                
+                //get the camera's version of the robot pose
+                tempPose = rawRobotPose.rotateBy(new Rotation3d(0, 0, r.drive.getAngle().getRadians()));
+                Pose3d robotPose = new Pose3d(fieldTagPose.get().getTranslation().minus(tempPose.getTranslation()), tempPose.getRotation());
+                Logger.recordOutput("Vision/RobotEstPose", robotPose);
+                Logger.recordOutput("Vision/RobotEst/RotX", Math.toDegrees(robotPose.getRotation().getX()));
+                Logger.recordOutput("Vision/RobotEst/RotY", Math.toDegrees(robotPose.getRotation().getY()));
+                Logger.recordOutput("Vision/RobotEst/RotZ", Math.toDegrees(robotPose.getRotation().getZ()));
 
                 
+                //eventually update odometry
+                //r.drive.odometry.addVisionMeasurement(new Pose2d(robotPose.getTranslation().toTranslation2d(), r.drive.getAngle()), 
+                //                                        inputs.tagData.timestamp, 
+                //                                        VecBuilder.fill(1, 1, 1));
 
             }
 

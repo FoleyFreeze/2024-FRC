@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.util.Units;
-
 public class VisionTag {
     public byte tagId;
     public byte eBits;
