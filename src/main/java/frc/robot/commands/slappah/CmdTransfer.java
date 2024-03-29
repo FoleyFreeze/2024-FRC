@@ -39,7 +39,7 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 6.0; //was 7.0; on 3/20/2024
+    static double transferRotations = 5.0; //was 7.0; on 3/20/2024
     static double climbTransferRotations = 6.0;
     static double transferCurrentLimit = 4;
 

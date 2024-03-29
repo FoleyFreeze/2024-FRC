@@ -180,19 +180,19 @@ public class RobotContainer {
     inputs.shootTriggerSWH
         .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
         .onTrue(CmdClimb.hook(this));
-
-    inputs.shootTriggerSWH
-        .and(new Trigger(() -> state.climbDeploy == ClimbState.HOOKED))
-        .onTrue(CmdClimb.climb(this));
     */
     inputs.shootTriggerSWH
-        .and(new Trigger(()-> state.climbDeploy == ClimbState.DEPLOYED))
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
+        .onTrue(CmdClimb.climb2(this));
+    
+    inputs.shootTriggerSWH
+        .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
         .whileTrue(CmdClimb.shootTrap(this));
     
 
     //unshooot trap
     inputs.gatherTriggerSWE
-        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.CLIMBED))
         .whileTrue(CmdClimb.unshootTrap(this));
 
     
