@@ -37,9 +37,9 @@ public class ShooterCals {
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 16)
                                         .setBrakeMode(true)
-                                        .setCurrLim(30)
-                                        .setPIDF(1.5, 0, 0, 0)//TODO: go back to 2
-                                        .setPIDPwrLim(0.3, -0.3)//TODO: go back to 0.4
+                                        .setCurrLim(30, 40)
+                                        .setPIDF(2, 0, 0, 0)//TODO: go back to 2
+                                        .setPIDPwrLim(0.4, -0.4)//TODO: go back to 0.4
                                         .setRatio(85 / 32.0 * 30/24.0); //32 rotations of the screw, but gear ratio of 30/24
                                                                         //so a real ratio of 95deg / 25.6 (yes its geared up)
 
