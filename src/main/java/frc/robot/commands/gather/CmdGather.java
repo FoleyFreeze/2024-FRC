@@ -18,7 +18,7 @@ public class CmdGather {
     static double extraIntakeTime = 0.0;
 
     static double backwardsGatherPower = -.13;
-    static double intakePower = 0.65; //was 0.5;//0.4
+    static double intakePower = 0.75; //was 0.5;//0.4
     static double gatePower = 0.25;//0.15
     static double reverseIntakePower = -0.6;//0.5
     static double reverseGatePower = -0.5;//0.3

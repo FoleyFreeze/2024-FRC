@@ -118,6 +118,7 @@ public class Drive extends SubsystemBase{
         Logger.recordOutput("Drive/Accels2/FieldRelSpeedsFF", fieldRelSpeedsFF);
         Logger.recordOutput("Drive/Accels2/FieldRelAccel", accel2);
         Logger.recordOutput("Drive/Accels2/BotRelAccel", botRelAccel2);
+        Logger.recordOutput("Drive/Accels2/dt", dt);
 
         //limit the calculated accel to the constraints placed on the path
         ChassisSpeeds limitedAccel2 = new ChassisSpeeds(botRelAccel2.vxMetersPerSecond, botRelAccel2.vyMetersPerSecond, botRelAccel2.omegaRadiansPerSecond);

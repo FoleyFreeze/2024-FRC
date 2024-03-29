@@ -28,7 +28,8 @@ public class CmdClimb {
     static double pushAgainstWallPower = 0.07;
 
     static double c2TurnsForHooksUp = -1.100; //was -.4365
-    static double c2ArmAngle = 80;     //was 60; on 3/20
+    static double c2ArmAnglePrep = 90; //get high enough to partially eject the note
+    static double c2ArmAngle = 60;     //was 80; on 3/28
     static double c2ShooterAngle = 103; //Was 95 on 3/20 bot tipping to far fwd
 
     public static Command deployClimb(RobotContainer r){
@@ -47,6 +48,10 @@ public class CmdClimb {
 
     public static Command deployClimb2(RobotContainer r){
         Command c = new SequentialCommandGroup(
+            new InstantCommand(() -> r.slappah.setAngle(c2ArmAnglePrep),r.slappah),
+            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 70),
+            new InstantCommand(() -> r.slappah.setTransferPosition(-3), r.slappah),
+            new WaitCommand(0.5),//TODO: make longer?
             new InstantCommand(() -> r.slappah.setAngle(c2ArmAngle), r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),
             new InstantCommand(() -> r.shooter.setAngle(c2ShooterAngle), r.shooter),
@@ -129,6 +134,7 @@ public class CmdClimb {
         return climb;
     }
 
+    //note this is flipped now as we drive the note up to score
     public static Command shootTrap(RobotContainer r){
         /*Command shoot = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setTransferPower(-1), r.slappah), //score into the trap
@@ -136,7 +142,7 @@ public class CmdClimb {
             new InstantCommand(() -> r.slappah.setTransferPower(0), r.slappah),
             new WaitUntilCommand(r.inputs.shootTriggerSWH.negate())
         );*/
-        Command shoot = new RunCommand(() -> r.slappah.setTransferPower(-1), r.slappah)
+        Command shoot = new RunCommand(() -> r.slappah.setTransferPower(1), r.slappah)
                     .finallyDo(() -> r.slappah.setTransferPower(0));
 
         shoot.setName("Trap Score");
@@ -144,7 +150,7 @@ public class CmdClimb {
     }
 
     public static Command unshootTrap(RobotContainer r){
-        Command unshoot = new RunCommand(() -> r.slappah.setTransferPower(1), r.slappah)
+        Command unshoot = new RunCommand(() -> r.slappah.setTransferPower(-1), r.slappah)
                     .finallyDo(() -> r.slappah.setTransferPower(0));;
 
         unshoot.setName("Unshoot Trap");

@@ -184,15 +184,15 @@ public class RobotContainer {
     inputs.shootTriggerSWH
         .and(new Trigger(() -> state.climbDeploy == ClimbState.HOOKED))
         .onTrue(CmdClimb.climb(this));
-
-    inputs.shootTriggerSWH
-        .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
-        .whileTrue(CmdClimb.shootTrap(this));
     */
+    inputs.shootTriggerSWH
+        .and(new Trigger(()-> state.climbDeploy == ClimbState.DEPLOYED))
+        .whileTrue(CmdClimb.shootTrap(this));
+    
 
     //unshooot trap
     inputs.gatherTriggerSWE
-        .and(new Trigger(() -> state.climbDeploy == ClimbState.CLIMBED))
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
         .whileTrue(CmdClimb.unshootTrap(this));
 
     
@@ -429,7 +429,8 @@ public class RobotContainer {
 
         case TEST:
           drive.k.dontFlip = false;
-          autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
+          //autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraight", this);
+          autonCommand = ChoreoAuto.getPathPlannerAuto("TestStraightFast", this);
           //autonCommand = ChoreoAuto.getPathPlannerAuto("TestArc", this);
           //autonCommand = ChoreoAuto.getChoreoPath("TestArcSpin", this);
           break;

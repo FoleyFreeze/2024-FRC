@@ -74,12 +74,13 @@ public class Slappah extends SubsystemBase {
     }
 
     public void setAngle(double position){
-        angleSetpoint = position + angleJog;
-        io.setPosition(position);
+        angleSetpoint = position;
+        io.setPosition(position + angleJog);
     }
 
     public void jogAngle(double jog){
         angleJog += jog;
+        System.out.println("Arm Angle Jog is: " + angleJog);
         setAngle(angleSetpoint);
     }
 

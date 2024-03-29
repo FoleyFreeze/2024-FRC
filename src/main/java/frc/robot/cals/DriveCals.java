@@ -51,7 +51,7 @@ public class DriveCals {
     private double wheelLocationY = wheelWidth / 2.0;
 
     public double maxWheelSpeed = Units.feetToMeters(14);
-    public double kA = 0;//0.1; //Acceleration feedfoward constant TODO: Cal this
+    public double kA = 0.02; //Acceleration feedfoward constant (units are percent per meter/sec/sec)
     
     //TODO: current limits
 
@@ -69,7 +69,7 @@ public class DriveCals {
     double driveRatio = 14 / 50.0 * 28 / 16.0 * 15 / 45.0; //mk4i L3
     double driveCurrLim1 = 65;//TODO:go back to 60+ for good batteries
     double driveCurrLim2 = 85;
-    double driveDiameter = Units.inchesToMeters(4);
+    double driveDiameter = Units.inchesToMeters(4-0.14);
     double conversionFactor = driveRatio * Math.PI * driveDiameter;
 
     public double fieldModePwr = 1.00;

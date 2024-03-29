@@ -103,7 +103,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         //always init with brakes off
-        m_robotContainer.drive.setBrake(false);
+        //actually use brakes in auto
+        m_robotContainer.drive.setBrake(true);
         m_robotContainer.drive.setSwerveBrake(true);
         m_robotContainer.climber.setBrakes(true);
 
