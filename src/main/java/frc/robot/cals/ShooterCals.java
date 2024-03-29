@@ -33,7 +33,7 @@ public class ShooterCals {
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 
     public double startAngle = 55;
-    public double homePosition = 35;
+    public double homePosition = 40;
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 16)
                                         .setBrakeMode(true)
