@@ -49,8 +49,8 @@ public class CmdAuton {
 
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
     static double driveToNoteThreshFar = 0;//Units.inchesToMeters(36);
-    static double driveToNoteThresh2 = 0;//Units.inchesToMeters(36);
-    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5);//we shoot a bit right, so compensate left
+    static double driveToNoteThresh2 = Units.inchesToMeters(36);
+    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 + 1.25);//we shoot a bit right, so compensate left
 
     static boolean fastCloseNoteShots = false;
     static double fastDistToNoteThresh = Units.inchesToMeters(36);
@@ -387,10 +387,13 @@ public class CmdAuton {
 
             // ----------- Pathfind to Note -------------
             Translation2d noteLocation = Locations.notes[currNote - 1];
-            Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
+            //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
+            //point at the speaker instead of the start
+            Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
             //offset the note 1/3 robot len in the direction we will approach from
             Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
-            Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle());
+            Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
+            //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
 
             Command pathFindingCommand = AutoBuilder.pathfindToPose(
                 noteTargetPose,
@@ -439,9 +442,11 @@ public class CmdAuton {
                 if(nextNote < 6){
                     //if the next note doesnt exist or is deep, shoot where you are
                     shootLoc = noteLocation;
-                    Translation2d toSpeaker = Locations.tagSpeaker.minus(shootLoc);
+                    
+                    //Forget this offset for now, the same position should work since it should be speaker aligned now
+                    //Translation2d toSpeaker = Locations.tagSpeaker.minus(shootLoc);
                     //since we need to move to turn, move a bit towards the speaker
-                    shootLoc = noteLocation.plus(new Translation2d(Units.inchesToMeters(6), toSpeaker.getAngle()));
+                    //shootLoc = noteLocation.plus(new Translation2d(Units.inchesToMeters(6), toSpeaker.getAngle()));
                 } else {
                     int shootIdx = shootPositionTable[currNote-6][nextNote-6];
                     shootLoc = Locations.shootingPositions[shootIdx];
