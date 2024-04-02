@@ -33,7 +33,7 @@ public class CmdClimb {
     static double c2WinchTurnsToFinish = 1.65;
     static double c2ArmAnglePrep = 100; //get high enough to partially eject the note
     static double c2ArmAngleEnd = 100;
-    static double c2ArmAngle = 60;     //was 80; on 3/28
+    static double c2ArmAngle = 65;     //was 80; on 3/28
     static double c2ShooterAngle = 103; //Was 95 on 3/20 bot tipping to far fwd
 
     public static Command deployClimb(RobotContainer r){
@@ -54,7 +54,7 @@ public class CmdClimb {
         Command c = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setAngle(c2ArmAnglePrep),r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 80),
-            new InstantCommand(() -> r.slappah.setTransferPosition(-4), r.slappah),
+            new InstantCommand(() -> r.slappah.setTransferPosition(-5), r.slappah),
             new WaitCommand(0.75),//TODO: make longer?
             new InstantCommand(() -> r.slappah.setAngle(c2ArmAngle), r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),

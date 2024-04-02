@@ -23,7 +23,7 @@ public class VisionCals {
     public Pose3d tagCamLocation = new Pose3d(new Translation3d(
                                                             Units.inchesToMeters(-13.25),
                                                             Units.inchesToMeters(9.5),
-                                                            Units.inchesToMeters(18.5)
+                                                            Units.inchesToMeters(14.5)//moved lower
                                                             ),
                                                    new Rotation3d(
                                                             0,
@@ -31,4 +31,6 @@ public class VisionCals {
                                                             Math.PI
                                                             )
                                                     );
+
+    public boolean printDebugTagData = false;
 }

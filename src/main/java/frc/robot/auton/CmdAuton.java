@@ -48,7 +48,7 @@ public class CmdAuton {
                                                     
 
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
-    static double driveToNoteThreshFar = 0;//Units.inchesToMeters(36);
+    static double driveToNoteThreshFar = Units.inchesToMeters(36);
     static double driveToNoteThresh2 = Units.inchesToMeters(36);
     public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 + 1.25);//we shoot a bit right, so compensate left
 

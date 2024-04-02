@@ -175,24 +175,27 @@ public class Vision extends SubsystemBase{
                 //first check height vs reality to reject incorrect heights
                 Optional<Pose3d> fieldTagPose = Locations.tagLayout.getTagPose(tag.tagId);
                 if(!fieldTagPose.isPresent()) {
-                    //System.out.println("Tag: " + tag.tagId + " does not exist");
+                    if(k.printDebugTagData) System.out.println("Tag: " + tag.tagId + " does not exist");
                     badIdErr++;
-                    Logger.recordOutput("Vision/ErrorBadId", badIdErr);
+                    Logger.recordOutput("Vision/Error/BadIdCount", badIdErr);
+                    Logger.recordOutput("Vision/Error/LastBadId", tag.tagId);
                     break;
                 } 
 
                 double targetHeight = fieldTagPose.get().getZ();
-                if(Math.abs(targetHeight - rawRobotPose.getZ()) > Units.inchesToMeters(4)){
-                    //System.out.println("Tag height doesn't match the field id:" + tag.tagId + " height: " + Units.metersToInches(rawRobotPose.getZ()));
+                if(Math.abs(targetHeight - rawRobotPose.getZ()) > Units.inchesToMeters(8)){
+                    if(k.printDebugTagData) System.out.println("Tag height doesn't match the field id:" + tag.tagId + " height: " + Units.metersToInches(rawRobotPose.getZ()));
                     badHeightErr++;
-                    Logger.recordOutput("Vision/ErrorBadHeight", badHeightErr);
+                    Logger.recordOutput("Vision/Error/BadHeightCount", badHeightErr);
+                    Logger.recordOutput("Vision/Error/LastBadHeightDelta", Math.abs(targetHeight - rawRobotPose.getZ()));
                     break;
                 }
 
                 if(tag.transX < 0){
-                    //System.out.println("Tag is located behind the camera?!? id: " + tag.tagId + " x: " + Units.metersToInches(tag.transX));
+                    if(k.printDebugTagData) System.out.println("Tag is located behind the camera?!? id: " + tag.tagId + " x: " + Units.metersToInches(tag.transX));
                     badXErr++;
-                    Logger.recordOutput("Vision/ErrorBadDist", badXErr);
+                    Logger.recordOutput("Vision/Error/BadDistCount", badXErr);
+                    Logger.recordOutput("Vision/Error/LastBadDist", tag.transX);
                     break;
                 }
 

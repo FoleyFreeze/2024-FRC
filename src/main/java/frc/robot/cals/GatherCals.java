@@ -9,7 +9,7 @@ public class GatherCals {
     //public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 14)
     public MotorCal topGather = new MotorCal(TypeMotor.SPARK, 7)
         .setRatio(0.5)
-        .setCurrLim(40, 60)
+        .setCurrLim(60, 80)
         .invert()
         .setRampRate(0.1);
     
