@@ -392,8 +392,11 @@ public class CmdAuton {
             //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
             //point at the speaker instead of the start
             Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
+
             //offset the note 1/3 robot len in the direction we will approach from
-            Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
+            //Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
+            Translation2d targetLocation = noteLocation;
+            
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
 
@@ -465,11 +468,13 @@ public class CmdAuton {
             //dont forget that the BACK of the robot needs to face the speaker
             System.out.println("find best shoot loc for note " + currNote);
             Translation2d shootLoc;
+            boolean shootAtNoteLoc = false;
             if(currNote > 5){
                 //if this note and the next are close, use the table for the best shoot spot 
                 if(nextNote < 6){
                     //if the next note doesnt exist or is deep, shoot where you are
                     shootLoc = noteLocation;
+                    shootAtNoteLoc = true;
                     
                     //Forget this offset for now, the same position should work since it should be speaker aligned now
                     //Translation2d toSpeaker = Locations.tagSpeaker.minus(shootLoc);
@@ -500,9 +505,13 @@ public class CmdAuton {
             Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset));
 
             double extraShootDist = 0;
-            if(currNote < 6){
-                //extraShootDist = Units.inchesToMeters(9);
-                //System.out.println("offsetting shoot dist 9in for note: " + currNote);
+            if(shootAtNoteLoc){
+                //offset back for the note shots so the angle is lower 
+                extraShootDist = Units.inchesToMeters(24);
+                System.out.println("offsetting shoot dist 18in for note: " + currNote);
+            } else if(shootLoc == Locations.shootingPositions[2]){
+                extraShootDist = Units.inchesToMeters(18);
+                System.out.println("offsetting shoot dist 18in for note: " + currNote);
             }
             
             pathFindingCommand = AutoBuilder.pathfindToPose(

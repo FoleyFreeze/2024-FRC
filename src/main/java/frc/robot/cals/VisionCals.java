@@ -25,11 +25,11 @@ public class VisionCals {
     public Pose3d tagCamLocation = new Pose3d(new Translation3d(
                                                             Units.inchesToMeters(-13.25),
                                                             Units.inchesToMeters(9.5),
-                                                            Units.inchesToMeters(14.5)//moved lower
+                                                            Units.inchesToMeters(15.0)//moved lower
                                                             ),
                                                    new Rotation3d(
                                                             0,
-                                                            Math.toRadians(-29),
+                                                            Math.toRadians(-26),
                                                             Math.PI
                                                             )
                                                     );

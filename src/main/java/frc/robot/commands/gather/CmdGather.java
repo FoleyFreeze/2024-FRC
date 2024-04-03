@@ -50,7 +50,11 @@ public class CmdGather {
         return c;
     }
 
-    public static Command gather (RobotContainer r){
+    public static Command gather(RobotContainer r){
+        return gather(r, false);
+    }
+
+    public static Command gather(RobotContainer r, boolean isAuton){
         /*
         //start spinning things and wait for start up current to decay
         Command c = new WaitCommand(startupTime)
@@ -70,13 +74,25 @@ public class CmdGather {
         Timer currTimer = new Timer();
         currTimer.start();
 
+        Command initialCommand;
+        if(isAuton){
+            //auton does not call goHome as that would stop the shooter spinning
+            initialCommand = new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                     r.shooter.setAngle(r.shooter.k.homePosition);
+                                                     r.slappah.setAngle(0);
+                                                    }, r.gather, r.shooter, r.slappah);
+        } else {
+            //teleop does call goHome
+            initialCommand = new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
+                                                     r.shooter.goHome();
+                                                     r.slappah.setAngle(0);
+                                                    }, r.gather, r.shooter, r.slappah);
+        }
+
         Command c = new SequentialCommandGroup(
             //start spinning things and wait for start up current to decay
             new WaitCommand(startupTime)
-                .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
-                                                     r.shooter.goHome();
-                                                     r.slappah.setAngle(0);
-                                                    }, r.gather, r.shooter, r.slappah)),
+                .deadlineWith(initialCommand),
             //detect when the piece has made it to the gate wheel
             new ParallelDeadlineGroup(
                 new WaitUntilCommand(() -> r.gather.inputs.proxSensor),
@@ -86,14 +102,14 @@ public class CmdGather {
                     new InstantCommand(() -> currTimer.reset()),
                     new WaitUntilCommand(() -> {
                                                 if(r.gather.inputs.intakeCurrentAmps > 20){
-                                                    return currTimer.hasElapsed(0.5);
+                                                    return currTimer.hasElapsed(0.75);
                                                 } else {
                                                     currTimer.reset();
                                                     return false;
                                                 }
                                                }),
                     new InstantCommand(() -> r.gather.setGatherPower(reverseIntakePower, reverseGatePower)),
-                    new WaitCommand(0.15),
+                    new WaitCommand(0.10),
                     new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower)),
                     new InstantCommand(() -> currTimer.reset())
                 )
@@ -130,7 +146,7 @@ public class CmdGather {
                     new SequentialCommandGroup(
                         new WaitCommand(startupTime),
                         new WaitUntilCommand(() -> r.gather.getCurrent() > 12),
-                        new WaitCommand(.100) //wait 1/10s to intake note after gath spike
+                        new WaitCommand(0.10) //wait 1/10s to intake note after gath spike
                     )
                 ),
                 //then immediately return control to the driver
@@ -142,8 +158,8 @@ public class CmdGather {
         return c;
     }
 
-    public static Command autonGather (RobotContainer r){
-        Command c = new SequentialCommandGroup(
+    public static Command autonGather(RobotContainer r){
+        /*Command c = new SequentialCommandGroup(
             //start spinning things and wait for start up current to decay
             new WaitCommand(startupTime)
                 .deadlineWith(new RunCommand( () -> {r.gather.setGatherPower(intakePower, gatePower);
@@ -161,6 +177,9 @@ public class CmdGather {
 
         c.setName("Auto Gather");
         return c;
+        */
+
+        return gather(r, true);
     }
 
     public static Command unGather(RobotContainer r){
