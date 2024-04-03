@@ -57,6 +57,9 @@ public class CmdAuton {
     static double fastDistToBotThreshClose = Units.inchesToMeters(0);
     static double fastDistToBotThreshFar = Units.inchesToMeters(48);
 
+    static boolean dodgeCloseNotes = false;//TODO: try this
+    static Rotation2d forwardDir;
+
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
                                        StartLocationType startLocation,
@@ -78,6 +81,12 @@ public class CmdAuton {
         //might as well save the 20ms of time when wait is zero
         if(waitTime > 0){
             fullSequence.addCommands(new WaitCommand(waitTime));
+        }
+
+        if(isBlueAlliance()){
+            forwardDir = new Rotation2d();
+        } else {
+            forwardDir = Rotation2d.fromDegrees(180);
         }
         
         if(fastCloseNoteShots){
@@ -109,13 +118,6 @@ public class CmdAuton {
         ));
         
         Pose2d startPose = getStartPose(r, startLocation);
-
-        Rotation2d forwardDir;
-        if(isBlueAlliance()){
-            forwardDir = new Rotation2d();
-        } else {
-            forwardDir = Rotation2d.fromDegrees(180);
-        }
 
         //for each note
         int prevNote = 0;
@@ -395,11 +397,37 @@ public class CmdAuton {
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
 
-            Command pathFindingCommand = AutoBuilder.pathfindToPose(
-                noteTargetPose,
-                constraints,
-                0.0, 0.0
-            ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+            Command pathFindingCommand;
+            if(i == 0 && currNote < 6 && dodgeCloseNotes
+                    && (startLocation == StartLocationType.AMP_SIDE_SPEAKER
+                    || startLocation == StartLocationType.SPEAKER_CENTER)){
+                //if the first note is far, and we are starting amp side
+                //attempt to dodge it by going between the 2 close notes
+                Translation2d inbetweenNoteLoc;
+                if(isBlueAlliance()){
+                    //blue side is notes 6 and 7
+                    inbetweenNoteLoc = Locations.blueNoteF.plus(Locations.blueNoteG).div(2);
+                } else {
+                    //red side is notes 7 and 8
+                    inbetweenNoteLoc = Locations.redNoteG.plus(Locations.redNoteH).div(2);
+                }
+                pathFindingCommand = AutoBuilder.pathfindToPose(
+                    new Pose2d(inbetweenNoteLoc, forwardDir),
+                    constraints,
+                    constraints.getMaxVelocityMps(), 0.0
+                ).andThen(AutoBuilder.pathfindToPose(
+                    noteTargetPose,
+                    constraints,
+                    0.0, 0.0
+                )).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+
+            } else {
+                pathFindingCommand = AutoBuilder.pathfindToPose(
+                    noteTargetPose,
+                    constraints,
+                    0.0, 0.0
+                ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+            }
 
             //if close notes
             double driveToNoteThresh;
