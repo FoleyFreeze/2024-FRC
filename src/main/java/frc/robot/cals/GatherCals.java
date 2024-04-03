@@ -15,10 +15,10 @@ public class GatherCals {
     
     public MotorCal gateMotor = new MotorCal(TypeMotor.SPARK, 12)
         .setRatio(1)
-        .setCurrLim(40)
-        .setPIDF(0.3, 0.001, 0, 0)
+        .setCurrLim(60)
+        .setPIDF(0.4, 0.001, 0, 0)
         .setIZone(0.25)
-        .setPIDPwrLim(0.2)
+        .setPIDPwrLim(0.4)
         .setRampRate(0.1)
         .setBrakeMode(true);
 }

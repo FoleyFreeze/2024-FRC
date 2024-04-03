@@ -35,7 +35,7 @@ public class CmdDriveNoteTraj extends Command{
     //only recalc path if the note has moved more than x distance
     double recalcError = Units.inchesToMeters(12);
     //only recalc path if the note is further away than x distance
-    double recalcBounds = Units.inchesToMeters(12);
+    double recalcBounds = Units.inchesToMeters(24);
 
     Command driveCommand;
 

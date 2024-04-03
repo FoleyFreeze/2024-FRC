@@ -1,5 +1,6 @@
 package frc.robot.commands.gather;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -18,8 +19,8 @@ public class CmdGather {
     static double extraIntakeTime = 0.0;
 
     static double backwardsGatherPower = -.13;
-    static double intakePower = 0.75; //was 0.5;//0.4
-    static double gatePower = 0.25;//0.15
+    static double intakePower = 0.5; //was 0.75;//0.4
+    static double gatePower = 0.3;//0.25
     static double reverseIntakePower = -0.6;//0.5
     static double reverseGatePower = -0.5;//0.3
 
@@ -65,6 +66,9 @@ public class CmdGather {
         c = c.andThen(new WaitCommand(extraIntakeTime))
             .finallyDo(() -> r.gather.setIntakePower(0));
         */
+        //timer for tracking time at high current
+        Timer currTimer = new Timer();
+        currTimer.start();
 
         Command c = new SequentialCommandGroup(
             //start spinning things and wait for start up current to decay
@@ -74,8 +78,26 @@ public class CmdGather {
                                                      r.slappah.setAngle(0);
                                                     }, r.gather, r.shooter, r.slappah)),
             //detect when the piece has made it to the gate wheel
-            new WaitUntilCommand(() -> r.gather.inputs.proxSensor)
-                .finallyDo(() -> r.gather.setGatePower(0)),
+            new ParallelDeadlineGroup(
+                new WaitUntilCommand(() -> r.gather.inputs.proxSensor),
+                //while we have not sensed a note, monitor intake current
+                //and briefly back up the gatherer if stalled for too long
+                new SequentialCommandGroup(
+                    new InstantCommand(() -> currTimer.reset()),
+                    new WaitUntilCommand(() -> {
+                                                if(r.gather.inputs.intakeCurrentAmps > 20){
+                                                    return currTimer.hasElapsed(0.5);
+                                                } else {
+                                                    currTimer.reset();
+                                                    return false;
+                                                }
+                                               }),
+                    new InstantCommand(() -> r.gather.setGatherPower(reverseIntakePower, reverseGatePower)),
+                    new WaitCommand(0.15),
+                    new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower)),
+                    new InstantCommand(() -> currTimer.reset())
+                )
+            ).finallyDo(() -> r.gather.setGatePower(0)),
             //move the piece to it's final holding position
             new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
                                       r.state.hasNote = true;}, r.gather),

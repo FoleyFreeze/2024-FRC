@@ -154,9 +154,9 @@ public class Inputs extends SubsystemBase {
         //right triggr 3pos switch 
         //up is layup mid is freethrow down is threepoint
         if(SWGLo.getAsBoolean()){
-            return 1;
+            return 2;
         } else if(SWGHi.getAsBoolean()){
-            return 0;//TODO: back to 0 if we want a real third shooting location
+            return 0;
         }else {
             return 1;
         }

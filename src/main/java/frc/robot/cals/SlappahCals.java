@@ -17,7 +17,7 @@ public class SlappahCals {
 
     public MotorCal transferMotor = new MotorCal(TypeMotor.SPARK, 3)
                                     .setBrakeMode(true)
-                                    .setCurrLim(20)
+                                    .setCurrLim(30)
                                     //.setRampRate(0.1)
                                     .setPIDF(0.2, 0.00000, 0.0, 0)
                                     .setRatio(1 / 3.0)  //was 4.0 before 3/21/24

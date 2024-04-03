@@ -19,6 +19,8 @@ public class VisionCals {
 
     public Pose2d camLocation = new Pose2d(Locations.robotLength/2, 0, Rotation2d.fromDegrees(0)); 
                                     //originally 13in, but we are now dist from bumper so botlen/2 it is
+                                    
+    public double maxNoteDist = Units.feetToMeters(10);
 
     public Pose3d tagCamLocation = new Pose3d(new Translation3d(
                                                             Units.inchesToMeters(-13.25),
@@ -27,7 +29,7 @@ public class VisionCals {
                                                             ),
                                                    new Rotation3d(
                                                             0,
-                                                            Math.toRadians(-28),
+                                                            Math.toRadians(-29),
                                                             Math.PI
                                                             )
                                                     );

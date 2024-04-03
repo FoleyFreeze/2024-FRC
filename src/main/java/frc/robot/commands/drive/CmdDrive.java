@@ -48,6 +48,8 @@ public class CmdDrive extends Command {
     
     @Override
     public void execute(){
+        r.state.autoDrive = false;
+
         ChassisSpeeds speed = r.inputs.getChassisSpeeds();
         if(r.state.climbDeploy != ClimbState.NONE){
             //give the driver reversed robot oriented drive
@@ -99,7 +101,7 @@ public class CmdDrive extends Command {
             inPodiumAngleControl = false;
             inCameraAngleControl = false;
 
-        } else if(r.state.isPrime && r.inputs.getFixedTarget() == 1){
+        } else if(r.state.isPrime && r.inputs.getFixedTarget() == 2){
             //if we are priming for a podium shot, go to the right angle
 
             if(!inPodiumAngleControl){
@@ -191,6 +193,7 @@ public class CmdDrive extends Command {
 
     @Override
     public void end(boolean interrupted){
+        r.state.autoDrive = true;//assume we are being interrupted for autodrive
         r.drive.swerveDrivePwr(new ChassisSpeeds(), false);
     }
 }

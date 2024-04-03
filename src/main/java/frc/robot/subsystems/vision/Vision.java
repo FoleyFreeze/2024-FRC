@@ -107,11 +107,11 @@ public class Vision extends SubsystemBase{
     }
 
     public boolean hasNoteImage(){
-        return inputs.now - inputs.noteData.timeStamp < k.maxNoteAge;
+        return inputs.now - inputs.noteData.timeStamp < k.maxNoteAge && lastNoteLocation != null;
     }
 
     public boolean hasNewNoteImage(){
-        return !inputs.noteData.isProcessed && hasNoteImage();
+        return !inputs.noteData.isProcessed && inputs.now - inputs.noteData.timeStamp < k.maxNoteAge;
     }
 
     public boolean hasTagImage(){
@@ -136,6 +136,10 @@ public class Vision extends SubsystemBase{
         if(hasNewNoteImage()){
             lastNoteLocation = calcNoteLocation();
             Logger.recordOutput("Vision/fieldRelNoteLocation", lastNoteLocation);
+            if(r.drive.getPose().getTranslation().getDistance(lastNoteLocation) > k.maxNoteDist){
+                //ignore the note image if its too far away
+                lastNoteLocation = null;
+            }
         } else {
             //Logger.recordOutput("Vision/fieldRelNoteLocation", zeroT2D);
         }

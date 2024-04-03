@@ -24,11 +24,11 @@ public class ShooterCals {
     public double minFixedAngle = 22;
     public double maxFixedSpeed = 10000;
     public double minFixedSpeed = 500;
-    public double fixedAngle[] = {57, 35, 35}; // was 36.7, 36.7};//note far shot is cal'd out in inputs
-    public double fixedRPM[] = {5500, 6000, 6000};
+    public double fixedAngle[] = {57, 55, 35}; // was 36.7, 36.7};//note far shot is cal'd out in inputs
+    public double fixedRPM[] = {5500, 5000, 6000}; //note middle is the pass shot now
 
     public double ctrlBoardShootAngle = 55;
-    public double ctrlBoardShootSpeed = 4200;
+    public double ctrlBoardShootSpeed = 5000;
  
     public String fixedName[] = {"layup", "freethrow", "threepoint"};
 

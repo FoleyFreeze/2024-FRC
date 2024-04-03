@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.slappah.CmdTransfer;
 import frc.robot.subsystems.RoboState.ClimbState;
@@ -48,6 +49,15 @@ public class CmdClimb {
             CmdTransfer.end(r),
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.NONE)
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public static Command undeployClimb2(RobotContainer r){
+        Command c = new SequentialCommandGroup(
+            //new InstantCommand(() -> )
+        );
+
+        c.setName("UndeployClimb2");
+        return c;
     }
 
     public static Command deployClimb2(RobotContainer r){

@@ -204,7 +204,11 @@ public class Lights extends SubsystemBase{
         } else if(r.state.hasNote){
             //has note
             skittles2(garfield, false, r.state.isPrime);
-            
+
+        } else if(r.state.autoDrive){
+            //is auto driving to note or something else
+            skittles2(belle, false);
+
         } else { //no note
             skittles2(beast, false);
         }
@@ -230,8 +234,8 @@ public class Lights extends SubsystemBase{
     
     public int testStage = 0;
     public void incTestStage(){
-        System.out.println("inc test stage: " + testStage);
         testStage++;
+        System.out.println("inc test stage: " + testStage);
     }
 
     public void testMode(){

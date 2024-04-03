@@ -18,6 +18,7 @@ public class RoboState {
     public boolean isPrime;
     public boolean hasNote;//in shooter or arm
     public boolean hasTransfer; //in arm, probably for amp
+    public boolean autoDrive;//driver does not have control of the robot
     public ClimbState climbDeploy = ClimbState.NONE; //climb deployed, but maybe not in arm yet
 
 
