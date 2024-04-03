@@ -53,7 +53,12 @@ public class CmdClimb {
 
     public static Command undeployClimb2(RobotContainer r){
         Command c = new SequentialCommandGroup(
-            //new InstantCommand(() -> )
+            new InstantCommand(() -> r.climber.setWinchPosition(0)),
+            new WaitCommand(0.5),
+            new InstantCommand(() -> r.shooter.goHome()),
+            new WaitUntilCommand(() -> r.shooter.inputs.anglePosition < 60),
+            new InstantCommand(() -> r.slappah.setAngle(0)),
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.NONE)
         );
 
         c.setName("UndeployClimb2");

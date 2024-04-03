@@ -154,7 +154,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.fixedPrime(this));*/
 
     inputs.shootTriggerSWH
-        .and(inputs.SWBHi.negate()) //TODO: add when camera shoot exists
+        //.and(inputs.SWBHi.negate()) //TODO: add when camera shoot exists
         //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
@@ -163,11 +163,13 @@ public class RobotContainer {
         .onTrue(CMDShoot.simpleShoot(this));
         //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
     
+    /* //TODO: add when tag camera works right 
     inputs.shootTriggerSWH
       .and(inputs.SWBHi)
       .and(state.climbDeployT.negate())
       .and(state.hasTransferT.negate())
       .onTrue(CMDShoot.visionShoot(this));
+    */
 
     //climb commands
     inputs.shootTriggerSWH
@@ -227,7 +229,7 @@ public class RobotContainer {
         .and(inputs.shiftB6)
         .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
         //.and(state.hasTransferT.negate())
-        .onTrue(CmdClimb.undeployClimb(this));
+        .onTrue(CmdClimb.undeployClimb2(this));
 
     inputs.climbWinchB2
         //.and(state.climbDeployT.or(new Trigger(()->slappah.inputs.anglePosition > 45)))
