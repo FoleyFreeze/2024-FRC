@@ -2,6 +2,8 @@ package frc.robot.auton;
 
 import java.util.List;
 
+import javax.tools.JavaFileManager.Location;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -488,6 +490,20 @@ public class CmdAuton {
             } else{
                 //currNote is far
                 shootLoc = getBestShootLocation(Locations.shootingPositions, noteLocation, nextNoteLoc);
+
+                //override the speaker side notes to use the easiest shoot position
+                if(isBlueAlliance()){
+                    //blue
+                    if(currNote == 1 || currNote == 2){
+                        shootLoc = Locations.shootingPositions[2];
+                    }
+                } else {
+                    //red
+                    if(currNote == 4 || currNote == 5){
+                        shootLoc = Locations.shootingPositions[2];
+                    }
+                }
+                
             }
             Translation2d vecToSpeaker = Locations.tagSpeaker.minus(shootLoc);
             Rotation2d targetAngle = vecToSpeaker.getAngle().plus(Rotation2d.fromDegrees(180));
