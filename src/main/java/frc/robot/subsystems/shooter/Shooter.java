@@ -20,8 +20,9 @@ public class Shooter extends SubsystemBase {
     double angleSetpoint;
     public double rpmSetpoint;
 
-    double speedJog;
-    double angleJog;
+    public double speedJog;
+    public double speedJogLob;
+    public double angleJog;
 
     public Shooter (RobotContainer r, ShooterCals k){
 
@@ -35,6 +36,7 @@ public class Shooter extends SubsystemBase {
         }
 
         speedJog = k.initSpeedJog;
+        speedJogLob = 0;
         angleJog = k.initAngleJog;
 
         //TODO: see if this works here
@@ -60,10 +62,17 @@ public class Shooter extends SubsystemBase {
 
     public void jogSpeed(double delta){
         speedJog += delta;
+        System.out.println("Shoot Speed Jog is: " + speedJog);
+    }
+
+    public void jogLobSpeed(double delta){
+        speedJogLob += delta;
+        System.out.println("Shoot Lob Speed Jog is: " + speedJogLob);
     }
 
     public void jogAngle(double delta){
         angleJog += delta;
+        System.out.println("Shoot Angle Jog is: " + angleJog);
     }
 
     public void setAngle(double angle){
@@ -85,8 +94,13 @@ public class Shooter extends SubsystemBase {
     public void fixedPrime(){
         //TODO: go back to this when done testing
         int index = r.inputs.getFixedTarget();
+        
+        //jog lob shots independently
+        double jog = speedJog;
+        if(index == 1) jog = speedJogLob;
+
         setAngle(k.fixedAngle[index] + angleJog); //COMMENT this out to tune shooter with dials on Flysky
-        setRPM(k.fixedRPM[index] + speedJog);     //COMMENT this out to tune shooter with dials on Flysky
+        setRPM(k.fixedRPM[index] + jog);     //COMMENT this out to tune shooter with dials on Flysky
 
         //setAngle(getTestAngle()); //UNCOMMENT this for tuning shooter with dials on FlySky
         //setRPM(getTestSpeed());   //UNCOMMENT this for tuning shooter with dials on FlySky

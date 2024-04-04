@@ -62,7 +62,6 @@ public class RobotContainer {
   public Vision vision;
   public Lights lights;
   public RoboState state;
-
   
   public enum AutonType{
     DO_NOTHING, PREGEN, DENIAL, SELECTABLE, TEST
@@ -96,7 +95,7 @@ public class RobotContainer {
     slappah = new Slappah(this, new SlappahCals());
     climber = new Climber(this, new ClimberCals());
     lights = new Lights(this);
-    state = new RoboState();
+    state = new RoboState(this);
 
     configureBindings();
 
@@ -295,15 +294,30 @@ public class RobotContainer {
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
 
+    Trigger isLobShotTrigger = new Trigger(() -> inputs.getFixedTarget() == 1);
     inputs.shiftB6
         .and(inputs.shootAngleJogUp)
+        .and(isLobShotTrigger.negate())
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
 
     inputs.shiftB6
         .and(inputs.shootAngleJogDn)
+        .and(isLobShotTrigger.negate())
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+
+    inputs.shiftB6
+        .and(inputs.shootAngleJogUp)
+        .and(isLobShotTrigger)
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand(() -> shooter.jogLobSpeed(shooter.k.jogSpeedIncriment)));
+
+    inputs.shiftB6
+        .and(inputs.shootAngleJogDn)
+        .and(isLobShotTrigger)
+        .and(state.hasTransferT.negate())
+        .onTrue(new InstantCommand(() -> shooter.jogLobSpeed(-shooter.k.jogSpeedIncriment)));
     
     inputs.shiftB6
         .and(inputs.armAngleJogUp)

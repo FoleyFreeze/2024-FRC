@@ -33,7 +33,7 @@ public class Drive extends SubsystemBase{
     public DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
     FileIOInputsAutoLogged fileInputs = new FileIOInputsAutoLogged();
 
-    Wheel[] wheels;
+    public Wheel[] wheels;
     SwerveDriveKinematics kinematics;
     public SwerveDrivePoseEstimator odometry;
 

@@ -15,7 +15,7 @@ public class Wheel {
     WheelCal k;
 
     private final WheelIO io;
-    private final WheelIOInputsAutoLogged inputs = new WheelIOInputsAutoLogged();
+    public final WheelIOInputsAutoLogged inputs = new WheelIOInputsAutoLogged();
 
     SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.03, 0.13);
     PIDController driveFB = new PIDController(0.00, 0, 0);

@@ -19,7 +19,7 @@ public class Slappah extends SubsystemBase {
     double angleSetpoint;
     double transferSetPoint;
 
-    double angleJog = 0;
+    public double angleJog = 0;
 
     public Slappah (RobotContainer r, SlappahCals k){
         this.k = k;
