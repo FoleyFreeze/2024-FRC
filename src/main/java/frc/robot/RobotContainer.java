@@ -276,6 +276,11 @@ public class RobotContainer {
         .and(state.hasTransferT.negate())
         .onTrue(CMDShoot.simpleCtrlBoardShoot(this, inputs.shootBtnB1));
 
+    //score in amp anyways
+    inputs.shootBtnB1
+        .and(inputs.shiftB6)
+        .onTrue(CmdTransfer.scoreInAmp(this));
+
     //coast winch motors
     inputs.shiftB6
         .and(inputs.climbDeployB4)
@@ -284,6 +289,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true)
             .andThen(new PrintCommand("Winches in Coast Mode")));
 
+    /* removed shoot angle jog
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         .and(state.hasTransferT.negate())
@@ -293,6 +299,7 @@ public class RobotContainer {
         .and(inputs.shootAngleJogDn)
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+    */
 
     Trigger isLobShotTrigger = new Trigger(() -> inputs.getFixedTarget() == 1);
     inputs.shiftB6
@@ -337,12 +344,12 @@ public class RobotContainer {
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
-        .and(state.hasTransferT.or(state.climbDeployT))
+        //.and(state.hasTransferT.or(state.climbDeployT))
         .onTrue(new InstantCommand(() -> slappah.setTransferPosition(1)));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogDn)
-        .and(state.hasTransferT.or(state.climbDeployT))
+        //.and(state.hasTransferT.or(state.climbDeployT))
         .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-1)));
 
     inputs.shiftB6

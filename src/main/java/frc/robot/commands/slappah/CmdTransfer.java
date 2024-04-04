@@ -21,7 +21,7 @@ public class CmdTransfer {
     static double slapTransferPos = 5;//10
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
-    static double slapPreAmpPos = 90; // was on 3/20/2024 55;//90;
+    static double slapPreAmpPos = 65;//90; // was on 3/20/2024 55;//90;
     static double slapAmpScorePos = 108;
     static double slapPreTrapPos = 75;
     static double slapTrapScorePos = 108; //TODO: find actual number
@@ -51,7 +51,7 @@ public class CmdTransfer {
 
     //score
     static double scoreTransferPower = -1;
-    static double scoreWaitTime = 0.6;
+    static double scoreWaitTime = 1;//0.6;
     static double scoreAnglePower = 0.1;
 
     public static Command unTransferFull(RobotContainer r, Trigger t){

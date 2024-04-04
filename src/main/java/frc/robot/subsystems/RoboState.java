@@ -141,7 +141,7 @@ public class RoboState {
                                                                                r.drive.wheels[3].inputs.swerveTemp));
         gatherTempsEntry.setString(String.format("In:%.0f Gate:%.0f", r.gather.inputs.intakeTemp,
                                                                              r.gather.inputs.gateTemp));
-        shootTempsEntry.setString(String.format("Ang:%.0f T:%.0f B:%.0f", r.shooter.inputs.angleTemp,
+        shootTempsEntry.setString(String.format("A:%.0f T:%.0f B:%.0f", r.shooter.inputs.angleTemp,
                                                                                  r.shooter.inputs.shootTopTemp,
                                                                                  r.shooter.inputs.shootBottomTemp));
         slapTempsEntry.setString(String.format("Ang:%.0f Xfer:%.0f", r.slappah.inputs.angleTemp,

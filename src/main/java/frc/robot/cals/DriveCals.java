@@ -167,7 +167,7 @@ public class DriveCals {
         new PIDConstants(9, 0, 0.75),
         maxWheelSpeed,
         wheelBR.wheelLocation.getNorm(),
-        new ReplanningConfig()
+        new ReplanningConfig(true, true, 0.75, 0.25)
     );
 
     public boolean dontFlip = false;

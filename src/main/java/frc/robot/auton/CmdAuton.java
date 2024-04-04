@@ -510,7 +510,7 @@ public class CmdAuton {
                 extraShootDist = Units.inchesToMeters(24);
                 System.out.println("offsetting shoot dist 18in for note: " + currNote);
             } else if(shootLoc == Locations.shootingPositions[2]){
-                extraShootDist = Units.inchesToMeters(18);
+                extraShootDist = Units.inchesToMeters(9);
                 System.out.println("offsetting shoot dist 18in for note: " + currNote);
             }
             
