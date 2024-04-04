@@ -59,7 +59,7 @@ public class CmdAuton {
     static double fastDistToBotThreshClose = Units.inchesToMeters(0);
     static double fastDistToBotThreshFar = Units.inchesToMeters(48);
 
-    static boolean dodgeCloseNotes = false;//TODO: try this
+    static boolean dodgeCloseNotes = true;//TODO: try this
     static Rotation2d forwardDir;
 
     public static Command selectedAuto(RobotContainer r, 
