@@ -400,15 +400,15 @@ public class CmdAuton {
             Translation2d targetLocation = noteLocation;
             if(isBlueAlliance()){
                 if(currNote == 8){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(6)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
                 } else if(currNote == 6){
-                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(6)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
                 }
             } else {
                 if(currNote == 6){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(6)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
                 } else if(currNote == 8){
-                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(6)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
                 }
             }
 
@@ -562,11 +562,11 @@ public class CmdAuton {
             double extraShootDist = 0;
             if(shootAtNoteLoc){
                 //offset back for the note shots so the angle is lower 
-                extraShootDist = Units.inchesToMeters(6);
-                System.out.println("offsetting shoot dist 6in for note: " + currNote);
+                extraShootDist = Units.inchesToMeters(20);//24(low) -> 6 (high) -> 20
+                System.out.println("offsetting shoot dist 20in for note: " + currNote);
             } else if(shootLoc == Locations.shootingPositions[2]){
-                extraShootDist = Units.inchesToMeters(0);
-                System.out.println("offsetting shoot dist 0in for note: " + currNote);
+                extraShootDist = Units.inchesToMeters(3);//9(low) -> 0 (high) -> 3
+                System.out.println("offsetting shoot dist 3in for note: " + currNote);
             }
             
             pathFindingCommand = AutoBuilder.pathfindToPose(

@@ -33,7 +33,7 @@ public class CmdClimb {
     static double c2TurnsForHooksUp = -1.100; //was -.4365
     static double c2WinchTurnsToFinish = 1.65;
     static double c2ArmAnglePrep = 100; //get high enough to partially eject the note
-    static double c2ArmAngleEnd = 100;
+    static double c2ArmAngleEnd = 110;//100
     static double c2ArmAngle = 65;     //was 80; on 3/28
     static double c2ShooterAngle = 103; //Was 95 on 3/20 bot tipping to far fwd
 
