@@ -48,7 +48,7 @@ public class Locations {
     public static final Translation2d redNoteH = new Translation2d(fieldLength - Units.inchesToMeters(114), fieldWidth/2 + Units.inchesToMeters(57*2));
 
     //start locations
-    public static final Pose2d blueSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(60+1));
+    public static final Pose2d blueSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(60+2));
     public static final Pose2d blueCenterSide = new Pose2d(new Translation2d(blueSpeakerEdge + robotLength/2.0, blueNoteG.getY()), new Rotation2d());
     public static final Pose2d blueSourceSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2 - speakerSideEdgeLength).rotateBy(Rotation2d.fromDegrees(-60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()-speakerEdgeLength/2.0)), Rotation2d.fromDegrees(-60));
     public static final Pose2d blueAmp = new Pose2d(blueAutoLine - robotLength/2, fieldWidth - Units.inchesToMeters(17.75) - robotWidth/2, new Rotation2d());
