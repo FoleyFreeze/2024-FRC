@@ -472,6 +472,7 @@ public class RobotContainer {
     //log path data with advantage scope
     PathPlannerLogging.setLogActivePathCallback((path) -> {
         Logger.recordOutput("PathPlanner/ActivePath", path.toArray(new Pose2d[path.size()]));
+        drive.fullPath = path;
         drive.newPath = true;
     });
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {Logger.recordOutput("PathPlanner/CurrentPose", pose);

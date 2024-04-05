@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.tools.JavaFileManager.Location;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -398,6 +401,19 @@ public class CmdAuton {
             //offset the note 1/3 robot len in the direction we will approach from
             //Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
             Translation2d targetLocation = noteLocation;
+            if(isBlueAlliance()){
+                if(currNote == 8){
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(6)));
+                } else if(currNote == 6){
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(6)));
+                }
+            } else {
+                if(currNote == 6){
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(6)));
+                } else if(currNote == 8){
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(6)));
+                }
+            }
             
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
@@ -444,7 +460,12 @@ public class CmdAuton {
 
             //construct the complex pathfind to note and gather it with vision command
             Command noteCommand;
-            
+
+            if(currNote < 6){
+                //use the right pickup angle for the far notes
+                pathFindingCommand = pathFindingCommand.deadlineWith(setRotationOverride(r, noteTargetPose));
+            }
+
             noteCommand = pathFindingCommand
                 //until we are close to the note (and vision sees a note that close)
                 .until(() -> {var botLoc = r.drive.getPose().getTranslation();
@@ -550,6 +571,28 @@ public class CmdAuton {
         }
 
         return fullCommand;
+    }
+
+    public static Command setRotationOverride(RobotContainer r, Pose2d goal){
+        return new RunCommand(() -> {
+                                    int size = r.drive.fullPath.size();
+                                    if(size > 0){
+                                        int lastIdx = size - 1;
+                                        if(r.drive.fullPath.get(lastIdx).getTranslation().getDistance(goal.getTranslation()) < Units.inchesToMeters(6)){
+                                            Translation2d endPos = r.drive.fullPath.get(lastIdx).getTranslation();
+                                            int midIdx = lastIdx - size / 5;
+                                            Translation2d midPos = r.drive.fullPath.get(midIdx).getTranslation();
+                                            Rotation2d targetAngle = endPos.minus(midPos).getAngle();
+                                            RotationOverride.setTargetRotation(targetAngle);
+                                            Logger.recordOutput("PathPlanner/RotationOverride", targetAngle);
+                                            Logger.recordOutput("PathPlanner/RotationOverrideEn", true);
+                                        }
+                                    }
+                                    })
+                        .finallyDo(() -> {
+                            RotationOverride.disableRotation();
+                            Logger.recordOutput("PathPlanner/RotationOverrideEn", false);
+                        });
     }
 
     public static Command prime(RobotContainer r, double distance){

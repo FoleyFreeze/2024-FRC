@@ -1,5 +1,8 @@
 package frc.robot.subsystems.drive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.path.PathConstraints;
@@ -140,6 +143,7 @@ public class Drive extends SubsystemBase{
     public boolean newPath = false;
     public Pose2d currentPose = new Pose2d();
     public Pose2d targetPose = new Pose2d();
+    public List<Pose2d> fullPath = new ArrayList<>(0);
     public PIDConstants profilePID = new PIDConstants(0);
     public ChassisSpeeds prevFieldRelChassisSpeeds = new ChassisSpeeds();
     public PathConstraints profileConstraints = new PathConstraints(0, 0, 0, 0);
