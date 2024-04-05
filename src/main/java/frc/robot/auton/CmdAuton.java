@@ -443,7 +443,7 @@ public class CmdAuton {
                     0.0, 0.0
                 )).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
-            } else if(isBlueAlliance() && prevNote == 8 || !isBlueAlliance() && prevNote == 6) {
+            } else if(currNote < 6 && (isBlueAlliance() && prevNote == 8 || !isBlueAlliance() && prevNote == 6)) {
                 //if we just shot the podium note make sure we backup a bit
                 Pose2d backup = new Pose2d(
                                     Locations.notes[prevNote-1].plus(
@@ -562,11 +562,11 @@ public class CmdAuton {
             double extraShootDist = 0;
             if(shootAtNoteLoc){
                 //offset back for the note shots so the angle is lower 
-                extraShootDist = Units.inchesToMeters(24);
-                System.out.println("offsetting shoot dist 18in for note: " + currNote);
+                extraShootDist = Units.inchesToMeters(6);
+                System.out.println("offsetting shoot dist 6in for note: " + currNote);
             } else if(shootLoc == Locations.shootingPositions[2]){
-                extraShootDist = Units.inchesToMeters(9);
-                System.out.println("offsetting shoot dist 18in for note: " + currNote);
+                extraShootDist = Units.inchesToMeters(0);
+                System.out.println("offsetting shoot dist 0in for note: " + currNote);
             }
             
             pathFindingCommand = AutoBuilder.pathfindToPose(
