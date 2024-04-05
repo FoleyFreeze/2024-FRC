@@ -366,9 +366,6 @@ public class CmdAuton {
     private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation){
         SequentialCommandGroup fullCommand = new SequentialCommandGroup();
         
-        //Step 0: set the start position
-        fullCommand.addCommands(resetPosition(r, startLocation));
-
         //shoot first note
         Pose2d startPose = getStartPose(r, startLocation);
         double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
@@ -378,6 +375,9 @@ public class CmdAuton {
             new WaitCommand(0.4),
             shoot(r)
         ));
+
+        //Step 0: set the start position
+        fullCommand.addCommands(resetPosition(r, startLocation));
 
         //for each note
         int prevNote = 0;
@@ -394,10 +394,7 @@ public class CmdAuton {
 
             // ----------- Pathfind to Note -------------
             Translation2d noteLocation = Locations.notes[currNote - 1];
-            //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
-            //point at the speaker instead of the start
-            Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
-
+            
             //offset the note 1/3 robot len in the direction we will approach from
             //Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
             Translation2d targetLocation = noteLocation;
@@ -414,6 +411,10 @@ public class CmdAuton {
                     targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(6)));
                 }
             }
+
+            //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
+            //point at the speaker instead of the start
+            Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
             
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
@@ -442,7 +443,24 @@ public class CmdAuton {
                     0.0, 0.0
                 )).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
+            } else if(isBlueAlliance() && prevNote == 8 || !isBlueAlliance() && prevNote == 6) {
+                //if we just shot the podium note make sure we backup a bit
+                Pose2d backup = new Pose2d(
+                                    Locations.notes[prevNote-1].plus(
+                                        new Translation2d(Units.inchesToMeters(-12), 0).rotateBy(forwardDir)),
+                                        forwardDir);
+                pathFindingCommand = AutoBuilder.pathfindToPose(
+                    backup,
+                    constraints,
+                    constraints.getMaxVelocityMps(), 0.0
+                ).andThen(AutoBuilder.pathfindToPose(
+                    noteTargetPose,
+                    constraints,
+                    0.0, 0.0
+                )).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+
             } else {
+                //just pathfind to the note
                 pathFindingCommand = AutoBuilder.pathfindToPose(
                     noteTargetPose,
                     constraints,
