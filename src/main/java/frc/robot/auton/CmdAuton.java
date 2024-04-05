@@ -399,13 +399,19 @@ public class CmdAuton {
             //Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
             Translation2d targetLocation = noteLocation;
             if(isBlueAlliance()){
-                if(currNote == 8){
+                if(prevNote == 0 && startLocation == StartLocationType.AMP_SIDE_SPEAKER && currNote == 6){
+                    //overdrive the note if coming from the side start
+                    targetLocation = targetLocation.plus(new Translation2d(Units.inchesToMeters(6), 0));
+                } else if(currNote == 8){
                     targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
                 } else if(currNote == 6){
                     targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
                 }
             } else {
-                if(currNote == 6){
+                if(prevNote == 0 && startLocation == StartLocationType.AMP_SIDE_SPEAKER && currNote == 8){
+                    //overdrive the note if coming from the side start
+                    targetLocation = targetLocation.plus(new Translation2d(-Units.inchesToMeters(6), 0));
+                } else if(currNote == 6){
                     targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
                 } else if(currNote == 8){
                     targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
@@ -565,7 +571,7 @@ public class CmdAuton {
                 extraShootDist = Units.inchesToMeters(20);//24(low) -> 6 (high) -> 20
                 System.out.println("offsetting shoot dist 20in for note: " + currNote);
             } else if(shootLoc == Locations.shootingPositions[2]){
-                extraShootDist = Units.inchesToMeters(0);//9(low) -> 0 (high) -> 3
+                extraShootDist = Units.inchesToMeters(-3);//9(low) -> 0 (high) -> 3
                 System.out.println("offsetting shoot dist 3in for note: " + currNote);
             }
             
@@ -583,7 +589,13 @@ public class CmdAuton {
 
             //only run the shoot sequence if we successfully gathered a note
             //TODO: add this back if we can fix the robot direction
-            fullCommand.addCommands(shootCommand/*.onlyIf(() -> r.state.hasNote)*/);
+            if(currNote < 6){
+                //we have rotation override so this should work
+                fullCommand.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
+            } else {
+                fullCommand.addCommands(shootCommand);
+            }
+            
 
             prevNote = currNote;
         }
