@@ -17,7 +17,7 @@ public class Locations {
     public static final double robotWidth = Units.inchesToMeters(32.75);
     public static final double robotLength = Units.inchesToMeters(38.25);
 
-    private static final double fieldWidth = Units.feetToMeters(26 + 11.25/12);//feet feeeettttt
+    public static final double fieldWidth = Units.feetToMeters(26 + 11.25/12);//feet feeeettttt
     private static final double fieldLength = Units.feetToMeters(54 + 3.25/12);
     private static final double blueWingLine = Units.inchesToMeters(76.1+155.1);
     private static final double redWingLine = fieldLength - Units.inchesToMeters(76.1+155.1);

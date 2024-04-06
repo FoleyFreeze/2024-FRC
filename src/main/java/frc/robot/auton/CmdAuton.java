@@ -403,7 +403,7 @@ public class CmdAuton {
                     //overdrive the note if coming from the side start
                     targetLocation = targetLocation.plus(new Translation2d(Units.inchesToMeters(6), 0));
                 } else if(currNote == 8){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(8)));
                 } else if(currNote == 6){
                     targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
                 }
@@ -412,7 +412,7 @@ public class CmdAuton {
                     //overdrive the note if coming from the side start
                     targetLocation = targetLocation.plus(new Translation2d(-Units.inchesToMeters(6), 0));
                 } else if(currNote == 6){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(4)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(8)));
                 } else if(currNote == 8){
                     targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
                 }
@@ -451,10 +451,34 @@ public class CmdAuton {
 
             } else if(currNote < 6 && (isBlueAlliance() && prevNote == 8 || !isBlueAlliance() && prevNote == 6)) {
                 //if we just shot the podium note make sure we backup a bit
-                Pose2d backup = new Pose2d(
-                                    Locations.notes[prevNote-1].plus(
-                                        new Translation2d(Units.inchesToMeters(-12), 0).rotateBy(forwardDir)),
-                                        forwardDir);
+                Pose2d backupBlueLeft = new Pose2d(new Translation2d(
+                                                    Locations.blueNoteG.getX()/2,
+                                                    Locations.blueNoteG.getY()), forwardDir);
+                Pose2d backupBlueRight = new Pose2d(new Translation2d(
+                                                    Locations.blueNoteG.getX()/2,
+                                                    Locations.fieldWidth/4), forwardDir);
+                Pose2d backupRedLeft = new Pose2d(new Translation2d(
+                                                    Locations.redNoteG.getX() + Locations.blueNoteG.getX()/2,
+                                                    Locations.fieldWidth/4), forwardDir);
+                Pose2d backupRedRight = new Pose2d(new Translation2d(
+                                                    Locations.redNoteG.getX() + Locations.blueNoteG.getX()/2,
+                                                    Locations.redNoteG.getY()), forwardDir);
+
+                Pose2d backup;
+                if(isBlueAlliance()){
+                    if(currNote < 3){
+                        backup = backupBlueLeft;
+                    } else {
+                        backup = backupBlueRight;
+                    }
+                } else {
+                    if(currNote < 3){
+                        backup = backupRedLeft;
+                    } else {
+                        backup = backupRedRight;
+                    }
+                }
+
                 pathFindingCommand = AutoBuilder.pathfindToPose(
                     backup,
                     constraints,
