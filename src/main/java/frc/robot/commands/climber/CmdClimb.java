@@ -70,11 +70,12 @@ public class CmdClimb {
             new InstantCommand(() -> r.slappah.setAngle(c2ArmAnglePrep),r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 80),
             new InstantCommand(() -> r.slappah.setTransferPosition(-5), r.slappah),
-            new WaitCommand(0.75),//TODO: make longer?
-            new InstantCommand(() -> r.slappah.setAngle(c2ArmAngle), r.slappah),
-            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),
+            new WaitCommand(0.25),//TODO: make longer?
+            //new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),
             new InstantCommand(() -> r.shooter.setAngle(c2ShooterAngle), r.shooter),
             new InstantCommand(() -> r.climber.setWinchPosition(c2TurnsForHooksUp), r.climber),
+            new WaitCommand(0.5),//wait for winches to clear arm
+            new InstantCommand(() -> r.slappah.setAngle(c2ArmAngle), r.slappah),
             new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
         );
         c.setName("DeployClimb2");
