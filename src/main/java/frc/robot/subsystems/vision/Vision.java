@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision;
 
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -144,7 +146,29 @@ public class Vision extends SubsystemBase{
             //Logger.recordOutput("Vision/fieldRelNoteLocation", zeroT2D);
         }
         
+        //limelight time
+        LimelightHelpers.SetRobotOrientation("limelight", r.drive.getAngle().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
+        boolean doRejectUpdate = false;
+        if(Math.abs(r.drive.inputs.yawVelocity) > Math.PI*4) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+            doRejectUpdate = true;
+        }
+        if(mt2.tagCount == 0)
+        {
+            doRejectUpdate = true;
+        }
+        if(!doRejectUpdate)
+        {
+            r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            r.drive.odometry.addVisionMeasurement(
+                mt2.pose,
+                mt2.timestampSeconds);
+        }
+    }
+
+    public void oldTagStuffLogicFunction(){
         if(hasNewTagImage()){
             for(int i=0;i<inputs.tagData.tagCount;i++){
                 VisionTag tag = inputs.tagData.tags[i];

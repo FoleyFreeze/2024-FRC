@@ -55,7 +55,7 @@ public class VisionIO_HW implements VisionIO{
             }
         });
 
-        poseMsgTag = NetworkTableInstance.getDefault().getTable("Vision").getRawTopic("Tag Pose Data Bytes").subscribe("raw", null);
+      /*  poseMsgTag = NetworkTableInstance.getDefault().getTable("Vision").getRawTopic("Tag Pose Data Bytes").subscribe("raw", null);
         NetworkTableInstance.getDefault().addListener(poseMsgTag, 
             EnumSet.of(NetworkTableEvent.Kind.kValueAll),
             event -> {
@@ -82,7 +82,7 @@ public class VisionIO_HW implements VisionIO{
                     tagData = e;
                 }
 
-            });
+            });*/
     }
 
     @Override
