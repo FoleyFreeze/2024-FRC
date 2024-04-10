@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -55,6 +56,7 @@ public class VisionIO_HW implements VisionIO{
             }
         });
 
+        //replaced by limelight
       /*  poseMsgTag = NetworkTableInstance.getDefault().getTable("Vision").getRawTopic("Tag Pose Data Bytes").subscribe("raw", null);
         NetworkTableInstance.getDefault().addListener(poseMsgTag, 
             EnumSet.of(NetworkTableEvent.Kind.kValueAll),
@@ -86,7 +88,7 @@ public class VisionIO_HW implements VisionIO{
     }
 
     @Override
-    public void updateInputs (VisionIOInputs inputs){
+    public void updateInputs (VisionIOInputs inputs, Rotation2d robotAngle) {
         inputs.noteData = noteData;
         inputs.tagData = tagData;
 
@@ -95,5 +97,14 @@ public class VisionIO_HW implements VisionIO{
         active.set(true);
         notesActive.set(true);
         tagsActive.set(true);
+
+        //limelight
+        LimelightHelpers.SetRobotOrientation("limelight", robotAngle.getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+
+        inputs.mt2_botPose = mt2.pose;
+        inputs.mt2_latency = mt2.latency;
+        inputs.mt2_tagCount = mt2.tagCount;
+        inputs.mt2_timestamp = mt2.timestampSeconds;
     }
 }

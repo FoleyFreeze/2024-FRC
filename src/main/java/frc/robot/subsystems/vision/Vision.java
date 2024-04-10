@@ -128,7 +128,7 @@ public class Vision extends SubsystemBase{
 
      @Override
     public void periodic(){
-        io.updateInputs(inputs);
+        io.updateInputs(inputs, r.drive.getAngle());
         Logger.processInputs("Vision", inputs);
 
         updatePoseBuffer();
@@ -147,24 +147,18 @@ public class Vision extends SubsystemBase{
         }
         
         //limelight time
-        LimelightHelpers.SetRobotOrientation("limelight", r.drive.getAngle().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-
-        boolean doRejectUpdate = false;
-        if(Math.abs(r.drive.inputs.yawVelocity) > Math.PI*4) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-        {
-            doRejectUpdate = true;
+        boolean updateTags = true;
+        if(Math.abs(r.drive.inputs.yawVelocity) > Math.PI*4) { // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            updateTags = false;
+        } else if(inputs.mt2_tagCount == 0) {
+            updateTags = false;
         }
-        if(mt2.tagCount == 0)
-        {
-            doRejectUpdate = true;
-        }
-        if(!doRejectUpdate)
-        {
+        Logger.recordOutput("Vision/TagUpdate", updateTags);
+        if(updateTags) {
             r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
             r.drive.odometry.addVisionMeasurement(
-                mt2.pose,
-                mt2.timestampSeconds);
+                inputs.mt2_botPose,
+                inputs.mt2_timestamp);
         }
     }
 
