@@ -153,7 +153,7 @@ public class RobotContainer {
         .onTrue(CMDShoot.fixedPrime(this));*/
 
     inputs.shootTriggerSWH
-        //.and(inputs.SWBHi.negate()) //TODO: add when camera shoot exists
+        .and(inputs.SWBHi.negate()) //TODO: add when camera shoot exists
         //.and(state.hasNoteT)
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT.negate())
@@ -162,13 +162,12 @@ public class RobotContainer {
         .onTrue(CMDShoot.simpleShoot(this));
         //.onTrue(CMDShoot.simpleAmpShoot(this)); //for testing, should move to SWC eventually
     
-    /* //TODO: add when tag camera works right 
+     //TODO: add when tag camera works right 
     inputs.shootTriggerSWH
       .and(inputs.SWBHi)
       .and(state.climbDeployT.negate())
       .and(state.hasTransferT.negate())
       .onTrue(CMDShoot.visionShoot(this));
-    */
 
     //climb commands
     inputs.shootTriggerSWH

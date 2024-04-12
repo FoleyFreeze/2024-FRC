@@ -394,33 +394,37 @@ public class CmdAuton {
 
             // ----------- Pathfind to Note -------------
             Translation2d noteLocation = Locations.notes[currNote - 1];
+
+            //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
+            //point at the speaker instead of the start
+            Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
             
             //offset the note 1/3 robot len in the direction we will approach from
-            //Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/5, 0).rotateBy(vecToNote.getAngle()));
-            Translation2d targetLocation = noteLocation;
+            Translation2d targetLocation = noteLocation.minus(new Translation2d(Locations.robotLength/3, 0).rotateBy(vecToNote.getAngle()));
+            //Translation2d targetLocation = noteLocation;
+
+            /*
             if(isBlueAlliance()){
                 if(prevNote == 0 && startLocation == StartLocationType.AMP_SIDE_SPEAKER && currNote == 6){
                     //overdrive the note if coming from the side start
                     targetLocation = targetLocation.plus(new Translation2d(Units.inchesToMeters(6), 0));
                 } else if(currNote == 8){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(8)));
+                    targetLocation = targetLocation.plus(new Translation2d(-Units.inchesToMeters(8), -Units.inchesToMeters(8)));
                 } else if(currNote == 6){
-                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(8)));
                 }
             } else {
                 if(prevNote == 0 && startLocation == StartLocationType.AMP_SIDE_SPEAKER && currNote == 8){
                     //overdrive the note if coming from the side start
                     targetLocation = targetLocation.plus(new Translation2d(-Units.inchesToMeters(6), 0));
                 } else if(currNote == 6){
-                    targetLocation = targetLocation.plus(new Translation2d(0, -Units.inchesToMeters(8)));
+                    targetLocation = targetLocation.plus(new Translation2d(Units.inchesToMeters(8), -Units.inchesToMeters(8)));
                 } else if(currNote == 8){
-                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(4)));
+                    targetLocation = targetLocation.plus(new Translation2d(0, Units.inchesToMeters(8)));
                 }
             }
-
-            //Translation2d vecToNote = noteLocation.minus(startPose.getTranslation());
-            //point at the speaker instead of the start
-            Translation2d vecToNote = noteLocation.minus(Locations.tagSpeaker);
+            */
+            
             
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
@@ -592,11 +596,11 @@ public class CmdAuton {
             double extraShootDist = 0;
             if(shootAtNoteLoc){
                 //offset back for the note shots so the angle is lower 
-                extraShootDist = Units.inchesToMeters(24);//24(low) -> 6 (high) -> 20
-                System.out.println("offsetting shoot dist 20in for note: " + currNote);
+                //extraShootDist = Units.inchesToMeters(24);//24(low) -> 6 (high) -> 20
+                //System.out.println("offsetting shoot dist 20in for note: " + currNote);
             } else if(shootLoc == Locations.shootingPositions[2]){
-                extraShootDist = Units.inchesToMeters(-3);//9(low) -> 0 (high) -> 3
-                System.out.println("offsetting shoot dist 3in for note: " + currNote);
+                //extraShootDist = Units.inchesToMeters(-3);//9(low) -> 0 (high) -> 3
+                //System.out.println("offsetting shoot dist 3in for note: " + currNote);
             }
             
             pathFindingCommand = AutoBuilder.pathfindToPose(

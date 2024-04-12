@@ -1,5 +1,8 @@
 package frc.robot.commands.shooter;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -130,7 +133,9 @@ public class CMDShoot {
 
     public static Command visionShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
-            new RunCommand(() -> {r.shooter.distancePrime(Locations.tagSpeaker.getDistance(r.drive.getPose().getTranslation()));
+            new RunCommand(() -> {double distance = Locations.tagSpeaker.getDistance(r.drive.getPose().getTranslation());
+                                  r.shooter.distancePrime(distance);
+                                  Logger.recordOutput("Shooter/AutoAimDist", Units.metersToInches(distance));
                                   r.state.isPrime = true;
                                 }, r.shooter)
                 .until(() -> r.shooter.checkAngleError() 
@@ -143,10 +148,10 @@ public class CMDShoot {
                                       r.gather.setGatePower(0); 
                                       r.state.hasNote = false;}, 
                                             r.shooter, r.gather),
-            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean()),
-            new InstantCommand(() -> r.state.isPrime = false)
+            new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean())
+            //new InstantCommand(() -> r.state.isPrime = false)
             //make sure trigger is released so it doesnt immediately run again
-        );
+        ).finallyDo(() -> r.state.isPrime = false);
         
         c.setName("VisionShoot");
         return c;    

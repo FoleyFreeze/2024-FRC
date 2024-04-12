@@ -40,7 +40,7 @@ public class CmdDrive extends Command {
 
         pidController = new ProfiledPIDController(1, 0, 0, new Constraints(2, 2));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
-        pidController.setTolerance(Math.toRadians(3), 0.5); //3deg error and 0.5 rad/s
+        pidController.setTolerance(Math.toRadians(5), 0.5); //3deg error and 0.5 rad/s
 
         timeSinceDriverRotate = new Timer();
         timeSinceDriverRotate.restart();
@@ -127,6 +127,7 @@ public class CmdDrive extends Command {
 
             } else {
                 //run the pid
+
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
                 double goal = MathUtil.angleModulus(angleSetpoint.getRadians());
                 speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
@@ -135,6 +136,9 @@ public class CmdDrive extends Command {
                 Logger.recordOutput("Drive/AnglePID/Goal", goal);
                 Logger.recordOutput("Drive/AnglePID/Setpoint", pidController.getSetpoint().position);
                 Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
+                Logger.recordOutput("Drive/AnglePID/ErrorDeg", Math.toDegrees(pidController.getPositionError()));
+                Logger.recordOutput("Drive/AnglePID/VelocityErr", pidController.getVelocityError());
+                
             }
 
             inClimbAngleControl = false;
@@ -147,7 +151,7 @@ public class CmdDrive extends Command {
                 inCameraAngleControl = true; 
                 
                 //since robot must point backwards at speaker, draw a line from speaker to robot and point along it
-                angleSetpoint = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getAngle().plus(CmdAuton.shooterOffset);
+                angleSetpoint = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker).getAngle().plus(CmdAuton.shooterOffset);
 
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
                 pidController.reset(measurement);
@@ -168,7 +172,9 @@ public class CmdDrive extends Command {
             } else {
                 //run the pid
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
-                double goal = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getAngle().plus(CmdAuton.shooterOffset).getRadians();
+                double goal = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker).getAngle()/*.plus(CmdAuton.shooterOffset)*/.getRadians();
+                Logger.recordOutput("Shooter/AutoAimAngle", Math.toDegrees(goal));
+
                 speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
                 speed.omegaRadiansPerSecond = MathUtil.clamp(speed.omegaRadiansPerSecond, -0.3, 0.3);
 
@@ -177,6 +183,8 @@ public class CmdDrive extends Command {
                 Logger.recordOutput("Drive/AnglePID/Goal", goal);
                 Logger.recordOutput("Drive/AnglePID/Setpoint", pidController.getSetpoint().position);
                 Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
+                Logger.recordOutput("Drive/AnglePID/ErrorDeg", Math.toDegrees(pidController.getPositionError()));
+                Logger.recordOutput("Drive/AnglePID/VelocityErr", pidController.getVelocityError());
             }
             
             inClimbAngleControl = false;

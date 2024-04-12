@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -159,6 +160,10 @@ public class Vision extends SubsystemBase{
             r.drive.odometry.addVisionMeasurement(
                 inputs.mt2_botPose,
                 inputs.mt2_timestamp);
+
+            double dist = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
+            Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
+            SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
         }
     }
 
