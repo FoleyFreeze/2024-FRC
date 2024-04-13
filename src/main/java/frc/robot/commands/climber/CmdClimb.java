@@ -37,7 +37,7 @@ public class CmdClimb {
 
     static double c3TurnsForHooksUpCenter = -1.100; //was -.4365
     static double c3TurnsForHooksUpBuddy = -1.400; //go higher
-    static double c3WinchTurnsToFinish = 1.46;//all the way up
+    static double c3WinchTurnsToFinish = 1.3;//all the way up
     static double c3WinchTurnsToBuddy = 1.16;//not all the way up
     static double c3ArmAngleEnd = 110;//100
     static double c3ShooterAngle = 95;//Was 95 on 3/20 bot tipping to far fwd
@@ -92,14 +92,15 @@ public class CmdClimb {
             //move arm
             new InstantCommand(() -> r.slappah.setAngle(c3ArmAngleEnd),r.slappah),
             //startmoving shooter
-            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition >25),
+            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 25),
             new InstantCommand(() -> r.shooter.setAngle(c3ShooterAngle), r.shooter), 
             //move winches
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 45),
             new InstantCommand(() -> r.climber.setWinchPosition(c3TurnsForHooksUpCenter), r.climber),
             //move the note
-            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 80),
-            new InstantCommand(() -> r.slappah.setTransferPosition(-5), r.slappah)
+            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 95),
+            new InstantCommand(() -> r.slappah.setTransferPosition(-5), r.slappah),
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
         );
         c.setName("DeployClimbCenter3");
         return c;
@@ -114,7 +115,8 @@ public class CmdClimb {
             new InstantCommand(() -> r.shooter.setAngle(c3ShooterAngle), r.shooter), 
             //move winches
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 45),
-            new InstantCommand(() -> r.climber.setWinchPosition(c3TurnsForHooksUpBuddy), r.climber)
+            new InstantCommand(() -> r.climber.setWinchPosition(c3TurnsForHooksUpBuddy), r.climber),
+            new InstantCommand(() -> r.state.climbDeploy = ClimbState.DEPLOYED)
         );
         c.setName("DeployClimbBuddy3");
         return c;

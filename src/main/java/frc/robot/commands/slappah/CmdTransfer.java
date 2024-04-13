@@ -22,7 +22,7 @@ public class CmdTransfer {
     static double slapPreTransPos = 34;
     static double slapPreClimbPos = 25;//unused, just use preTrans
     static double slapPreAmpPos = 65;//90; // was on 3/20/2024 55;//90;
-    static double slapAmpScorePos = 108;
+    static double slapAmpScorePos = 108 + 10;
     static double slapPreTrapPos = 75;
     static double slapTrapScorePos = 108; //TODO: find actual number
 
@@ -51,7 +51,7 @@ public class CmdTransfer {
 
     //score
     static double scoreTransferPower = -1;
-    static double scoreWaitTime = 1;//0.6;
+    static double scoreWaitTime = 1.1;//0.6;
     static double scoreAnglePower = 0.1;
 
     public static Command unTransferFull(RobotContainer r, Trigger t){
@@ -216,15 +216,16 @@ public class CmdTransfer {
         return c;
     }
 
-    public static Command scoreInAmp(RobotContainer r){
+    public static Command scoreInAmp(RobotContainer r, Trigger trigger){
         Command c = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setAngle(slapAmpScorePos), r.slappah),
-            new WaitUntilCommand(() -> r.slappah.checkAngleError()),
+            new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 100),
+            new WaitCommand(0.1),//let any bouncing settle
             new InstantCommand(() -> {r.slappah.setTransferPower(scoreTransferPower);
                                       r.slappah.setAnglePwr(scoreAnglePower);
                                      }, r.slappah),
             new WaitCommand(scoreWaitTime), 
-            new WaitUntilCommand(r.inputs.shootTriggerSWH.negate()), //wait until shoot released
+            new WaitUntilCommand(trigger.negate()), //wait until shoot released
             new InstantCommand(() -> {r.slappah.setAngle(slapHomePos);
                                       r.slappah.setTransferPower(0);
                                       r.state.hasNote = false;

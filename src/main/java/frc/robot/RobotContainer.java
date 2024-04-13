@@ -174,7 +174,7 @@ public class RobotContainer {
     inputs.shootTriggerSWH
         .and(state.hasTransferT)
         .and(state.climbDeployT.negate())
-        .onTrue(CmdTransfer.scoreInAmp(this));
+        .onTrue(CmdTransfer.scoreInAmp(this, inputs.shootTriggerSWH));
 
 
     /*
@@ -241,7 +241,8 @@ public class RobotContainer {
     //undeploy climb
     inputs.climbDeployB4
         .and(inputs.shiftB6)
-        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED
+                          || state.climbDeploy == ClimbState.CLIMBED))
         //.and(state.hasTransferT.negate())
         .onTrue(CmdClimb.undeployClimb2(this));
 
@@ -283,7 +284,7 @@ public class RobotContainer {
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
         .and(state.hasTransferT)
-        .onTrue(CmdTransfer.scoreInAmp(this));
+        .onTrue(CmdTransfer.scoreInAmp(this, inputs.shootBtnB1));
 
     inputs.shootBtnB1
         .and(inputs.shiftB6.negate())
@@ -306,7 +307,7 @@ public class RobotContainer {
     inputs.shootBtnB1
         .and(inputs.shiftB6)
         .and(state.climbDeployT.negate())
-        .onTrue(CmdTransfer.scoreInAmp(this));
+        .onTrue(CmdTransfer.scoreInAmp(this, inputs.shootBtnB1));
 
     //coast winch motors
     inputs.shiftB6
