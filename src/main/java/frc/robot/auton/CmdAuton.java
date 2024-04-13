@@ -69,7 +69,13 @@ public class CmdAuton {
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
                                        StartLocationType startLocation,
-                                       int waitTime){
+                                       int waitTime,
+                                       boolean earlyAngleReset){
+
+        if(DriverStation.isFMSAttached()){
+            //force the angle reset when connected to the field
+            earlyAngleReset = true;
+        }
 
         int noteOrder[] = new int[8];
         sort(noteOrder, a, 1);
@@ -98,7 +104,7 @@ public class CmdAuton {
         if(fastCloseNoteShots){
             fullSequence.addCommands(fastAuto(r, noteOrder, startLocation));
         } else {
-            fullSequence.addCommands(slowButWorkingAuto(r, noteOrder, startLocation));
+            fullSequence.addCommands(slowButWorkingAuto(r, noteOrder, startLocation, earlyAngleReset));
         }
 
         Command cmd = fullSequence.finallyDo(() -> stopAll(r));
@@ -364,7 +370,12 @@ public class CmdAuton {
     //     C-else: If we did not gather a note, then someone stole it first, continue on to the next note
     //     
     //Step3: fin
-    private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation){
+    private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation, boolean earlyAngleReset){
+        if (earlyAngleReset){
+            //immediately reset the robot angle so april tag data is useful
+            r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
+        }
+
         SequentialCommandGroup fullCommand = new SequentialCommandGroup();
 
         //Step -1: reset shooter and arm if on the field
@@ -375,7 +386,7 @@ public class CmdAuton {
         
         //shoot first note
         Pose2d startPose = getStartPose(r, startLocation);
-        double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
+        //double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
 
         fullCommand.addCommands(new SequentialCommandGroup(
             prime(r, startLocation),
@@ -384,7 +395,12 @@ public class CmdAuton {
         ));
 
         //Step 0: set the start position
-        fullCommand.addCommands(resetPosition(r, startLocation));
+        fullCommand.addCommands(
+            new ConditionalCommand(
+                new InstantCommand(() -> r.drive.resetFieldOrientedAngle(startPose.getRotation())),
+                resetPosition(r, startLocation), 
+            () -> r.vision.hasNewLimelightImage() && earlyAngleReset)
+        );
 
         //for each note
         int prevNote = 0;

@@ -129,6 +129,10 @@ public class Shooter extends SubsystemBase {
         return Math.toRadians(interp(dist, k.camLobDist, k.camLobBotAngleOffset));
     }
 
+    public double getBotAngleTol(double dist){
+        return Math.toRadians(interp(dist, k.camDistTol, k.camAngleTol));
+    }
+
     public void distancePrime(double distance){
         double angle = interp(distance, k.camDistance, k.camAngle);
         double rpm = interp(distance, k.camDistance, k.camRPM);

@@ -35,13 +35,16 @@ public class CmdDrive extends Command {
 
     Timer timeSinceDriverRotate;
 
+    double initVelTol = 0.5;
+    double initPosTol = Math.toRadians(5);
+
     public CmdDrive(RobotContainer r){
         this.r = r;
         addRequirements(r.drive);
 
         pidController = new ProfiledPIDController(2, 0, 0.05, new Constraints(7, 4));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
-        pidController.setTolerance(Math.toRadians(3), 0.5); //3deg error and 0.5 rad/s
+        pidController.setTolerance(initPosTol, initVelTol); //3deg error and 0.5 rad/s
 
         timeSinceDriverRotate = new Timer();
         timeSinceDriverRotate.restart();
@@ -53,6 +56,8 @@ public class CmdDrive extends Command {
 
         ChassisSpeeds speed = r.inputs.getChassisSpeeds();
         if(r.state.climbDeploy != ClimbState.NONE){
+            pidController.setTolerance(initPosTol, initVelTol);
+
             //give the driver reversed robot oriented drive
             speed.times(0.2);
             //speed.omegaRadiansPerSecond *= -1;
@@ -75,7 +80,7 @@ public class CmdDrive extends Command {
                         System.out.println("Unknown climb dir: " + r.inputs.getClimbDir());
                 }
                 if(DriverStation.getAlliance().get() == Alliance.Red){
-                    angleSetpoint.plus(Rotation2d.fromDegrees(180));
+                    angleSetpoint = angleSetpoint.plus(Rotation2d.fromDegrees(180));
                 }
 
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
@@ -104,6 +109,7 @@ public class CmdDrive extends Command {
 
         } else if(r.state.isPrime && r.inputs.getFixedTarget() == 2){
             //if we are priming for a podium shot, go to the right angle
+            pidController.setTolerance(initPosTol, initVelTol);
 
             if(!inPodiumAngleControl){
                 inPodiumAngleControl = true; 
@@ -180,9 +186,17 @@ public class CmdDrive extends Command {
                     Rotation2d angleOffset = new Rotation2d(r.shooter.getLobOffset(dist));
                     Translation2d targetPosition = Locations.tagAmp.plus(Locations.tagSpeaker).div(2);
                     goal = r.drive.getPose().getTranslation().minus(targetPosition).getAngle().plus(angleOffset).getRadians();
+
+                    double angleTol = Math.toRadians(7);//7deg? too much?
+                    pidController.setTolerance(angleTol, initVelTol);
                 } else {
                     //if shoot mode
-                    goal = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker).getAngle().plus(CmdAuton.shooterOffset).getRadians();
+                    Translation2d vecToSpeaker = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker);
+                    goal = vecToSpeaker.getAngle().plus(CmdAuton.shooterOffset).getRadians();
+
+                    double speakerDist = vecToSpeaker.getNorm();
+                    double angleTol = r.shooter.getBotAngleTol(speakerDist);
+                    pidController.setTolerance(angleTol, initVelTol);
                 }
                 Logger.recordOutput("Shooter/AutoAimAngle", Math.toDegrees(goal));
 

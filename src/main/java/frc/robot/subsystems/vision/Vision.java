@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -165,6 +166,11 @@ public class Vision extends SubsystemBase{
             Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
             SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
         }
+    }
+
+    public boolean hasNewLimelightImage(){
+        double timeSinceTag = 1;
+        return(Timer.getFPGATimestamp() - inputs.mt2_timestamp < timeSinceTag);
     }
 
     public void oldTagStuffLogicFunction(){

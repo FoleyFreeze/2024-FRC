@@ -83,6 +83,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> totalNotes;
   private LoggedDashboardChooser<StartLocationType> startChooser;
   private LoggedDashboardChooser<Integer> waitChooser;
+  private LoggedDashboardChooser<Boolean> setAngleChooser;
 
   public RobotContainer() {
     Locations.loadTagData();
@@ -183,7 +184,13 @@ public class RobotContainer {
     */
     inputs.shootTriggerSWH
         .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
-        .onTrue(CmdClimb.climb2(this));
+        .and(inputs.buddyBtnB1.negate())
+        .onTrue(CmdClimb.climbCenter3(this));
+
+        inputs.shootTriggerSWH
+        .and(new Trigger(() -> state.climbDeploy == ClimbState.DEPLOYED))
+        .and(inputs.buddyBtnB1)
+        .onTrue(CmdClimb.climbBuddy3(this));
     
     inputs.shootTriggerSWH
         .and(new Trigger(()-> state.climbDeploy == ClimbState.CLIMBED))
@@ -218,9 +225,18 @@ public class RobotContainer {
     inputs.climbDeployB4
         .and(inputs.shiftB6.negate())
         .and(state.climbDeployT.negate())
+        .and(inputs.buddyBtnB1)
         //.and(state.hasTransferT.negate())
         //.onTrue(CmdClimb.deployClimb(this));
-        .onTrue(CmdClimb.deployClimb2(this));
+        .onTrue(CmdClimb.deployClimbBuddy3(this));
+
+    inputs.climbDeployB4
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT.negate())
+        .and(inputs.buddyBtnB1.negate())
+        //.and(state.hasTransferT.negate())
+        //.onTrue(CmdClimb.deployClimb(this));
+        .onTrue(CmdClimb.deployClimbCenter3(this));
 
     //undeploy climb
     inputs.climbDeployB4
@@ -275,9 +291,21 @@ public class RobotContainer {
         .and(state.hasTransferT.negate())
         .onTrue(CMDShoot.simpleCtrlBoardShoot(this, inputs.shootBtnB1));
 
+    //give operator trap controls while climbing
+    inputs.shootBtnB1
+        .and(inputs.shiftB6.negate())
+        .and(state.climbDeployT)
+        .whileTrue(CmdClimb.shootTrap(this));
+
+    inputs.shootBtnB1
+        .and(inputs.shiftB6)
+        .and(state.climbDeployT)
+        .whileTrue(CmdClimb.unshootTrap(this));
+
     //score in amp anyways
     inputs.shootBtnB1
         .and(inputs.shiftB6)
+        .and(state.climbDeployT.negate())
         .onTrue(CmdTransfer.scoreInAmp(this));
 
     //coast winch motors
@@ -389,6 +417,7 @@ public class RobotContainer {
     selectedAuton += getAlliance();
     selectedAuton += startChooser.get().ordinal();
     selectedAuton += waitChooser.get();
+    selectedAuton += setAngleChooser.get();
 
     if (/*checkPoseError(autonStartPose, drive.getPose()) || */!selectedAuton.equals(lastSelectedAuton)){
       Locations.recalcForAlliance();
@@ -445,7 +474,8 @@ public class RobotContainer {
                                 notePriorityH.get(),
                                 totalNotes.get(),
                                 startChooser.get(),
-                                waitChooser.get()
+                                waitChooser.get(),
+                                setAngleChooser.get()
           );
           break;
 
@@ -517,6 +547,7 @@ public class RobotContainer {
     totalNotes = new LoggedDashboardChooser<>("Total Notes"); //stop after this many notes
     startChooser = new LoggedDashboardChooser<>("Start Location");
     waitChooser = new LoggedDashboardChooser<>("Start Wait Time");
+    setAngleChooser = new LoggedDashboardChooser<>("Reset Bot Angle");
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
@@ -562,6 +593,9 @@ public class RobotContainer {
     totalNotes.addOption("7", 7);
     totalNotes.addOption("8", 8);
 
+    setAngleChooser.addDefaultOption("False", false);
+    setAngleChooser.addOption("True", true);
+
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
     autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0,0).withSize(2,1);
     autoTab.add("Total Notes", totalNotes.getSendableChooser()).withPosition(2,0).withSize(2,1);
@@ -575,6 +609,8 @@ public class RobotContainer {
     autoTab.add("Note F", notePriorityF.getSendableChooser()).withPosition(2, 2);
     autoTab.add("Note G", notePriorityG.getSendableChooser()).withPosition(3, 2);
     autoTab.add("Note H", notePriorityH.getSendableChooser()).withPosition(4, 2);
+    autoTab.add("Reset Bot Angle", setAngleChooser.getSendableChooser()).withPosition(7, 2);
+
   }
 
   private void addNoteOrderHelper(LoggedDashboardChooser<Integer> c){

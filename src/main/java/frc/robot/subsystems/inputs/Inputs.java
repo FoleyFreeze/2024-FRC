@@ -47,6 +47,7 @@ public class Inputs extends SubsystemBase {
     public Trigger gatherBtnB5 = new Trigger(() -> cbConn() && controlBoard1.getRawButton(5));
     public Trigger transferB3 = new Trigger(() -> cbConn() && controlBoard1.getRawButton(3));
     public Trigger shootBtnB1 = new Trigger(() -> cbConn() && controlBoard1.getRawButton(1));
+    public Trigger buddyBtnB1 = new Trigger(() -> cbConn() && controlBoard2.getRawButton(1));
 
     public Inputs (RobotContainer r, InputsCals k){
         this.r = r;

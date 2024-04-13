@@ -29,6 +29,9 @@ public class ShooterCals {
     public double camLobRPM[] =            {  3850,  4500,  5750};
     public double camLobBotAngleOffset[] = {    10,    20,    10};
 
+    public double camDistTol[] =  {55, 267};
+    public double camAngleTol[] = { 8,   3};
+
     public double camVelocity[] = {0, 0};
     
  
@@ -77,11 +80,15 @@ public class ShooterCals {
     public double allowedRPMError = 100;
 
     public ShooterCals(){
+        //convert inch arrays to meters
         for(int i=0;i<camDistance.length;i++){
             camDistance[i] = Units.inchesToMeters(camDistance[i]);
         }
         for(int i=0;i<camLobDist.length;i++){
             camLobDist[i] = Units.inchesToMeters(camLobDist[i]);
+        }
+        for(int i=0;i<camDistTol.length;i++){
+            camDistTol[i] = Units.inchesToMeters(camDistTol[i]);
         }
     }
 }    
