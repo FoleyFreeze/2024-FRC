@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -19,7 +20,7 @@ public class CMDShoot {
     //button on ctrl board and trigger on flysky when cam not enabled
     //start motors, set angle, move gate, wait, stop
 
-    static double shootWaitTime = 0.5;
+    static double shootWaitTime = 0.4;
 
 
     public static Command simpleShoot(RobotContainer r){
@@ -150,8 +151,8 @@ public class CMDShoot {
                                       r.gather.setGatePower(0); 
                                       r.state.hasNote = false;}, 
                                             r.shooter, r.gather),
+            new InstantCommand(() -> r.state.isPrime = false),//this stops auto align
             new WaitUntilCommand(() -> !r.inputs.shootTriggerSWH.getAsBoolean())
-            //new InstantCommand(() -> r.state.isPrime = false)
             //make sure trigger is released so it doesnt immediately run again
         ).finallyDo(() -> r.state.isPrime = false);
         

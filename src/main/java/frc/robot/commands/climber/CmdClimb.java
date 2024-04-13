@@ -36,9 +36,9 @@ public class CmdClimb {
     static double c2ShooterAngle = 103;//Was 95 on 3/20 bot tipping to far fwd
 
     static double c3TurnsForHooksUpCenter = -1.100; //was -.4365
-    static double c3TurnsForHooksUpBuddy = -1.400; //go higher
-    static double c3WinchTurnsToFinish = 1.3;//all the way up
-    static double c3WinchTurnsToBuddy = 1.16;//not all the way up
+    static double c3TurnsForHooksUpBuddy = -1.600; //go higher
+    static double c3WinchTurnsToFinish = 1.2;//all the way up
+    static double c3WinchTurnsToBuddy = 0.8;//not all the way up
     static double c3ArmAngleEnd = 110;//100
     static double c3ShooterAngle = 95;//Was 95 on 3/20 bot tipping to far fwd
 

@@ -154,5 +154,8 @@ public class Climber extends SubsystemBase{
         }
         SmartDashboard.putNumber("Climb Power", power);
         SmartDashboard.putBoolean("ClimbEnabled", r.inputs.SWBHi.getAsBoolean() || r.inputs.SWBLo.getAsBoolean());
+
+        Logger.recordOutput("Climber/LeftWinchPosition", inputs.winchLPosition - winchStartL);
+        Logger.recordOutput("Climber/RightWinchPosition", inputs.winchRPosition - winchStartR);
     }
 }

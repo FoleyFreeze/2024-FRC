@@ -212,6 +212,12 @@ public class CmdDrive extends Command {
                 Logger.recordOutput("Drive/AnglePID/VelocityErr", pidController.getVelocityError());
                 //Logger.recordOutput("Drive/AnglePID/Velocity", );
                 Logger.recordOutput("Drive/AnglePID/Power", speed.omegaRadiansPerSecond);
+
+                if(r.inputs.shootTriggerSWH.getAsBoolean()){
+                    //once we are priming and the trigger is still held we disable human driving
+                    speed.vxMetersPerSecond = 0;
+                    speed.vyMetersPerSecond = 0;
+                }
             }
             
             inClimbAngleControl = false;

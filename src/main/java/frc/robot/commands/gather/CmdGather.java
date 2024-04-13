@@ -108,9 +108,9 @@ public class CmdGather {
                                                     return false;
                                                 }
                                                }),
-                    new InstantCommand(() -> r.gather.setGatherPower(reverseIntakePower, reverseGatePower)),
+                    new InstantCommand(() -> r.gather.setGatherPower(reverseIntakePower, reverseGatePower), r.gather),
                     new WaitCommand(0.10),
-                    new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower)),
+                    new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower), r.gather),
                     new InstantCommand(() -> currTimer.reset())
                 )
             ).finallyDo(() -> r.gather.setGatePower(0)),
@@ -186,7 +186,7 @@ public class CmdGather {
         Command c = (new RunCommand(() -> {r.gather.setGatherPower(reverseGatePower, reverseIntakePower);
                                             r.slappah.setTransferPower(1);
                                             r.shooter.setShootPower(-0.15);
-                                            r.shooter.setAngle(r.shooter.k.homePosition);}))
+                                            r.shooter.setAngle(r.shooter.k.homePosition);}, r.gather, r.shooter, r.slappah))
                          .finallyDo(() -> {r.gather.setGatherPower(0, 0); 
                                             r.shooter.setShootPower(0);
                                             r.slappah.setTransferPower(0);
