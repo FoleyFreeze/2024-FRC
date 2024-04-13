@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -114,6 +115,18 @@ public class Shooter extends SubsystemBase {
     public void visionPrime(){
         double distToTarget = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getNorm();
         distancePrime(distToTarget);
+    }
+
+    public void visionLob(){
+        double dist = Locations.tagSpeaker.minus(r.drive.getPose().getTranslation()).getNorm();
+        double angle = interp(dist, k.camLobDist, k.camLobAngle);
+        double rpm = interp(dist, k.camLobDist, k.camLobRPM);
+        setAngle(angle + angleJog);
+        setRPM(rpm + speedJog);
+    }
+
+    public double getLobOffset(double dist){
+        return Math.toRadians(interp(dist, k.camLobDist, k.camLobBotAngleOffset));
     }
 
     public void distancePrime(double distance){

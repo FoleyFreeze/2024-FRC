@@ -1,5 +1,6 @@
 package frc.robot.cals;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.motor.MotorCal;
 import frc.robot.subsystems.motor.MotorCal.TypeMotor;
@@ -19,9 +20,14 @@ public class ShooterCals {
     //public double camRPM[] =      {5000,   6000, 6000, 6500,     6630};
 
     //Thanks Limelight!
-    public double camDistance[] = {55,   81.5, 112.5, 150,  188,   226,  241,  267};
-    public double camAngle[] =    {58,   45,   35.5,  30,   27.75, 23,   22.6, 22};
-    public double camRPM[] =      {5000, 5600, 6000,  6250, 6250,  6600, 6800, 7000};
+    public double camDistance[] = {55,   81.5, 112.5, 150,  188,   207,   226,  241,  267};
+    public double camAngle[] =    {58,   45,   35.5,  30,   26.75, 25.75, 23,   22.6, 22};
+    public double camRPM[] =      {5000, 5600, 6000,  6250, 6250,  6425,  6600, 6800, 7000};
+
+    public double camLobDist[] =           {   255,   322,   450};
+    public double camLobAngle[] =          {    59,    58,  52.5};
+    public double camLobRPM[] =            {  3850,  4500,  5750};
+    public double camLobBotAngleOffset[] = {    10,    20,    10};
 
     public double camVelocity[] = {0, 0};
     
@@ -43,7 +49,7 @@ public class ShooterCals {
 
     public MotorCal angleMotor = new MotorCal(TypeMotor.SPARK, 16)
                                         .setBrakeMode(true)
-                                        .setCurrLim(45, 60)
+                                        .setCurrLim(50, 70)
                                         .setPIDF(2, 0, 0, 0)//TODO: go back to 2
                                         .setPIDPwrLim(0.4, -0.4)//TODO: go back to 0.4
                                         .setRatio(85 / 32.0 * 30/24.0); //32 rotations of the screw, but gear ratio of 30/24
@@ -73,6 +79,9 @@ public class ShooterCals {
     public ShooterCals(){
         for(int i=0;i<camDistance.length;i++){
             camDistance[i] = Units.inchesToMeters(camDistance[i]);
+        }
+        for(int i=0;i<camLobDist.length;i++){
+            camLobDist[i] = Units.inchesToMeters(camLobDist[i]);
         }
     }
 }    

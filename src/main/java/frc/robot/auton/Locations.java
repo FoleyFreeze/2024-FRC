@@ -75,18 +75,18 @@ public class Locations {
                                                                  new Translation2d(blueNoteG.getX() - Units.inchesToMeters(39), blueNoteG.getY()/*midY(blueNoteG, blueNoteH)*/), //between B and C, offset 2ft in
                                                                  //new Translation2d(blueNoteG.getX() + Units.inchesToMeters(6), blueNoteF.getY()/*midY(blueNoteF, blueNoteG))*/), //between A and B, offset the other way
                                                                  //new Translation2d(blueNoteG.getX() + Units.inchesToMeters(6), blueNoteG.getY(),
-                                                                 new Translation2d(blueWingLine - Units.inchesToMeters(48), midY(blueNoteA, blueNoteB)), //speakerside, between DE | offset X 4ft in
+                                                                 new Translation2d(blueWingLine - Units.inchesToMeters(30/*48*/), midY(blueNoteA, blueNoteB)), //speakerside, between DE | offset X 4ft in
                                                                  new Translation2d(blueWingLine - Units.inchesToMeters(54), fieldWidth/2 + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
-                                                                 new Translation2d(blueNoteH.getX() + Units.inchesToMeters(24), blueNoteH.getY() - Units.inchesToMeters(48)), //nonspeakerside, far forward, offset from noteC
+                                                                 new Translation2d(blueNoteH.getX() + Units.inchesToMeters(24+48), blueNoteH.getY() - Units.inchesToMeters(48+24)), //nonspeakerside, far forward, offset from noteC
                                                                 };
 
     public static final Translation2d redShootingPositions[] =  {new Translation2d(redNoteF.getX() + Units.inchesToMeters(39), redNoteG.getY()/*midY(redNoteF, redNoteG)*/), //between A and B, offset 2ft in
                                                                  new Translation2d(redNoteG.getX() + Units.inchesToMeters(39), redNoteG.getY()/*midY(redNoteG, redNoteH)*/), //between B and C, offset 2ft in
                                                                  //new Translation2d(redNoteG.getX() - Units.inchesToMeters(6), redNoteH.getY()/*midY(redNoteG, redNoteH))*/), //between B and C, offset the other way
                                                                  //new Translation2d(redNoteG.getX() + Units.inchesToMeters(6), redNoteG.getY(),
-                                                                 new Translation2d(redWingLine + Units.inchesToMeters(48), midY(redNoteD, redNoteE)), //speakerside, between DE | offset X 4ft in
+                                                                 new Translation2d(redWingLine + Units.inchesToMeters(30/*48*/), midY(redNoteD, redNoteE)), //speakerside, between DE | offset X 4ft in
                                                                  new Translation2d(redWingLine + Units.inchesToMeters(54), fieldWidth/2 + Units.inchesToMeters(57/2.0)), //under the stage, speaker side
-                                                                 new Translation2d(redNoteF.getX() - Units.inchesToMeters(24), redNoteF.getY() - Units.inchesToMeters(48)), //nonspeakerside, far forward, offset from noteC
+                                                                 new Translation2d(redNoteF.getX() - Units.inchesToMeters(24+48), redNoteF.getY() - Units.inchesToMeters(48+24)), //nonspeakerside, far forward, offset from noteC
                                                                 };
 
     //things that flip on alliance change

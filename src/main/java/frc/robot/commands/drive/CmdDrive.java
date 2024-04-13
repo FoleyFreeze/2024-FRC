@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,9 +39,9 @@ public class CmdDrive extends Command {
         this.r = r;
         addRequirements(r.drive);
 
-        pidController = new ProfiledPIDController(1, 0, 0, new Constraints(2, 2));
+        pidController = new ProfiledPIDController(2, 0, 0.05, new Constraints(7, 4));
         pidController.enableContinuousInput(-Math.PI, Math.PI);
-        pidController.setTolerance(Math.toRadians(5), 0.5); //3deg error and 0.5 rad/s
+        pidController.setTolerance(Math.toRadians(3), 0.5); //3deg error and 0.5 rad/s
 
         timeSinceDriverRotate = new Timer();
         timeSinceDriverRotate.restart();
@@ -144,7 +145,7 @@ public class CmdDrive extends Command {
             inClimbAngleControl = false;
             inCameraAngleControl = false;
 
-        } else if(r.state.isPrime && r.inputs.SWBHi.getAsBoolean()){
+        } else if(r.state.isPrime && (r.inputs.SWBHi.getAsBoolean() || DriverStation.isAutonomous())){
             //if camera aiming, aim at the speaker
 
             if(!inCameraAngleControl){
@@ -172,7 +173,17 @@ public class CmdDrive extends Command {
             } else {
                 //run the pid
                 double measurement = MathUtil.angleModulus(r.drive.getAngle().getRadians());
-                double goal = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker).getAngle()/*.plus(CmdAuton.shooterOffset)*/.getRadians();
+                double goal;
+                if(r.inputs.getFixedTarget() == 1){
+                    //if lob mode
+                    double dist = r.drive.getPose().getTranslation().getDistance(Locations.tagSpeaker);
+                    Rotation2d angleOffset = new Rotation2d(r.shooter.getLobOffset(dist));
+                    Translation2d targetPosition = Locations.tagAmp.plus(Locations.tagSpeaker).div(2);
+                    goal = r.drive.getPose().getTranslation().minus(targetPosition).getAngle().plus(angleOffset).getRadians();
+                } else {
+                    //if shoot mode
+                    goal = r.drive.getPose().getTranslation().minus(Locations.tagSpeaker).getAngle().plus(CmdAuton.shooterOffset).getRadians();
+                }
                 Logger.recordOutput("Shooter/AutoAimAngle", Math.toDegrees(goal));
 
                 speed.omegaRadiansPerSecond = pidController.calculate(measurement, goal);
@@ -185,6 +196,8 @@ public class CmdDrive extends Command {
                 Logger.recordOutput("Drive/AnglePID/Measurement", measurement);
                 Logger.recordOutput("Drive/AnglePID/ErrorDeg", Math.toDegrees(pidController.getPositionError()));
                 Logger.recordOutput("Drive/AnglePID/VelocityErr", pidController.getVelocityError());
+                //Logger.recordOutput("Drive/AnglePID/Velocity", );
+                Logger.recordOutput("Drive/AnglePID/Power", speed.omegaRadiansPerSecond);
             }
             
             inClimbAngleControl = false;

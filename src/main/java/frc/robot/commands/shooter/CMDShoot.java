@@ -134,7 +134,9 @@ public class CMDShoot {
     public static Command visionShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
             new RunCommand(() -> {double distance = Locations.tagSpeaker.getDistance(r.drive.getPose().getTranslation());
-                                  r.shooter.distancePrime(distance);
+                                  //if lob is selected use the lob table
+                                  if(r.inputs.getFixedTarget() == 1) r.shooter.visionLob();
+                                  else r.shooter.distancePrime(distance);
                                   Logger.recordOutput("Shooter/AutoAimDist", Units.metersToInches(distance));
                                   r.state.isPrime = true;
                                 }, r.shooter)

@@ -32,6 +32,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.gather.CmdGather;
+import frc.robot.subsystems.drive.Drive;
 
 public class CmdAuton {
 
@@ -55,7 +56,7 @@ public class CmdAuton {
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
     static double driveToNoteThreshFar = Units.inchesToMeters(48);
     static double driveToNoteThresh2 = Units.inchesToMeters(48);
-    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 + 1.25);//we shoot a bit right, so compensate left
+    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 /*+ 1.25*/);//we shoot a bit right, so compensate left
 
     static boolean fastCloseNoteShots = false;
     static double fastDistToNoteThresh = Units.inchesToMeters(36);
@@ -365,6 +366,12 @@ public class CmdAuton {
     //Step3: fin
     private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation){
         SequentialCommandGroup fullCommand = new SequentialCommandGroup();
+
+        //Step -1: reset shooter and arm if on the field
+        fullCommand.addCommands(new InstantCommand(() -> {
+            r.shooter.resetAngle();
+            r.slappah.resetArmAngle();
+        }).onlyIf(() -> DriverStation.isFMSAttached()));
         
         //shoot first note
         Pose2d startPose = getStartPose(r, startLocation);
@@ -456,14 +463,14 @@ public class CmdAuton {
             } else if(currNote < 6 && (isBlueAlliance() && prevNote == 8 || !isBlueAlliance() && prevNote == 6)) {
                 //if we just shot the podium note make sure we backup a bit
                 Pose2d backupBlueLeft = new Pose2d(new Translation2d(
-                                                    Locations.blueNoteG.getX()/2,
-                                                    Locations.blueNoteG.getY()), forwardDir);
+                                                    Locations.blueNoteG.getX() - Units.inchesToMeters(18),
+                                                    Locations.fieldWidth/2 - Units.inchesToMeters(48)), forwardDir);
                 Pose2d backupBlueRight = new Pose2d(new Translation2d(
                                                     Locations.blueNoteG.getX()/2,
                                                     Locations.fieldWidth/4), forwardDir);
                 Pose2d backupRedLeft = new Pose2d(new Translation2d(
-                                                    Locations.redNoteG.getX() + Locations.blueNoteG.getX()/2,
-                                                    Locations.fieldWidth/4), forwardDir);
+                                                    Locations.redNoteG.getX() + Units.inchesToMeters(18),
+                                                    Locations.fieldWidth/2 - Units.inchesToMeters(48)), forwardDir);
                 Pose2d backupRedRight = new Pose2d(new Translation2d(
                                                     Locations.redNoteG.getX() + Locations.blueNoteG.getX()/2,
                                                     Locations.redNoteG.getY()), forwardDir);
@@ -612,6 +619,8 @@ public class CmdAuton {
             Command shootCommand = new SequentialCommandGroup(
                 prime(r, vecToSpeaker.getNorm() + extraShootDist),
                 pathFindingCommand,
+                //double check we are where we think we are, and dial in the distance and angle
+                visionPrime(r),
                 shoot(r)
             );
 
@@ -651,6 +660,16 @@ public class CmdAuton {
                             RotationOverride.disableRotation();
                             Logger.recordOutput("PathPlanner/RotationOverrideEn", false);
                         });
+    }
+
+    public static Command visionPrime(RobotContainer r){
+        return new ParallelRaceGroup(
+            new RunCommand(() -> r.shooter.visionPrime(), r.shooter),
+            new WaitUntilCommand(() -> r.shooter.checkAngleError() 
+                                    && r.shooter.checkRPMError() 
+                                    && r.drive.atAngleSetpoint),
+            new WaitCommand(0.5) //wait up to 0.5s to align, then take the shot and move on
+        );
     }
 
     public static Command prime(RobotContainer r, double distance){
