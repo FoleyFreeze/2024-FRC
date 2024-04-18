@@ -106,5 +106,6 @@ public class VisionIO_HW implements VisionIO{
         inputs.mt2_latency = mt2.latency;
         inputs.mt2_tagCount = mt2.tagCount;
         inputs.mt2_timestamp = mt2.timestampSeconds;
+        inputs.mt2_avgTagDist = mt2.avgTagDist;
     }
 }

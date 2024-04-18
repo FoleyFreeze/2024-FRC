@@ -157,7 +157,9 @@ public class Vision extends SubsystemBase{
         }
         Logger.recordOutput("Vision/TagUpdate", updateTags);
         if(updateTags) {
-            r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            double stdDev = r.shooter.interp(inputs.mt2_avgTagDist, k.distAxis, k.stdDevs);
+
+            r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(stdDev,stdDev,9999999));
             r.drive.odometry.addVisionMeasurement(
                 inputs.mt2_botPose,
                 inputs.mt2_timestamp);

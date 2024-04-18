@@ -35,4 +35,7 @@ public class VisionCals {
                                                     );
 
     public boolean printDebugTagData = false;
+
+    public double[] distAxis = {Units.feetToMeters(5), Units.feetToMeters(15)};
+    public double[] stdDevs = {0.7, 2};
 }
