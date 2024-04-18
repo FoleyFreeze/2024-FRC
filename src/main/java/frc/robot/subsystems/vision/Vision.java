@@ -37,6 +37,8 @@ public class Vision extends SubsystemBase{
 
     DoubleEntry rioTime = NetworkTableInstance.getDefault().getDoubleTopic("/Vision/RIO Time").getEntry(0);
 
+    Translation2d totalOdometryError = new Translation2d();
+
     public class TimestampedPose2d{
         Pose2d pose;
         double time;
@@ -129,6 +131,10 @@ public class Vision extends SubsystemBase{
 
     static final Translation2d zeroT2D = new Translation2d();
 
+    public void resetTotalOdoError(){
+        totalOdometryError = new Translation2d();
+    }
+
      @Override
     public void periodic(){
         io.updateInputs(inputs, r.drive.getAngle());
@@ -158,21 +164,30 @@ public class Vision extends SubsystemBase{
         }
         Logger.recordOutput("Vision/TagUpdate", updateTags);
         if(updateTags) {
+            Pose2d oldBotPose = posePicker(inputs.mt2_timestamp);
+            Transform2d deltaPose = r.drive.getPose().minus(oldBotPose);
+            Pose2d visionPose = inputs.mt2_botPose.plus(deltaPose);
+            Logger.recordOutput("Vision/CorrectedBotPose", visionPose);
+
+            Pose2d startPose = r.drive.getPose();
+
             double stdDev = r.shooter.interp(inputs.mt2_avgTagDist, k.distAxis, k.stdDevs);
 
             r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(stdDev,stdDev,9999999));
             r.drive.odometry.addVisionMeasurement(
                 inputs.mt2_botPose,
                 inputs.mt2_timestamp);
+            r.drive.forcePoseUpdate();
+
+            Transform2d odoDelta = r.drive.getPose().minus(startPose);
+            totalOdometryError = totalOdometryError.plus(odoDelta.getTranslation());
+            Logger.recordOutput("Vision/TotalOdoError", totalOdometryError);
 
             double dist = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
             Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
             SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
 
-            Pose2d oldBotPose = posePicker(inputs.mt2_timestamp);
-            Transform2d deltaPose = r.drive.getPose().minus(oldBotPose);
-            Pose2d visionPose = inputs.mt2_botPose.plus(deltaPose);
-            Logger.recordOutput("Vision/CorrectedBotPose", visionPose);
+            
         }
     }
 

@@ -637,8 +637,8 @@ public class CmdAuton {
                 prime(r, vecToSpeaker.getNorm() + extraShootDist),
                 pathFindingCommand,
                 //double check we are where we think we are, and dial in the distance and angle
-                visionPrime(r),
-                //new ParallelRaceGroup(visionPrime(r), new CmdDrive(r)), //TODO: swap this in
+                //visionPrime(r),
+                new ParallelRaceGroup(visionPrime(r), new CmdDrive(r)), //TODO: swap this in
                 shoot(r)
             );
 

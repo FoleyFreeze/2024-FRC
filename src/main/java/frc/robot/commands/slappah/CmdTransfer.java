@@ -39,8 +39,8 @@ public class CmdTransfer {
     static double shooterCurrentLim = 30;
     static double extraTransferGate = 0.3;
     static double transferBackup = -1.5;
-    static double transferRotations = 6.0; //was 7.0; on 3/20/2024
-    static double climbTransferRotations = 6.0;
+    static double transferRotations = 7.0; //was 7.0; on 3/20/2024
+    static double climbTransferRotations = 7.0;
     static double transferCurrentLimit = 4;
 
     //unTransfer
@@ -133,6 +133,15 @@ public class CmdTransfer {
                                                new WaitUntilCommand(() -> !t.getAsBoolean()));
         c = c.withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         c.setName("CmdTransfer");
+
+        return c;
+    }
+
+    public static Command transferForClimb(RobotContainer r){
+        Command c = new SequentialCommandGroup(setup(r, true),
+                                               transfer(r, true), 
+                                               new InstantCommand(() -> r.state.hasTransfer = true));
+        c.setName("CmdClimbTransfer");
 
         return c;
     }

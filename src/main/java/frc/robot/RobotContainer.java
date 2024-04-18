@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -236,7 +237,11 @@ public class RobotContainer {
         .and(inputs.buddyBtnB1.negate())
         //.and(state.hasTransferT.negate())
         //.onTrue(CmdClimb.deployClimb(this));
-        .onTrue(CmdClimb.deployClimbCenter3(this));
+        //.onTrue(CmdClimb.deployClimbCenter3(this));
+
+        .onTrue(new SequentialCommandGroup(CmdTransfer.transferForClimb(this).onlyIf(state.hasTransferT.negate()),
+                                           CmdClimb.deployClimbCenter3(this)
+                                           ));
 
     //undeploy climb
     inputs.climbDeployB4

@@ -251,6 +251,11 @@ public class Drive extends SubsystemBase{
         Logger.recordOutput("Drive/Accel", accelMag);
     }
 
+    //called after updating from april tags
+    public void forcePoseUpdate(){
+        robotPose = odometry.getEstimatedPosition();
+    }
+
     @AutoLogOutput(key = "Drive/RobotPose")
     public Pose2d getPose(){
         return robotPose;

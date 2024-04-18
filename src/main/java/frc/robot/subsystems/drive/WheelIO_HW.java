@@ -43,6 +43,8 @@ public class WheelIO_HW implements WheelIO {
             inputs.swerveCurrent = current;
             inputs.swerveVoltage = voltage;
             inputs.swerveTemp = temp;
+
+            inputs.rawSwervePosition = position;
         }
 
         startErrorCount = driveMotor.getErrorCount();
@@ -59,6 +61,8 @@ public class WheelIO_HW implements WheelIO {
             inputs.driveCurrentAmps = current;
             inputs.driveAppliedVolts = voltage;
             inputs.driveTemp = temp;
+
+            inputs.rawDrivePosition = driveMotor.getPosition();
         }
 
         inputs.analogEncoderAngleRaw = new Rotation2d(swerveAbsoluteEncoder.getVoltage() / RobotController.getVoltage5V() * 2.0 * Math.PI);

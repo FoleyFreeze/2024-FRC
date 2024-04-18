@@ -18,6 +18,9 @@ public interface WheelIO {
         public double swerveVoltage;
         public double swerveCurrent;
 
+        public double rawDrivePosition;
+        public double rawSwervePosition;
+
         public double driveTemp;
         public double swerveTemp;
         

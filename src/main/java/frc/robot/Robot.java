@@ -112,6 +112,8 @@ public class Robot extends LoggedRobot {
 
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+        m_robotContainer.vision.resetTotalOdoError();
+
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
