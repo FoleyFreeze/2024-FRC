@@ -187,7 +187,7 @@ public class CmdDrive extends Command {
                     Translation2d targetPosition = Locations.tagAmp.plus(Locations.tagSpeaker).div(2);
                     goal = r.drive.getPose().getTranslation().minus(targetPosition).getAngle().plus(angleOffset).getRadians();
 
-                    double angleTol = Math.toRadians(7);//7deg? too much?
+                    double angleTol = Math.toRadians(9);//7deg? too much?
                     pidController.setTolerance(angleTol, initVelTol);
                 } else {
                     //if shoot mode
@@ -213,7 +213,7 @@ public class CmdDrive extends Command {
                 //Logger.recordOutput("Drive/AnglePID/Velocity", );
                 Logger.recordOutput("Drive/AnglePID/Power", speed.omegaRadiansPerSecond);
 
-                if(r.inputs.shootTriggerSWH.getAsBoolean()){
+                if(r.inputs.shootTriggerSWH.getAsBoolean() || DriverStation.isAutonomous()){
                     //once we are priming and the trigger is still held we disable human driving
                     speed.vxMetersPerSecond = 0;
                     speed.vyMetersPerSecond = 0;

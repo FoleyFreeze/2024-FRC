@@ -25,7 +25,7 @@ public class Robot extends LoggedRobot {
 
     private RobotContainer m_robotContainer;
 
-    private static final boolean simOnly = true;
+    private static final boolean simOnly = false;
 
     @Override
     public void robotInit() {

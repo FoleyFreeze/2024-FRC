@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -167,6 +168,11 @@ public class Vision extends SubsystemBase{
             double dist = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
             Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
             SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
+
+            Pose2d oldBotPose = posePicker(inputs.mt2_timestamp);
+            Transform2d deltaPose = r.drive.getPose().minus(oldBotPose);
+            Pose2d visionPose = inputs.mt2_botPose.plus(deltaPose);
+            Logger.recordOutput("Vision/CorrectedBotPose", visionPose);
         }
     }
 

@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.StartLocationType;
+import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
 import frc.robot.commands.gather.CmdGather;
 import frc.robot.subsystems.drive.Drive;
@@ -637,6 +638,7 @@ public class CmdAuton {
                 pathFindingCommand,
                 //double check we are where we think we are, and dial in the distance and angle
                 visionPrime(r),
+                //new ParallelRaceGroup(visionPrime(r), new CmdDrive(r)), //TODO: swap this in
                 shoot(r)
             );
 
