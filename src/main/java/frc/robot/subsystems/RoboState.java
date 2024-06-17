@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -49,6 +50,9 @@ public class RoboState {
     GenericEntry gatherTempsEntry;
     GenericEntry shootTempsEntry;
     GenericEntry slapTempsEntry;
+
+    //vision
+    GenericEntry distToSpeakerEntry;
 
     public RoboState(RobotContainer r){
         this.r = r;
@@ -112,6 +116,10 @@ public class RoboState {
         slapTempsEntry = teleTab.add("Slap Temps", "")
             .withPosition(6, 3)
             .getEntry();
+
+        distToSpeakerEntry = teleTab.add("Speak Dist", 0)
+            .withPosition(5, 2)
+            .getEntry();
     }
 
     public void periodic(){
@@ -130,6 +138,8 @@ public class RoboState {
 
         shootAngleEntry.setDouble(r.shooter.inputs.anglePosition);
         armAngleEntry.setDouble(r.slappah.inputs.anglePosition);
+
+        distToSpeakerEntry.setDouble(Units.metersToInches(r.vision.distToSpeaker));
 
         driveTempsEntry.setString(String.format("%.0f %.0f %.0f %.0f", r.drive.wheels[0].inputs.driveTemp,
                                                                               r.drive.wheels[1].inputs.driveTemp,

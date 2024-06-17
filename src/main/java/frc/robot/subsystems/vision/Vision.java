@@ -40,6 +40,8 @@ public class Vision extends SubsystemBase{
 
     Translation2d totalOdometryError = new Translation2d();
 
+    public double distToSpeaker = 0;
+
     public class TimestampedPose2d{
         Pose2d pose;
         double time;
@@ -202,11 +204,11 @@ public class Vision extends SubsystemBase{
             totalOdometryError = totalOdometryError.plus(odoDelta.getTranslation());
             Logger.recordOutput("Vision/TotalOdoError", totalOdometryError);
 
-            double dist = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
-            Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
-            SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
+            distToSpeaker = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
+            Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(distToSpeaker));
+            SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(distToSpeaker));
 
-            inputs.mt2_newData = false;
+            inputs.mt2_newData = false; 
         }
     }
 
