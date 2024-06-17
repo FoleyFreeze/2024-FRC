@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.auton.CmdAuton;
@@ -35,7 +36,7 @@ public class CmdDriveNoteTraj extends Command{
     //only recalc path if the note has moved more than x distance
     double recalcError = Units.inchesToMeters(12);
     //only recalc path if the note is further away than x distance
-    double recalcBounds = Units.inchesToMeters(24);
+    double recalcBounds = Units.inchesToMeters(24+6);
 
     Command driveCommand;
 

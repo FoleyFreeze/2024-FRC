@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -78,6 +79,17 @@ public class Vision extends SubsystemBase{
         }
         //if the time is before everything in the buffer return the oldest thing
         return robotPoseBuffer.getLast().pose;
+    }
+
+    public void updatePoseHistory(Transform2d deltaPose, double oldtime){
+        /*
+        for(int i=0;i<robotPoseBuffer.size();i++){
+            TimestampedPose2d pose = robotPoseBuffer.get(i);
+            if(pose.time > oldtime){
+                //TODO: the buffer is not writable in the middle
+            }
+        }
+        */
     }
 
     public Translation2d calcNoteLocation(){
@@ -156,8 +168,9 @@ public class Vision extends SubsystemBase{
         }
         
         //limelight time
-        boolean updateTags = true;
-        if(Math.abs(r.drive.inputs.yawVelocity) > Math.PI*4) { // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        //boolean updateTags = true;
+        boolean updateTags = inputs.mt2_newData;//this is better to not double count frames
+        if(Math.abs(r.drive.inputs.yawVelocity) > Math.PI*2) { // if our angular velocity is greater than 720 degrees per second, ignore vision updates
             updateTags = false;
         } else if(inputs.mt2_tagCount == 0) {
             updateTags = false;
@@ -171,7 +184,13 @@ public class Vision extends SubsystemBase{
 
             Pose2d startPose = r.drive.getPose();
 
-            double stdDev = r.shooter.interp(inputs.mt2_avgTagDist, k.distAxis, k.stdDevs);
+            double stdDevBase = r.shooter.interp(inputs.mt2_avgTagDist, k.distAxis, k.stdDevs);
+            ChassisSpeeds speeds = r.drive.getRelVelocity();
+            double totalVel = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+                              + Math.abs(speeds.omegaRadiansPerSecond) * k.rotationMultiplier;
+            double stdDevMulti = r.shooter.interp(totalVel, k.speedAxis, k.stdDevMul);
+            double stdDev = stdDevBase * stdDevMulti;
+            Logger.recordOutput("Vision/StdDevUpdt", stdDev);
 
             r.drive.odometry.setVisionMeasurementStdDevs(VecBuilder.fill(stdDev,stdDev,9999999));
             r.drive.odometry.addVisionMeasurement(
@@ -187,7 +206,7 @@ public class Vision extends SubsystemBase{
             Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(dist));
             SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(dist));
 
-            
+            inputs.mt2_newData = false;
         }
     }
 

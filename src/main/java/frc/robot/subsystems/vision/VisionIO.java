@@ -19,6 +19,7 @@ public interface VisionIO {
         double mt2_latency;
         int mt2_tagCount;
         double mt2_avgTagDist;
+        boolean mt2_newData;
     }
 
     public default void updateInputs(VisionIOInputs inputs, Rotation2d botAngle) {}

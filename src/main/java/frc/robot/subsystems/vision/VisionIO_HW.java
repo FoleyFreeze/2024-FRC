@@ -102,6 +102,9 @@ public class VisionIO_HW implements VisionIO{
         LimelightHelpers.SetRobotOrientation("limelight", robotAngle.getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
+        if(inputs.mt2_timestamp != mt2.timestampSeconds){
+            inputs.mt2_newData = true;
+        }
         inputs.mt2_botPose = mt2.pose;
         inputs.mt2_latency = mt2.latency;
         inputs.mt2_tagCount = mt2.tagCount;

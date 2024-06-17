@@ -57,7 +57,7 @@ public class CmdAuton {
     static double driveToNoteThreshClose = Units.inchesToMeters(0);
     static double driveToNoteThreshFar = Units.inchesToMeters(48);
     static double driveToNoteThresh2 = Units.inchesToMeters(48);
-    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 /*+ 1.25*/);//we shoot a bit right, so compensate left
+    public static Rotation2d shooterOffset = Rotation2d.fromDegrees(4.5 + 0.5);//we shoot a bit right, so compensate left
 
     static boolean fastCloseNoteShots = false;
     static double fastDistToNoteThresh = Units.inchesToMeters(36);
@@ -615,7 +615,13 @@ public class CmdAuton {
                 offsetDrive = new Translation2d(Units.inchesToMeters(3), Units.inchesToMeters(6));
             }
             */
-            Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset));
+            Rotation2d farSideExtraOffset = new Rotation2d();
+            if(shootLoc.equals(Locations.shootingPositions[4])){
+                //offset far source side shots by 1 degree
+                System.out.println("offsetting source side shoot position for note: " + currNote);
+                farSideExtraOffset = Rotation2d.fromDegrees(-1.5);
+            }
+            Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset).plus(farSideExtraOffset));
 
             double extraShootDist = 0;
             if(shootAtNoteLoc){
