@@ -83,6 +83,7 @@ public class CMDShoot {
         
     }
 
+    //fuq dis
     public static Command simpleAmpShoot(RobotContainer r){
         Command c = new SequentialCommandGroup(
             new RunCommand(() -> {r.shooter.setAngle(102);

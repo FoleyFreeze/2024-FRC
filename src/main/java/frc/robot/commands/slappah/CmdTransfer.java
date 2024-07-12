@@ -229,7 +229,8 @@ public class CmdTransfer {
         Command c = new SequentialCommandGroup(
             new InstantCommand(() -> r.slappah.setAngle(slapAmpScorePos), r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 100),
-            new WaitCommand(0.1),//let any bouncing settle
+            new InstantCommand(() -> r.slappah.setAnglePwr(scoreAnglePower), r.slappah),
+            new WaitCommand(0.1),//let any bouncing settle //make larger???
             new InstantCommand(() -> {r.slappah.setTransferPower(scoreTransferPower);
                                       r.slappah.setAnglePwr(scoreAnglePower);
                                      }, r.slappah),
