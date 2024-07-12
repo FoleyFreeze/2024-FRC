@@ -52,7 +52,7 @@ public class CmdTransfer {
     //score
     static double scoreTransferPower = -1;
     static double scoreWaitTime = 1.1;//0.6;
-    static double scoreAnglePower = 0.1;
+    static double scoreAnglePower = 0.15; //was 0.1
 
     public static Command unTransferFull(RobotContainer r, Trigger t){
         Command c = new SequentialCommandGroup(setup(r, true), 
@@ -230,7 +230,7 @@ public class CmdTransfer {
             new InstantCommand(() -> r.slappah.setAngle(slapAmpScorePos), r.slappah),
             new WaitUntilCommand(() -> r.slappah.inputs.anglePosition > 100),
             new InstantCommand(() -> r.slappah.setAnglePwr(scoreAnglePower), r.slappah),
-            new WaitCommand(0.1),//let any bouncing settle //make larger???
+            new WaitCommand(0.2),//let any bouncing settle //make larger???
             new InstantCommand(() -> {r.slappah.setTransferPower(scoreTransferPower);
                                       r.slappah.setAnglePwr(scoreAnglePower);
                                      }, r.slappah),
