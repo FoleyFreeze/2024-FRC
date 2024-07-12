@@ -322,7 +322,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> climber.setBrakes(false)).ignoringDisable(true)
             .andThen(new PrintCommand("Winches in Coast Mode")));
 
-    /* removed shoot angle jog
+    // unremoved shoot angle jog
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         .and(state.hasTransferT.negate())
@@ -332,7 +332,7 @@ public class RobotContainer {
         .and(inputs.shootAngleJogDn)
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
-    */
+    
 
     Trigger isLobShotTrigger = new Trigger(() -> inputs.getFixedTarget() == 1);
     inputs.shiftB6
@@ -379,6 +379,8 @@ public class RobotContainer {
         .and(inputs.armAngleJogDn)
         .onTrue(new InstantCommand(() -> slappah.jogAngle(-5)));
 
+    /*
+    //jog transfer position with shift shootjog
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         //.and(state.hasTransferT.or(state.climbDeployT))
@@ -388,6 +390,7 @@ public class RobotContainer {
         .and(inputs.shootAngleJogDn)
         //.and(state.hasTransferT.or(state.climbDeployT))
         .onTrue(new InstantCommand(() -> slappah.setTransferPosition(-1)));
+    */
 
     inputs.shiftB6
         .and(new Trigger(DriverStation::isDisabled))
