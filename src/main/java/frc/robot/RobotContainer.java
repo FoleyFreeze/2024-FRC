@@ -326,12 +326,12 @@ public class RobotContainer {
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogUp)
         .and(state.hasTransferT.negate())
-        .onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)));
+        .onTrue(new InstantCommand(() -> shooter.jogAngle(shooter.k.jogAngleIncriment)).ignoringDisable(true));
 
     inputs.shiftB6.negate()
         .and(inputs.shootAngleJogDn)
         .and(state.hasTransferT.negate())
-        .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)));
+        .onTrue(new InstantCommand(() -> shooter.jogAngle(-shooter.k.jogAngleIncriment)).ignoringDisable(true));
     
 
     Trigger isLobShotTrigger = new Trigger(() -> inputs.getFixedTarget() == 1);
