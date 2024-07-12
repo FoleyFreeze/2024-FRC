@@ -374,7 +374,8 @@ public class CmdAuton {
     private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation, boolean earlyAngleReset){
         if (earlyAngleReset){
             //immediately reset the robot angle so april tag data is useful
-            r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
+            //r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
+            resetPosition(r, startLocation);
         }
 
         SequentialCommandGroup fullCommand = new SequentialCommandGroup();
