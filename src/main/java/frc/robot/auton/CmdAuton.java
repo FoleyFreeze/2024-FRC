@@ -374,7 +374,7 @@ public class CmdAuton {
     private static Command slowButWorkingAuto(RobotContainer r, int[] noteOrder, StartLocationType startLocation, boolean earlyAngleReset){
         if (earlyAngleReset){
             //immediately reset the robot angle so april tag data is useful
-            //r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
+            r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
             resetPosition(r, startLocation);
         }
 
@@ -620,7 +620,7 @@ public class CmdAuton {
             if(shootLoc.equals(Locations.shootingPositions[4])){
                 //offset far source side shots by 1 degree
                 System.out.println("offsetting source side shoot position for note: " + currNote);
-                farSideExtraOffset = Rotation2d.fromDegrees(-1.5);
+                farSideExtraOffset = Rotation2d.fromDegrees(-1.5 - 1);
             }
             Pose2d shotTargetPose = new Pose2d(shootLoc.plus(offsetDrive), targetAngle.plus(shooterOffset).plus(farSideExtraOffset));
 

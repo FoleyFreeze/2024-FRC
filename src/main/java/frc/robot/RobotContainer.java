@@ -335,17 +335,19 @@ public class RobotContainer {
     
 
     Trigger isLobShotTrigger = new Trigger(() -> inputs.getFixedTarget() == 1);
+
+    //jog transporter - removed isTransfer check
     inputs.shiftB6
         .and(inputs.shootAngleJogUp)
         //.and(isLobShotTrigger.negate())
-        .and(state.hasTransferT.negate())
+        //.and(state.hasTransferT.negate())
         .whileTrue(new RunCommand(() -> slappah.setTransferPower(1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
         //.onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
 
     inputs.shiftB6
         .and(inputs.shootAngleJogDn)
         //.and(isLobShotTrigger.negate())
-        .and(state.hasTransferT.negate())
+        //.and(state.hasTransferT.negate())
         .whileTrue(new RunCommand(() -> slappah.setTransferPower(-1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
         //.onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
 
