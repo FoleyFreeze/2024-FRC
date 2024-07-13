@@ -48,6 +48,13 @@ public class CmdAuton {
         3  //accel rad/s/s
     );
 
+    public static PathConstraints slowConstraints = new PathConstraints(
+        1, //vel 
+        2, //accel
+        3, //rot vel
+        3  //rot accel
+    );
+
     //if both the current and next note are close, lookup the shoot position on this table
     static int[][] shootPositionTable = {{0, 0, 0},
                                          {0, 0, 1},
@@ -66,6 +73,8 @@ public class CmdAuton {
 
     static boolean dodgeCloseNotes = true;//works
     static Rotation2d forwardDir;
+
+    static boolean missedNote = false;
 
     public static Command selectedAuto(RobotContainer r, 
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
@@ -375,7 +384,8 @@ public class CmdAuton {
         if (earlyAngleReset){
             //immediately reset the robot angle so april tag data is useful
             r.drive.resetFieldOrientedAngle(getStartPose(r, startLocation).getRotation());
-            resetPosition(r, startLocation);
+            r.drive.resetFieldOdometry(Locations.startLocations[startLocation.ordinal()]);
+            //resetPosition(r, startLocation);
         }
 
         SequentialCommandGroup fullCommand = new SequentialCommandGroup();
@@ -527,6 +537,14 @@ public class CmdAuton {
                 ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
             }
 
+            //slow path is only for missed notes 1-5
+            Command slowPathFindingCommand;
+            slowPathFindingCommand = AutoBuilder.pathfindToPose(
+                noteTargetPose,
+                slowConstraints,
+                0.0, 0.0
+            ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
+
             //if close notes
             double driveToNoteThresh;
             if(currNote > 5){
@@ -541,6 +559,9 @@ public class CmdAuton {
             if(currNote < 6){
                 //use the right pickup angle for the far notes
                 pathFindingCommand = pathFindingCommand.deadlineWith(setRotationOverride(r, noteTargetPose));
+                slowPathFindingCommand = slowPathFindingCommand.deadlineWith(setRotationOverride(r, noteTargetPose));
+                //if we missed the prev note, use slower constraints for the next path to allow time to rotate
+                pathFindingCommand = new ConditionalCommand(slowPathFindingCommand, pathFindingCommand, () -> missedNote);
             }
 
             noteCommand = pathFindingCommand
@@ -556,6 +577,9 @@ public class CmdAuton {
             .raceWith(CmdGather.autonGather(r));
 
             fullCommand.addCommands(noteCommand);
+            
+            //capture if we missed the note pickup
+            fullCommand.addCommands(new InstantCommand(() -> missedNote = !r.state.hasNote));
 
             
             // ----------- Pathfind to Shoot -------------
@@ -640,17 +664,19 @@ public class CmdAuton {
                 0.0, 0.0
             ).finallyDo(() -> r.drive.swerveDrivePwr(new ChassisSpeeds()));
 
-            Command shootCommand = new SequentialCommandGroup(
+            SequentialCommandGroup shootCommand = new SequentialCommandGroup(
                 prime(r, vecToSpeaker.getNorm() + extraShootDist),
                 pathFindingCommand,
                 //double check we are where we think we are, and dial in the distance and angle
                 //visionPrime(r),
-                new ParallelRaceGroup(visionPrime(r), new CmdDrive(r)), //TODO: swap this in
+                new ParallelRaceGroup(visionPrime(r), new CmdDrive(r)), 
                 shoot(r)
             );
 
+            //if the shoot command runs, clear the missedNote flag
+            shootCommand.addCommands(new InstantCommand(() -> missedNote = false));
+
             //only run the shoot sequence if we successfully gathered a note
-            //TODO: add this back if we can fix the robot direction
             if(currNote < 6){
                 //we have rotation override so this should work
                 fullCommand.addCommands(shootCommand.onlyIf(() -> r.state.hasNote));
