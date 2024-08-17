@@ -59,7 +59,7 @@ public class CmdDrive extends Command {
             pidController.setTolerance(initPosTol, initVelTol);
 
             //give the driver reversed robot oriented drive
-            speed.times(0.2);
+            speed.times(0.13);
             //speed.omegaRadiansPerSecond *= -1;
             
             //init setpoint 

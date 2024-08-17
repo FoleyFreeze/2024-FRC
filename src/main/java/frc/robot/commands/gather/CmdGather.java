@@ -19,7 +19,7 @@ public class CmdGather {
     static double extraIntakeTime = 0.0;
 
     static double backwardsGatherPower = -.13;
-    static double intakePower = 0.5; //was 0.75;//0.4
+    static double intakePower = 0.6; //has been 0.5 since states, but needs more
     static double gatePower = 0.3;//0.25
     static double reverseIntakePower = -0.6;//0.5
     static double reverseGatePower = -0.5;//0.3
@@ -102,7 +102,7 @@ public class CmdGather {
                     new InstantCommand(() -> currTimer.reset()),
                     new WaitUntilCommand(() -> {
                                                 if(r.gather.inputs.intakeCurrentAmps > 20){
-                                                    return currTimer.hasElapsed(0.75);
+                                                    return currTimer.hasElapsed(0.5);
                                                 } else {
                                                     currTimer.reset();
                                                     return false;
@@ -112,7 +112,7 @@ public class CmdGather {
                     new WaitCommand(0.10),
                     new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower), r.gather),
                     new InstantCommand(() -> currTimer.reset())
-                )
+                ).repeatedly()
             ).finallyDo(() -> r.gather.setGatePower(0)),
             //move the piece to it's final holding position
             new InstantCommand(() -> {r.gather.setGatePosition(extraGateRevsSensor);
