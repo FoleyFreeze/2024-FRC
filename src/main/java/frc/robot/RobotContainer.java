@@ -712,9 +712,9 @@ public class RobotContainer {
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
       autoChooser.addOption("Select", AutonType.SELECT);
-      autoChooser.addOption("Source", AutonType.SOURCE_SELECT);
-      autoChooser.addOption("Amp", AutonType.AMP_SELECT);
-      autoChooser.addOption("Close", AutonType.CLOSE_SELECT);
+      autoChooser.addOption("Select_Source", AutonType.SOURCE_SELECT);
+      autoChooser.addOption("Select_Amp", AutonType.AMP_SELECT);
+      autoChooser.addOption("Select_Close", AutonType.CLOSE_SELECT);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
       autoChooser.addOption("Denial", AutonType.DENIAL);
       autoChooser.addOption("Test", AutonType.TEST);
