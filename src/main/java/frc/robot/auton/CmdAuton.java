@@ -122,7 +122,7 @@ public class CmdAuton {
         }
 
         if(endLocation != EndLocationType.NONE){
-            
+            //TODO: drive to final location
         }
 
         Command cmd = fullSequence.finallyDo(() -> stopAll(r));
@@ -408,11 +408,13 @@ public class CmdAuton {
         Pose2d startPose = getStartPose(r, startLocation);
         //double shootDist = Locations.tagSpeaker.minus(startPose.getTranslation()).getNorm();
 
-        fullCommand.addCommands(new SequentialCommandGroup(
-            prime(r, startLocation),
-            new WaitCommand(0.4),
-            shoot(r)
-        ));
+        fullCommand.addCommands(
+            new SequentialCommandGroup(
+                prime(r, startLocation),
+                new WaitCommand(0.4),
+                shoot(r)
+            ).onlyIf(() -> startLocation != StartLocationType.SOURCE)
+        );
 
         //Step 0: set the start position
         fullCommand.addCommands(

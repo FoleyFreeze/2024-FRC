@@ -50,7 +50,8 @@ public class DriveCals {
     private double wheelLocationX = wheelLength / 2.0;
     private double wheelLocationY = wheelWidth / 2.0;
 
-    public double maxWheelSpeed = Units.feetToMeters(14);
+    //FIXME: this is the actual power limit. Change to whatever percentage you want
+    public double maxWheelSpeed = Units.feetToMeters(14) * 1.0;
     public double kA = 0.02; //Acceleration feedfoward constant (units are percent per meter/sec/sec)
     
     //TODO: current limits
