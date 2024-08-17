@@ -37,7 +37,7 @@ public class VisionCals {
     public boolean printDebugTagData = false;
 
     public double[] distAxis = {Units.feetToMeters(5), Units.feetToMeters(15)};//dist from tag
-    public double[] stdDevs = {0.5, 1.3};
+    public double[] stdDevs = {0.3, 1.1};
 
     public double[] speedAxis = {   0, 1, 3};//robot speed (m/s)
     public double[] stdDevMul = {0.18, 1, 2};//multiply the std dev by this

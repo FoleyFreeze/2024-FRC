@@ -150,7 +150,7 @@ public class CmdAuton {
         Pose2d startPose = getStartPose(r, startLocation);
 
         //for each note
-        int prevNote = 0;
+        int prevNote = 1;
         Translation2d lastNoteLocation = startPose.getTranslation();
         Translation2d lastShootLocation = startPose.getTranslation();
         for(int i=0;i<noteOrder.length;i++){
@@ -425,7 +425,7 @@ public class CmdAuton {
         );
 
         //for each note
-        int prevNote = 0;
+        int prevNote = 1;
         for(int i=0;i<noteOrder.length;i++){
             if(noteOrder[i] == 0){
                 //stop if there is no note at this position
@@ -473,6 +473,12 @@ public class CmdAuton {
             
             Pose2d noteTargetPose = new Pose2d(targetLocation, vecToNote.getAngle().plus(shooterOffset));
             //add the shooter offset angle to the gather angle. should help be in the right orientation for the shot later
+            
+            //if we missed a note, draw the line from the prev note to this one and gather that way
+            Translation2d noteToNote = noteLocation.minus(Locations.notes[prevNote - 1]);
+            //note that we flip the angle to hit it with the back 
+            Pose2d missedNoteTargetPose = new Pose2d(noteLocation, noteToNote.getAngle().minus(Rotation2d.fromDegrees(180)));
+            //System.out.println("NoteToNoteAngle: " + noteToNote.getAngle().getDegrees());
 
             Command pathFindingCommand;
             if(i == 0 && currNote < 6 && dodgeCloseNotes
@@ -569,7 +575,7 @@ public class CmdAuton {
             if(currNote < 6){
                 //use the right pickup angle for the far notes
                 pathFindingCommand = pathFindingCommand.deadlineWith(setRotationOverride(r, noteTargetPose));
-                slowPathFindingCommand = slowPathFindingCommand.deadlineWith(setRotationOverride(r, noteTargetPose));
+                slowPathFindingCommand = slowPathFindingCommand.deadlineWith(setRotationOverride(r, missedNoteTargetPose));
                 //if we missed the prev note, use slower constraints for the next path to allow time to rotate
                 pathFindingCommand = new ConditionalCommand(slowPathFindingCommand, pathFindingCommand, () -> missedNote);
             }
