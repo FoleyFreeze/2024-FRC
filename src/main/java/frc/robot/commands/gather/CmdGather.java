@@ -102,16 +102,15 @@ public class CmdGather {
                     new InstantCommand(() -> currTimer.reset()),
                     new WaitUntilCommand(() -> {
                                                 if(r.gather.inputs.intakeCurrentAmps > 20){
-                                                    return currTimer.hasElapsed(0.5);
+                                                    return currTimer.hasElapsed(0.45);
                                                 } else {
                                                     currTimer.reset();
                                                     return false;
                                                 }
                                                }),
                     new InstantCommand(() -> r.gather.setGatherPower(reverseIntakePower, reverseGatePower), r.gather),
-                    new WaitCommand(0.10),
-                    new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower), r.gather),
-                    new InstantCommand(() -> currTimer.reset())
+                    new WaitCommand(0.1),
+                    new InstantCommand(() -> r.gather.setGatherPower(intakePower, gatePower), r.gather)
                 ).repeatedly()
             ).finallyDo(() -> r.gather.setGatePower(0)),
             //move the piece to it's final holding position
