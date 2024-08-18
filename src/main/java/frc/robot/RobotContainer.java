@@ -351,19 +351,19 @@ public class RobotContainer {
     //jog transporter - removed isTransfer check
     inputs.shiftB6
         .and(inputs.shootAngleJogUp)
-        //.and(isLobShotTrigger.negate())
-        //.and(state.hasTransferT.negate())
-        .whileTrue(new RunCommand(() -> slappah.setTransferPower(1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
-        //.onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
+        .and(isLobShotTrigger.negate())
+        .and(state.hasTransferT.negate())
+        //.whileTrue(new RunCommand(() -> slappah.setTransferPower(1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
+        .onTrue(new InstantCommand(() -> shooter.jogSpeed(shooter.k.jogSpeedIncriment)));
 
     inputs.shiftB6
         .and(inputs.shootAngleJogDn)
-        //.and(isLobShotTrigger.negate())
-        //.and(state.hasTransferT.negate())
-        .whileTrue(new RunCommand(() -> slappah.setTransferPower(-1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
-        //.onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
+        .and(isLobShotTrigger.negate())
+        .and(state.hasTransferT.negate())
+        //.whileTrue(new RunCommand(() -> slappah.setTransferPower(-1), slappah).finallyDo(() -> slappah.setTransferPower(0)));
+        .onTrue(new InstantCommand(() -> shooter.jogSpeed(-shooter.k.jogSpeedIncriment)));
 
-    /* not using lob jog anyways
+    // using lob jog anyways
     inputs.shiftB6
         .and(inputs.shootAngleJogUp)
         .and(isLobShotTrigger)
@@ -375,7 +375,7 @@ public class RobotContainer {
         .and(isLobShotTrigger)
         .and(state.hasTransferT.negate())
         .onTrue(new InstantCommand(() -> shooter.jogLobSpeed(-shooter.k.jogSpeedIncriment)));
-    */
+    
 
     inputs.shiftB6
         .and(inputs.armAngleJogUp)

@@ -11,7 +11,7 @@ public class ShooterCals {
     public double initAngleJog = 0;
     public double initSpeedJog = 0;
     public double jogAngleIncriment = .5;
-    public double jogSpeedIncriment = 200;
+    public double jogSpeedIncriment = 50;
 
     //note these are in inches (get converted later) //TODO: add a spot at 187 (4th shoot pos)
     double di = 36;             //in front, podium, 19ft
@@ -26,7 +26,7 @@ public class ShooterCals {
 
     public double camLobDist[] =           {   255,   322,   450};
     public double camLobAngle[] =          {    59,    58,  52.5};
-    public double camLobRPM[] =            {  3850,  4500,  5750};
+    public double camLobRPM[] =            {  3850-100,  4500-250,  5750-250};
     public double camLobBotAngleOffset[] = {    10,    20,    10};
 
     public double camDistTol[] =  {55, 267};
