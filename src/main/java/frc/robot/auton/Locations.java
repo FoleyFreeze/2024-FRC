@@ -52,14 +52,28 @@ public class Locations {
     public static final Pose2d blueCenterSide = new Pose2d(new Translation2d(blueSpeakerEdge + robotLength/2.0, blueNoteG.getY()), new Rotation2d());
     public static final Pose2d blueSourceSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2 - speakerSideEdgeLength).rotateBy(Rotation2d.fromDegrees(-60)).plus(new Translation2d(blueSpeakerEdge, blueNoteG.getY()-speakerEdgeLength/2.0)), Rotation2d.fromDegrees(-60));
     public static final Pose2d blueAmp = new Pose2d(blueAutoLine - robotLength/2, fieldWidth - Units.inchesToMeters(17.75) - robotWidth/2, new Rotation2d());
-    public static final Pose2d blueSource = new Pose2d();
+    public static final Pose2d blueSource = new Pose2d(blueAutoLine - robotLength/2, Units.inchesToMeters(60), new Rotation2d());
+    //public static final Pose2d blueSource = new Pose2d(1.29, 1.457, new Rotation2d(Math.PI/3));
+
     //note blue source is actually the red alliance source, but its on the blue side of the field
 
     public static final Pose2d redSpeakerSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2 - speakerSideEdgeLength).rotateBy(Rotation2d.fromDegrees(120)).plus(new Translation2d(redSpeakerEdge, redNoteG.getY()+speakerEdgeLength/2.0)), Rotation2d.fromDegrees(120));
     public static final Pose2d redCenterSide = new Pose2d(new Translation2d(redSpeakerEdge - robotLength/2.0, redNoteG.getY()), Rotation2d.fromDegrees(180));
     public static final Pose2d redSourceSide = new Pose2d(new Translation2d(robotLength/2, robotWidth/2).rotateBy(Rotation2d.fromDegrees(240)).plus(new Translation2d(redSpeakerEdge, redNoteG.getY()-speakerEdgeLength/2.0)), Rotation2d.fromDegrees(240));
     public static final Pose2d redAmp = new Pose2d(redAutoLine + robotLength/2, fieldWidth - Units.inchesToMeters(17.75) - robotWidth/2, new Rotation2d());
-    public static final Pose2d redSource = new Pose2d();
+    public static final Pose2d redSource = new Pose2d(redAutoLine + robotLength/2, Units.inchesToMeters(60), new Rotation2d(Math.PI));
+    //public static final Pose2d redSource = new Pose2d(fieldLength - 1.29, 1.457, new Rotation2d(Math.PI*2/3.0));
+
+    //end locations
+    //blue
+    public static final Pose2d blueAmpEnd = new Pose2d(7.15, 6.625, new Rotation2d());
+    public static final Pose2d blueMidEnd = new Pose2d(7.15, fieldWidth/2, new Rotation2d());
+    public static final Pose2d blueSourceEnd = new Pose2d(7.15, 1.55, new Rotation2d());
+    
+    //red
+    public static final Pose2d redAmpEnd = new Pose2d(9.54, 6.7, new Rotation2d(Math.PI));
+    public static final Pose2d redMidEnd = new Pose2d(9.54, fieldWidth/2, new Rotation2d(Math.PI));
+    public static final Pose2d redSourceEnd = new Pose2d(9.54, 1.5, new Rotation2d(Math.PI));
 
     //field things
     public static final Translation2d bluePodium = new Translation2d(Units.inchesToMeters(120.5), fieldWidth/2);

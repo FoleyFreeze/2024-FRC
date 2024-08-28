@@ -72,6 +72,10 @@ public class RobotContainer {
     AMP_SIDE_SPEAKER, SPEAKER_CENTER, SOURCE_SIDE_SPEAKER, AMP, SOURCE, APRILTAG_0Deg, APRILTAG
   }
 
+  public enum EndLocationType{
+    NONE, AMP, MIDDLE, SOURCE
+  }
+
   private LoggedDashboardChooser<AutonType> autoChooser;
   private LoggedDashboardChooser<Integer> notePriorityA;
   private LoggedDashboardChooser<Integer> notePriorityB;
@@ -83,8 +87,12 @@ public class RobotContainer {
   private LoggedDashboardChooser<Integer> notePriorityH;
   private LoggedDashboardChooser<Integer> totalNotes;
   private LoggedDashboardChooser<StartLocationType> startChooser;
+  private LoggedDashboardChooser<EndLocationType> endChooser;
   private LoggedDashboardChooser<Integer> waitChooser;
   private LoggedDashboardChooser<Boolean> setAngleChooser;
+  private LoggedDashboardChooser<Boolean> droppedNote;
+
+  
 
   public RobotContainer() {
     Locations.loadTagData();
@@ -433,6 +441,8 @@ public class RobotContainer {
     selectedAuton += startChooser.get().ordinal();
     selectedAuton += waitChooser.get();
     selectedAuton += setAngleChooser.get();
+    selectedAuton += endChooser.get().ordinal();
+    selectedAuton += droppedNote.get();
 
     if (/*checkPoseError(autonStartPose, drive.getPose()) || */!selectedAuton.equals(lastSelectedAuton)){
       Locations.recalcForAlliance();
@@ -490,7 +500,9 @@ public class RobotContainer {
                                 totalNotes.get(),
                                 startChooser.get(),
                                 waitChooser.get(),
-                                setAngleChooser.get()
+                                setAngleChooser.get(),
+                                endChooser.get(),
+                                droppedNote.get()
           );
           break;
 
@@ -563,6 +575,8 @@ public class RobotContainer {
     startChooser = new LoggedDashboardChooser<>("Start Location");
     waitChooser = new LoggedDashboardChooser<>("Start Wait Time");
     setAngleChooser = new LoggedDashboardChooser<>("Reset Bot Angle");
+    endChooser = new LoggedDashboardChooser<>("End Location");
+    droppedNote = new LoggedDashboardChooser<>("Dropped Note");
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
@@ -577,6 +591,11 @@ public class RobotContainer {
       startChooser.addOption("FullSource", StartLocationType.SOURCE);
       startChooser.addOption("AprilTag", StartLocationType.APRILTAG);
       startChooser.addOption("AprilTag 0 Angle", StartLocationType.APRILTAG_0Deg);
+    
+    endChooser.addDefaultOption("None", EndLocationType.NONE);
+      endChooser.addOption("Amp", EndLocationType.AMP);
+      endChooser.addOption("Middle", EndLocationType.MIDDLE);
+      endChooser.addOption("Source", EndLocationType.SOURCE);
 
     waitChooser.addDefaultOption("0sec", 0);
       waitChooser.addOption("1sec", 1);
@@ -589,6 +608,9 @@ public class RobotContainer {
       waitChooser.addOption("8sec", 8);
       waitChooser.addOption("9sec", 9);
       waitChooser.addOption("10sec", 10);
+
+      droppedNote.addDefaultOption("False", false);
+      droppedNote.addOption("True", true);
     
     addNoteOrderHelper(notePriorityA);
     addNoteOrderHelper(notePriorityB);
@@ -608,8 +630,8 @@ public class RobotContainer {
     totalNotes.addOption("7", 7);
     totalNotes.addOption("8", 8);
 
-    setAngleChooser.addDefaultOption("False", false);
-    setAngleChooser.addOption("True", true);
+    setAngleChooser.addDefaultOption("True", true);
+    setAngleChooser.addOption("False", false);
 
     ShuffleboardTab autoTab = Shuffleboard.getTab("Auton");
     autoTab.add("Auton Mode", autoChooser.getSendableChooser()).withPosition(0,0).withSize(2,1);

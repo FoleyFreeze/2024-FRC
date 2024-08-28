@@ -177,9 +177,16 @@ public class Vision extends SubsystemBase{
         } else if(inputs.mt2_tagCount == 0) {
             updateTags = false;
         }
+
+        //TODO: delete
+        if(Robot.isSimulation() && inputs.mt2_tagCount > 0){
+            updateTags = true;
+        }
+
         Logger.recordOutput("Vision/TagUpdate", updateTags);
         if(updateTags) {
             Pose2d oldBotPose = posePicker(inputs.mt2_timestamp);
+            Logger.recordOutput("Vison/OldBotPose", oldBotPose);
             Transform2d deltaPose = r.drive.getPose().minus(oldBotPose);
             Pose2d visionPose = inputs.mt2_botPose.plus(deltaPose);
             Logger.recordOutput("Vision/CorrectedBotPose", visionPose);
@@ -206,10 +213,10 @@ public class Vision extends SubsystemBase{
 
             distToSpeaker = Locations.tagSpeaker.getDistance(inputs.mt2_botPose.getTranslation());
             Logger.recordOutput("Vision/DistToSpeaker", Units.metersToInches(distToSpeaker));
-            SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(distToSpeaker));
-
-            inputs.mt2_newData = false; 
+            SmartDashboard.putNumber("DistToSpeaker",Units.metersToInches(distToSpeaker));    
         }
+
+        inputs.mt2_newData = false; 
     }
 
     public boolean hasNewLimelightImage(){

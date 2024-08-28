@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.EndLocationType;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDrive;
 import frc.robot.commands.drive.CmdDriveNoteTraj;
@@ -80,7 +81,9 @@ public class CmdAuton {
                                        int a, int b, int c, int d, int e, int f, int g, int h, int total,
                                        StartLocationType startLocation,
                                        int waitTime,
-                                       boolean earlyAngleReset){
+                                       boolean earlyAngleReset,
+                                       EndLocationType endLocation,
+                                       boolean droppedNote){
 
         if(DriverStation.isFMSAttached()){
             //force the angle reset when connected to the field
@@ -117,6 +120,10 @@ public class CmdAuton {
             fullSequence.addCommands(slowButWorkingAuto(r, noteOrder, startLocation, earlyAngleReset));
         }
 
+        if(endLocation != EndLocationType.NONE){
+            
+        }
+
         Command cmd = fullSequence.finallyDo(() -> stopAll(r));
         cmd.setName("SelectableAuto");
         return cmd;
@@ -136,7 +143,7 @@ public class CmdAuton {
                 prime(r, startLocation),
                 new WaitCommand(0.4),//TODO: how much faster before we miss
                 shoot(r)
-             )
+             ).onlyIf(() -> startLocation != StartLocationType.SOURCE)
         ));
         
         Pose2d startPose = getStartPose(r, startLocation);
@@ -147,7 +154,7 @@ public class CmdAuton {
         Translation2d lastShootLocation = startPose.getTranslation();
         for(int i=0;i<noteOrder.length;i++){
             int currNote = noteOrder[i];
-            int nextNote = 0;
+            int nextNote = 0; 
             if(i+1 < noteOrder.length){
                 nextNote = noteOrder[i+1];
             }
