@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.DroppedNoteType;
 import frc.robot.RobotContainer.EndLocationType;
 import frc.robot.RobotContainer.StartLocationType;
 import frc.robot.commands.drive.CmdDrive;
@@ -83,7 +84,7 @@ public class CmdAuton {
                                        int waitTime,
                                        boolean earlyAngleReset,
                                        EndLocationType endLocation,
-                                       boolean droppedNote){
+                                       DroppedNoteType droppedNote){
 
         if(DriverStation.isFMSAttached()){
             //force the angle reset when connected to the field

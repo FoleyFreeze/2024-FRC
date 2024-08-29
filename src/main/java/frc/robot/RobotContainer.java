@@ -65,7 +65,7 @@ public class RobotContainer {
   public RoboState state;
   
   public enum AutonType{
-    DO_NOTHING, PREGEN, DENIAL, SELECTABLE, TEST
+    DO_NOTHING, PREGEN, DENIAL, SELECT, SOURCE_SELECT, CLOSE_SELECT, AMP_SELECT, TEST
   }
 
   public enum StartLocationType{
@@ -74,6 +74,10 @@ public class RobotContainer {
 
   public enum EndLocationType{
     NONE, AMP, MIDDLE, SOURCE
+  }
+
+  public enum DroppedNoteType{
+    NONE, LEAVE, PICKUP
   }
 
   private LoggedDashboardChooser<AutonType> autoChooser;
@@ -90,7 +94,7 @@ public class RobotContainer {
   private LoggedDashboardChooser<EndLocationType> endChooser;
   private LoggedDashboardChooser<Integer> waitChooser;
   private LoggedDashboardChooser<Boolean> setAngleChooser;
-  private LoggedDashboardChooser<Boolean> droppedNote;
+  private LoggedDashboardChooser<DroppedNoteType> droppedNote;
 
   
 
@@ -473,6 +477,12 @@ public class RobotContainer {
 
       //autonStartPose = drive.getPose();
 
+      if(startChooser.get() == StartLocationType.SOURCE){
+        droppedNote.addDefaultOption("Leave", DroppedNoteType.LEAVE);
+      }else{
+        droppedNote.addDefaultOption("None", DroppedNoteType.NONE);
+      }
+
       switch(autoChooser.get()){
         //TODO: include totalNotes in the pregen path autos to stop early
         //Probably do this as part of a AutonMonitor running in parallel
@@ -486,7 +496,129 @@ public class RobotContainer {
           autonCommand = ChoreoAuto.getPregen3NoteMid("3NoteMid", this);
           break;
 
-        case SELECTABLE:
+        case SELECT:
+          drive.k.dontFlip = true;
+          autonCommand = CmdAuton.selectedAuto(this,
+                                notePriorityA.get(),
+                                notePriorityB.get(),
+                                notePriorityC.get(),
+                                notePriorityD.get(),
+                                notePriorityE.get(),
+                                notePriorityF.get(),
+                                notePriorityG.get(),
+                                notePriorityH.get(),
+                                totalNotes.get(),
+                                startChooser.get(),
+                                waitChooser.get(),
+                                setAngleChooser.get(),
+                                endChooser.get(),
+                                droppedNote.get()
+          );
+          break;
+
+        case SOURCE_SELECT:
+          startChooser.addDefaultOption("SourceSideSpeaker", StartLocationType.SOURCE_SIDE_SPEAKER);
+          endChooser.addDefaultOption("Source", EndLocationType.SOURCE);
+          if(getAlliance() == 1){//blue
+            notePriorityE.addDefaultOption("1st", 1);
+            notePriorityD.addDefaultOption("2nd", 2);
+            notePriorityC.addDefaultOption("3rd", 3);
+            notePriorityA.addDefaultOption("N/A", 0);
+            notePriorityB.addDefaultOption("N/A", 0);
+            notePriorityF.addDefaultOption("N/A", 0);
+            notePriorityG.addDefaultOption("N/A", 0);
+            notePriorityH.addDefaultOption("N/A", 0);          
+          }else{//red
+            notePriorityA.addDefaultOption("1st", 1);
+            notePriorityB.addDefaultOption("2nd", 2);
+            notePriorityC.addDefaultOption("3rd", 3);
+            notePriorityD.addDefaultOption("N/A", 0);
+            notePriorityE.addDefaultOption("N/A", 0);
+            notePriorityF.addDefaultOption("N/A", 0);
+            notePriorityG.addDefaultOption("N/A", 0);
+            notePriorityH.addDefaultOption("N/A", 0);
+          }
+          drive.k.dontFlip = true;
+          autonCommand = CmdAuton.selectedAuto(this,
+                                notePriorityA.get(),
+                                notePriorityB.get(),
+                                notePriorityC.get(),
+                                notePriorityD.get(),
+                                notePriorityE.get(),
+                                notePriorityF.get(),
+                                notePriorityG.get(),
+                                notePriorityH.get(),
+                                totalNotes.get(),
+                                startChooser.get(),
+                                waitChooser.get(),
+                                setAngleChooser.get(),
+                                endChooser.get(),
+                                droppedNote.get()
+          );
+          break;
+        case AMP_SELECT:
+          startChooser.addDefaultOption("AmpSideSpeaker", StartLocationType.AMP_SIDE_SPEAKER);
+          endChooser.addDefaultOption("Amp", EndLocationType.AMP);
+          if(getAlliance() == 1){//blue
+            notePriorityA.addDefaultOption("1st", 1);
+            notePriorityB.addDefaultOption("2nd", 2);
+            notePriorityC.addDefaultOption("3rd", 3);
+            notePriorityD.addDefaultOption("N/A", 0);
+            notePriorityE.addDefaultOption("N/A", 0);
+            notePriorityF.addDefaultOption("N/A", 0);
+            notePriorityG.addDefaultOption("N/A", 0);
+            notePriorityH.addDefaultOption("N/A", 0);          
+          }else{//red
+            notePriorityE.addDefaultOption("1st", 1);
+            notePriorityD.addDefaultOption("2nd", 2);
+            notePriorityC.addDefaultOption("3rd", 3);
+            notePriorityG.addDefaultOption("N/A", 0);
+            notePriorityH.addDefaultOption("N/A", 0);
+            notePriorityA.addDefaultOption("N/A", 0);
+            notePriorityB.addDefaultOption("N/A", 0);
+            notePriorityF.addDefaultOption("N/A", 0);
+          }
+          drive.k.dontFlip = true;
+          autonCommand = CmdAuton.selectedAuto(this,
+                                notePriorityA.get(),
+                                notePriorityB.get(),
+                                notePriorityC.get(),
+                                notePriorityD.get(),
+                                notePriorityE.get(),
+                                notePriorityF.get(),
+                                notePriorityG.get(),
+                                notePriorityH.get(),
+                                totalNotes.get(),
+                                startChooser.get(),
+                                waitChooser.get(),
+                                setAngleChooser.get(),
+                                endChooser.get(),
+                                droppedNote.get()
+          );
+          break;
+        
+        case CLOSE_SELECT://string???
+          startChooser.addDefaultOption("CenterSpeaker", StartLocationType.SPEAKER_CENTER);
+          endChooser.addDefaultOption("Source", EndLocationType.NONE);
+          if(getAlliance() == 1){//blue
+            notePriorityF.addDefaultOption("1st", 1);
+            notePriorityG.addDefaultOption("2nd", 2);
+            notePriorityH.addDefaultOption("3rd", 3);
+            notePriorityA.addDefaultOption("N/A", 0);
+            notePriorityB.addDefaultOption("N/A", 0);
+            notePriorityC.addDefaultOption("N/A", 0);
+            notePriorityD.addDefaultOption("N/A", 0);
+            notePriorityE.addDefaultOption("N/A", 0);          
+          }else{//red
+            notePriorityH.addDefaultOption("1st", 1);
+            notePriorityG.addDefaultOption("2nd", 2);
+            notePriorityF.addDefaultOption("3rd", 3);
+            notePriorityA.addDefaultOption("N/A", 0);
+            notePriorityB.addDefaultOption("N/A", 0);
+            notePriorityC.addDefaultOption("N/A", 0);
+            notePriorityD.addDefaultOption("N/A", 0);
+            notePriorityE.addDefaultOption("N/A", 0);
+          }
           drive.k.dontFlip = true;
           autonCommand = CmdAuton.selectedAuto(this,
                                 notePriorityA.get(),
@@ -579,9 +711,12 @@ public class RobotContainer {
     droppedNote = new LoggedDashboardChooser<>("Dropped Note");
 
     autoChooser.addDefaultOption("Do Nothing", AutonType.DO_NOTHING);
+      autoChooser.addOption("Select", AutonType.SELECT);
+      autoChooser.addOption("Source", AutonType.SOURCE_SELECT);
+      autoChooser.addOption("Amp", AutonType.AMP_SELECT);
+      autoChooser.addOption("Close", AutonType.CLOSE_SELECT);
       autoChooser.addOption("Pregenerated", AutonType.PREGEN);
       autoChooser.addOption("Denial", AutonType.DENIAL);
-      autoChooser.addOption("Selectable", AutonType.SELECTABLE);
       autoChooser.addOption("Test", AutonType.TEST);
 
     startChooser.addDefaultOption("CenterSpeaker", StartLocationType.SPEAKER_CENTER);
@@ -609,8 +744,9 @@ public class RobotContainer {
       waitChooser.addOption("9sec", 9);
       waitChooser.addOption("10sec", 10);
 
-      droppedNote.addDefaultOption("False", false);
-      droppedNote.addOption("True", true);
+      droppedNote.addDefaultOption("None", DroppedNoteType.NONE);
+      droppedNote.addOption("Pickup", DroppedNoteType.PICKUP);
+      droppedNote.addOption("Leave", DroppedNoteType.LEAVE);
     
     addNoteOrderHelper(notePriorityA);
     addNoteOrderHelper(notePriorityB);
@@ -647,6 +783,7 @@ public class RobotContainer {
     autoTab.add("Note G", notePriorityG.getSendableChooser()).withPosition(3, 2);
     autoTab.add("Note H", notePriorityH.getSendableChooser()).withPosition(4, 2);
     autoTab.add("Reset Bot Angle", setAngleChooser.getSendableChooser()).withPosition(7, 2);
+    autoTab.add("Dropped Note", droppedNote.getSendableChooser()).withPosition(7,1);
 
   }
 

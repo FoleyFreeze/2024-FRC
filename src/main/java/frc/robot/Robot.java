@@ -24,7 +24,6 @@ public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
-
     private static final boolean simOnly = false;
 
     @Override
